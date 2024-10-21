@@ -1,0 +1,32 @@
+package com.example.todo.feature_todo.data.remote
+
+import androidx.room.Delete
+import com.example.todo.feature_todo.data.remote.dto.RemoteTodoItem
+import okhttp3.Response
+import retrofit2.http.Body
+import retrofit2.http.DELETE
+import retrofit2.http.GET
+import retrofit2.http.PUT
+import retrofit2.http.Path
+import retrofit2.http.Query
+import retrofit2.http.Url
+
+interface TodoApi {
+    @GET("/todo.json")
+    suspend fun getAllTodos(): List<RemoteTodoItem>
+
+    @GET("/todo.json?orderBy=\"ID\"")
+    suspend fun getTodoItemById(@Query("equalTo") id:Int?): Map<String,RemoteTodoItem>
+
+//    @POST
+//    suspend fun addTodo(@Url url:String, @Body updatedTodo:RemoteTodoItem):Response<Unit>
+
+    @PUT
+    suspend fun addTodo(@Url url:String, @Body updatedTodo:RemoteTodoItem):Unit
+
+    @DELETE("todo/{id}.json")
+    suspend fun deleteTodo(@Path("id") id :Int?) : Unit
+
+    @PUT("/todo/{id}.json")
+    suspend fun updateTodoItem(@Path("id") id:Int?,@Body todoItem:RemoteTodoItem):Unit
+}
