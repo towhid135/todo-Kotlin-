@@ -2,7 +2,7 @@ package com.example.todo.feature_todo.data.remote
 
 import androidx.room.Delete
 import com.example.todo.feature_todo.data.remote.dto.RemoteTodoItem
-import okhttp3.Response
+import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.DELETE
 import retrofit2.http.GET
@@ -22,11 +22,11 @@ interface TodoApi {
 //    suspend fun addTodo(@Url url:String, @Body updatedTodo:RemoteTodoItem):Response<Unit>
 
     @PUT
-    suspend fun addTodo(@Url url:String, @Body updatedTodo:RemoteTodoItem):Unit
+    suspend fun addTodo(@Url url:String, @Body updatedTodo:RemoteTodoItem):Response<Unit>
 
     @DELETE("todo/{id}.json")
-    suspend fun deleteTodo(@Path("id") id :Int?) : Unit
+    suspend fun deleteTodo(@Path("id") id :Int?) : Response<Unit>
 
     @PUT("/todo/{id}.json")
-    suspend fun updateTodoItem(@Path("id") id:Int?,@Body todoItem:RemoteTodoItem):Unit
+    suspend fun updateTodoItem(@Path("id") id:Int?,@Body todoItem:RemoteTodoItem):Response<Unit>
 }
