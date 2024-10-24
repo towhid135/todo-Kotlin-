@@ -51,6 +51,7 @@ android {
     }
     buildFeatures {
         compose = true
+        buildConfig = true
     }
 }
 
@@ -98,6 +99,7 @@ dependencies {
     //GSON
     implementation(libs.gson)
     implementation(libs.converter.gson)
+
 
 
 }
