@@ -12,7 +12,7 @@ sealed class TodoItemOrder(
         return when(this){
             is Title -> Title(this.sortingDirection,this.showArchived);
             is Time -> Time(this.sortingDirection,this.showArchived);
-            is Completed -> Time(this.sortingDirection,this.showArchived)
+            is Completed -> Completed(this.sortingDirection,this.showArchived)
         }
     }
 }
