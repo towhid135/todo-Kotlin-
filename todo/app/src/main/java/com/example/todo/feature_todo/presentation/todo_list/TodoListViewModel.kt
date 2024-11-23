@@ -31,6 +31,52 @@ class TodoListViewModel @Inject constructor(
         _state.value = _state.value.copy(error = e.message, isLoading = false)
     }
 
+    fun onEvent(event: TodoListEvent){
+        when(event){
+            is TodoListEvent.Delete -> {
+                viewModelScope.launch(dispatcher+errorHandler) {
+                    todoUseCases.deleteTodoItem(event.todo)
+                    getTodoItems()
+                    undoTodoItem = event.todo
+                }
+            }
+
+            is TodoListEvent.Sort -> {
+                val isStateOrderAlreadyMatchesEventOrder = event.todoItemOrder::class == _state.value.todoItemOrder::class &&
+                        event.todoItemOrder.sortingDirection == _state.value.todoItemOrder.sortingDirection &&
+                        event.todoItemOrder.showArchived == _state.value.todoItemOrder.showArchived
+                if(isStateOrderAlreadyMatchesEventOrder) return;
+
+                _state.value = _state.value.copy(
+                    todoItemOrder = event.todoItemOrder
+                )
+                getTodoItems()
+            }
+
+            is TodoListEvent.ToggleArchived -> {
+                viewModelScope.launch (dispatcher+errorHandler) {
+                    todoUseCases.toggleArchiveTodoItem(event.todo)
+                    getTodoItems()
+                }
+            }
+
+            is TodoListEvent.ToggleCompleted -> {
+                viewModelScope.launch(dispatcher+errorHandler){
+                    todoUseCases.toggleCompletedTodoItem(event.todo)
+                    getTodoItems()
+                }
+            }
+
+            is TodoListEvent.UndoDelete -> {
+                viewModelScope.launch(dispatcher+errorHandler){
+                    todoUseCases.addTodoItem(undoTodoItem ?: return@launch)
+                    undoTodoItem = null
+                    getTodoItems()
+                }
+            }
+        }
+    }
+
     fun getTodoItems(){
         getTodoItemJob?.cancel()
 
