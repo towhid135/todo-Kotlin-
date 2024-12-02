@@ -1,10 +1,13 @@
 package com.example.todo.core.presentation.components
 
 import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Archive
 import androidx.compose.material.icons.filled.CheckCircleOutline
+import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -52,14 +55,57 @@ fun EmptyCircle(color:Color,strokeWidth:Float = 9f){
     }
 }
 
+@Composable
+fun ArchiveButton(
+    onArchiveClick: () -> Unit,
+    color:Color = MaterialTheme.colorScheme.secondary,
+    modifier: Modifier = Modifier
+){
+    IconButton(
+        onClick = onArchiveClick,
+        modifier = modifier
+    ) {
+        Icon(
+            imageVector = Icons.Default.Archive,
+            contentDescription = ContentDescriptions.ARCHIVE_TODO_ITEM,
+            tint = color,
+            modifier = Modifier.size(32.dp)
+        )
+    }
+}
+
+@Composable
+fun DeleteButton(
+    onDeleteClick:() -> Unit,
+    modifier:Modifier = Modifier
+){
+    IconButton(
+        onClick = onDeleteClick,
+        modifier = modifier
+    ) {
+        Icon(
+            imageVector = Icons.Default.Delete,
+            contentDescription = ContentDescriptions.DELETE_TODO_ITEM,
+            tint = MaterialTheme.colorScheme.error,
+            modifier = Modifier.size(32.dp)
+        )
+    }
+}
+
 @Preview
 @Composable
 fun ButtonsPreview(){
     TodoTheme {
-        CompleteButton(
-            onCompleteClick = { print("completed")},
-            color = MaterialTheme.colorScheme.onSecondary,
-            completed = true
-        )
+        Column {
+            CompleteButton(
+                onCompleteClick = { print("completed")},
+                color = MaterialTheme.colorScheme.onSecondary,
+                completed = true
+            )
+            ArchiveButton(
+                onArchiveClick = { print("archive press") }
+            )
+            DeleteButton(onDeleteClick = { print("delete") })
+        }
     }
 }
