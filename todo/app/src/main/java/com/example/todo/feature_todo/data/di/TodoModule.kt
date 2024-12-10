@@ -6,12 +6,15 @@ import com.example.todo.BuildConfig
 import com.example.todo.feature_todo.data.local.TodoDao
 import com.example.todo.feature_todo.data.local.TodoDatabase
 import com.example.todo.feature_todo.data.remote.TodoApi
+import com.example.todo.feature_todo.data.repo.TodoListRepoImpl
+import com.example.todo.feature_todo.domain.repo.TodoListRepo
 import com.google.gson.internal.GsonBuildConfig
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
+import kotlinx.coroutines.CoroutineDispatcher
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import javax.inject.Singleton
@@ -49,6 +52,12 @@ object TodoModule {
             TodoDatabase::class.java,
             "todo_database"
         ).fallbackToDestructiveMigrationFrom().build()
+    }
+
+    @Provides
+    @Singleton
+    fun providesTodoRepo(db: TodoDatabase, api: TodoApi, @IoDispatcher dispatcher:CoroutineDispatcher): TodoListRepo{
+        return TodoListRepoImpl(db.dao,api,dispatcher)
     }
 
 }
