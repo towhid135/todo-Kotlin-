@@ -1,11 +1,24 @@
 package com.example.todo.core.util
 
+import com.example.todo.feature_todo.domain.util.SortingDirection
+import com.example.todo.feature_todo.domain.util.TodoItemOrder
+
 object TodoConstants {
     const val EMPTY_TITLE_OR_DESCRIPTION = "Both the todo title and description must be populated."
 }
 
 object TodoListStrings {
     const val CANT_GET_TODOS = "Error: Could not retrieve Todo Items"
+    const val TODO_LIST = "TODO List"
+    const val TITLE = "Title"
+    const val TIME = "Time"
+    const val Completed = "Completed"
+    const val SORT_UP = "Sort Up"
+    const val SORT_DOWN = "Sort Down"
+    const val SHOW_ARCHIVED = "Show Archived"
+    const val SORT_BY = "Sort By"
+    const val TODO_ITEM_DELETED = "Todo Item has been deleted"
+    const val UNDO = "Undo"
 }
 
 object ContentDescriptions {
@@ -18,3 +31,4 @@ object ContentDescriptions {
     const val BACKGROUND_IMAGE = "Background Image"
     const val LOADING_INDICATOR = "Loading"
 }
+

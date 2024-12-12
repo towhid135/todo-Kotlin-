@@ -8,11 +8,11 @@ sealed class TodoItemOrder(
     class Time(sortingDirection: SortingDirection,showArchived: Boolean):TodoItemOrder(sortingDirection,showArchived)
     class Completed(sortingDirection: SortingDirection,showArchived: Boolean):TodoItemOrder(sortingDirection,showArchived)
 
-    fun copy():TodoItemOrder{
+    fun copy(sortingDirection: SortingDirection,showArchived: Boolean):TodoItemOrder{
         return when(this){
-            is Title -> Title(this.sortingDirection,this.showArchived);
-            is Time -> Time(this.sortingDirection,this.showArchived);
-            is Completed -> Completed(this.sortingDirection,this.showArchived)
+            is Title -> Title(sortingDirection,showArchived);
+            is Time -> Time(sortingDirection,showArchived);
+            is Completed -> Completed(sortingDirection,showArchived)
         }
     }
 }
