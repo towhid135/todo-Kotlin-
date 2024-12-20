@@ -234,34 +234,3 @@ fun TodoItemList(backgroundImage:Painter,todoItems:List<TodoItem>,isLoading:Bool
     }
 }
 
-@Preview
-@Composable
-fun TodoItemListPreview() {
-    val sampleTodoItems = listOf(
-        TodoItem(id = 1, title = "Sample Todo 1", description = "Description 1", timestamp = System.currentTimeMillis(), completed = false, archived = false),
-        TodoItem(id = 2, title = "Sample Todo 2", description = "Description 2", timestamp = System.currentTimeMillis(), completed = true, archived = false),
-        TodoItem(id = 3, title = "Sample Todo 3", description = "Description 3", timestamp = System.currentTimeMillis(), completed = false, archived = true)
-    )
-
-    val painter = painterResource(id = R.drawable.background_portrait)
-
-    TodoItemList(
-        backgroundImage = painter,
-        todoItems = sampleTodoItems
-    )
-}
-
-@Preview
-@Composable
-fun TodoListScreenTopAppBarPreview(){
-    TodoListScreenTopAppBar(onMenuButtonPress = {})
-}
-
-@Preview
-@Composable
-fun AddTodoPreview(){
-    AddTodoButton(onAddButtonPress = {})
-}
-
-
-
