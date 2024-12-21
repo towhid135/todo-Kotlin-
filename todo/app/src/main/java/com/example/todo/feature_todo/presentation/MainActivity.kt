@@ -5,12 +5,15 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
+import androidx.compose.material3.Surface
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
+import com.example.todo.feature_todo.presentation.todo_list.TodoListScreen
+import com.example.todo.feature_todo.presentation.todo_list.TodoListViewModel
+import com.example.todo.feature_todo.presentation.util.Screen
 import com.example.todo.ui.theme.TodoTheme
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -21,29 +24,22 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             TodoTheme {
-                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    Greeting(
-                        name = "Android",
-                        modifier = Modifier.padding(innerPadding)
-                    )
+                Surface(
+                    modifier = Modifier.fillMaxSize()
+                ) {
+                    val navController = rememberNavController()
+                    val listViewModel:TodoListViewModel = hiltViewModel()
+
+                    NavHost(
+                        navController = navController,
+                        startDestination = Screen.TodoItemListScreen.route
+                    ){
+                        composable(route = Screen.TodoItemListScreen.route){
+                            TodoListScreen(navController = navController, viewModel = listViewModel)
+                        }
+                    }
                 }
             }
         }
-    }
-}
-
-@Composable
-fun Greeting(name: String, modifier: Modifier = Modifier) {
-    Text(
-        text = "Hello $name!",
-        modifier = modifier
-    )
-}
-
-@Preview(showBackground = true)
-@Composable
-fun GreetingPreview() {
-    TodoTheme {
-        Greeting("Android")
     }
 }
