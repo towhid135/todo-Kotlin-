@@ -1,3 +1,5 @@
+import java.util.Properties
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
@@ -7,34 +9,37 @@ plugins {
     alias(libs.plugins.hilt)
 }
 
+val localPropertiesFile = rootProject.file("local.properties")
+val localProperties = Properties()
+
+if (localPropertiesFile.exists()) {
+    localPropertiesFile.inputStream().use { stream ->
+        localProperties.load(stream)
+    }
+}
+
+val baseUrl: String? = localProperties["BASE_URL"] as? String
+
 android {
     namespace = "com.example.todo"
-    compileSdk = 34
+    compileSdk = 35
 
     defaultConfig {
         applicationId = "com.example.todo"
         minSdk = 24
+        //noinspection OldTargetApi
         targetSdk = 34
         versionCode = 1
         versionName = "1.0"
-
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
     buildTypes {
         debug {
-            buildConfigField(
-                "String",
-                "BASE_URL",
-                "\"${project.findProperty("BASE_URL") ?: "https://default-url.com"}\""
-            )
+            buildConfigField("String", "BASE_URL", "\"${baseUrl}\"")
         }
         release {
-            buildConfigField(
-                "String",
-                "BASE_URL",
-                "\"${project.findProperty("BASE_URL") ?: "https://default-url.com"}\""
-            )
+            buildConfigField("String", "BASE_URL", "\"${baseUrl}\"")
             isMinifyEnabled = false
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
@@ -106,5 +111,11 @@ dependencies {
 
 // Allow references to generated code
 kapt {
-    correctErrorTypes = true
+    arguments {
+        arg("dagger.fastInit", "enabled")
+        arg("dagger.hilt.android.internal.disableAndroidSuperclassValidation", "true")
+        arg("dagger.hilt.android.internal.projectType", "APP")
+        arg("dagger.hilt.internal.useAggregatingRootProcessor", "true")
+        arg("kapt.kotlin.generated", "${layout.buildDirectory}/generated/source/kaptKotlin")
+    }
 }
