@@ -1,5 +1,6 @@
 package com.example.todo.feature_todo.presentation.todo_list.components
 
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -11,16 +12,14 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.SnackbarResult
 import androidx.compose.material3.Text
 import androidx.compose.material3.VerticalDivider
 import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.material3.pulltorefresh.PullToRefreshDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -31,41 +30,48 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.todo.core.util.ContentDescriptions
+import com.example.todo.core.util.TodoListStrings
 import com.example.todo.feature_todo.domain.model.TodoItem
+import com.example.todo.feature_todo.presentation.todo_list.TodoListEvent
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TodoItemList(
     backgroundImage: Painter,
     todoItems:List<TodoItem>,
-    isLoading:Boolean=false,
+    isLoading:Boolean,
     error:String? = null,
-    onPullToRefresh:() -> Unit
+    onPullToRefresh:() -> Unit,
+    onEvent:(TodoListEvent) -> Unit,
+    snackbarHostState: SnackbarHostState,
+    scope: CoroutineScope,
     ){
-    var isRefreshing by remember { mutableStateOf(false) }
     val pullToRefreshState = rememberPullToRefreshState()
 
-    val onRefresh:() -> Unit = {
-        isRefreshing = true
+    fun onRefresh(){
         onPullToRefresh()
-        isRefreshing = false
     }
+    Log.d("OnRefresh","isLoading: $isLoading")
+
     PullToRefreshBox(
         modifier = Modifier.fillMaxSize()
             .background(MaterialTheme.colorScheme.background),
         state = pullToRefreshState,
-        isRefreshing = isRefreshing,
-        onRefresh = onRefresh,
+        isRefreshing = isLoading,
+        onRefresh = {onRefresh()},
         indicator = {
             PullToRefreshDefaults.Indicator(
                 state = pullToRefreshState,
-                isRefreshing = isRefreshing,
+                isRefreshing = isLoading,
                 modifier = Modifier.align(Alignment.TopCenter),
                 color = Color.Red
             )
         }
 
     ){
+
         Image(
             painter = backgroundImage,
             contentDescription = ContentDescriptions.BACKGROUND_IMAGE,
@@ -86,9 +92,21 @@ fun TodoItemList(
                         todo=todoItem,
                         modifier = Modifier.fillMaxSize()
                             .padding(4.dp),
-                        onDeleteClick = {},
-                        onArchiveClick = {},
-                        onCompleteClick = {},
+                        onDeleteClick = {
+                            onEvent(TodoListEvent.Delete(todoItem))
+                            scope.launch {
+                                val undo = snackbarHostState.showSnackbar(
+                                    message = TodoListStrings.TODO_ITEM_DELETED,
+                                    actionLabel = TodoListStrings.UNDO,
+                                    withDismissAction = true
+                                )
+                                if(undo == SnackbarResult.ActionPerformed){
+                                    onEvent(TodoListEvent.UndoDelete)
+                                }
+                            }
+                        },
+                        onArchiveClick = {onEvent(TodoListEvent.ToggleArchived(todoItem))},
+                        onCompleteClick = {onEvent(TodoListEvent.ToggleCompleted(todoItem))},
                         onCardClick = {}
                     )
                     VerticalDivider(

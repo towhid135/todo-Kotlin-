@@ -19,7 +19,7 @@ fun getTodoColors(todo:TodoItem):TodoItemColors{
             backgroundColor = MaterialTheme.colorScheme.secondary.copy(alpha = 0.6f),
             textColor = MaterialTheme.colorScheme.onSecondary,
             archiveIconColor = MaterialTheme.colorScheme.onSecondary,
-            checkColor = if(todo.completed) MaterialTheme.colorScheme.tertiaryContainer
+            checkColor = if(todo.completed) MaterialTheme.colorScheme.onTertiaryContainer
             else MaterialTheme.colorScheme.onSecondary
         )
     }else{
@@ -27,7 +27,7 @@ fun getTodoColors(todo:TodoItem):TodoItemColors{
             backgroundColor = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.6f),
             textColor = MaterialTheme.colorScheme.onPrimaryContainer,
             archiveIconColor = MaterialTheme.colorScheme.secondary,
-            checkColor = if(todo.completed) MaterialTheme.colorScheme.tertiaryContainer
+            checkColor = if(todo.completed) MaterialTheme.colorScheme.onTertiaryContainer
             else MaterialTheme.colorScheme.secondary
         )
     }

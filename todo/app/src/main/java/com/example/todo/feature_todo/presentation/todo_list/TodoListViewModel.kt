@@ -79,10 +79,9 @@ class TodoListViewModel @Inject constructor(
 
     fun getTodoItems(){
         getTodoItemJob?.cancel()
-
         getTodoItemJob = viewModelScope.launch(dispatcher+errorHandler){
+            _state.value = _state.value.copy(isLoading = true)
             val result = todoUseCases.getTodoItems(todoItemOrder = _state.value.todoItemOrder)
-
             when(result){
                 is TodoUseCaseResult.Success -> {
                     _state.value = _state.value.copy(

@@ -82,7 +82,7 @@ class TodoListRepoImpl(
         try{
             val response = api.deleteTodo(todo.id)
             if(response.isSuccessful){
-                Log.i("API_DELETE","Response successful")
+                dao.deleteTodoItem(todo.toLocalTodoItem())
             }else{
                 Log.i("API_DELETE","Response Unsuccessful")
                 Log.i("API_DELETE",response.message())

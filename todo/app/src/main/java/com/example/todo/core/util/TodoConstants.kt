@@ -1,8 +1,5 @@
 package com.example.todo.core.util
 
-import com.example.todo.feature_todo.domain.util.SortingDirection
-import com.example.todo.feature_todo.domain.util.TodoItemOrder
-
 object TodoConstants {
     const val EMPTY_TITLE_OR_DESCRIPTION = "Both the todo title and description must be populated."
 }
