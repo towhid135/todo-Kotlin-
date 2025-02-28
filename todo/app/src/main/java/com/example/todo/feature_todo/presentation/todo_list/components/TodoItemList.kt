@@ -87,7 +87,7 @@ fun TodoItemList(
                     .padding(horizontal = 12.dp)
                     .padding(top = 64.dp)
             ) {
-                items(todoItems){ todoItem ->
+                items(todoItems, key = {it.id}){ todoItem ->
                     TodoItemCard(
                         todo=todoItem,
                         modifier = Modifier.fillMaxSize()

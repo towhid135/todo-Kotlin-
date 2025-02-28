@@ -1,6 +1,5 @@
 package com.example.todo.feature_todo.data.remote.dto
 
-import androidx.room.PrimaryKey
 import com.google.gson.annotations.SerializedName
 
 data class RemoteTodoItem (
@@ -15,5 +14,5 @@ data class RemoteTodoItem (
     @SerializedName("Archived")
     val archived:Boolean,
     @SerializedName("ID")
-    val id:Int?
+    val id:Int
 )

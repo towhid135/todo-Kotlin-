@@ -50,10 +50,8 @@ class TodoListRepoImpl(
     }
 
     private suspend fun refreshRoomCache(){
-        val remoteTodos = api.getAllTodos()
-        if(remoteTodos.isNotEmpty()){
-            dao.addAllTodoItems(remoteTodos.toLocalTodoItemListFromRemote())
-        }
+        val remoteTodos = api.getAllTodos().filterNotNull()
+        dao.addAllTodoItems(remoteTodos.toLocalTodoItemListFromRemote())
     }
 
     private fun isCacheEmpty():Boolean{

@@ -6,5 +6,5 @@ data class TodoItem(
     val timestamp:Long,
     val completed:Boolean,
     val archived:Boolean,
-    val id:Int?
+    val id:Int
 )
