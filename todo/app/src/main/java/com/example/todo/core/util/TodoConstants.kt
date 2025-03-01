@@ -29,3 +29,11 @@ object ContentDescriptions {
     const val LOADING_INDICATOR = "Loading"
 }
 
+object NewUpdateStrings {
+    const val SAVE_ERROR = "Unable to save todo. Ensure the title and description are not blank."
+    const val CONFIRM_DELETE = "Are you sure you want to delte this todo item?"
+    const val YES = "Yes"
+    const val TITLE_HINT = "Title..."
+    const val DESCRIPTION_HINT = "Description..."
+}
+

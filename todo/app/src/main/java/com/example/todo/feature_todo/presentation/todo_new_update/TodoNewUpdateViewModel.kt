@@ -5,6 +5,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.todo.core.util.NewUpdateStrings
 import com.example.todo.feature_todo.data.di.IoDispatcher
 import com.example.todo.feature_todo.domain.use_case.TodoUseCases
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -35,7 +36,7 @@ class TodoNewUpdateViewModel @Inject constructor (
     private var currentTodoId:Int? = null
 
     sealed class UiEvent {
-        data class ShowSnackbar(val message:String):UiEvent()
+        data class ShowSnackbar(val message:String?):UiEvent()
         object SaveTodo:UiEvent()
         object Back:UiEvent()
     }
@@ -62,4 +63,69 @@ class TodoNewUpdateViewModel @Inject constructor (
             }
         }
     }
+
+    fun onEvent(event: TodoNewUpdateEvent){
+        when(event){
+            TodoNewUpdateEvent.Back -> {
+                viewModelScope.launch {
+                    _eventFlow.emit(UiEvent.Back)
+                }
+            }
+            TodoNewUpdateEvent.DeleteTodo -> {
+                viewModelScope.launch(dispatcher + errorHandler) {
+                    if(currentTodoId != null){
+                        todoUseCases.deleteTodoItem(_state.value.todo)
+                    }
+                    _eventFlow.emit(UiEvent.Back)
+                }
+            }
+            is TodoNewUpdateEvent.OnChangeTitle -> {
+                _state.value = _state.value.copy(
+                    todo = _state.value.todo.copy(
+                        title = event.title
+                    )
+                )
+            }
+            is TodoNewUpdateEvent.OnchangeDescription -> {
+                _state.value = _state.value.copy(
+                    todo = _state.value.todo.copy(
+                        description = event.description
+                    )
+                )
+            }
+            TodoNewUpdateEvent.SaveTodo -> {
+                viewModelScope.launch {
+                    try {
+                        if(currentTodoId != null){
+                            todoUseCases.updateTodoItem(_state.value.todo)
+                        }else{
+                            todoUseCases.addTodoItem(_state.value.todo.copy(
+                                timestamp = System.currentTimeMillis(),
+                                id = null
+                            ))
+                        }
+                    }catch (e:Exception){
+                        _eventFlow.emit(
+                            UiEvent.ShowSnackbar(e.message ?: NewUpdateStrings.SAVE_ERROR)
+                        )
+                    }
+                }
+            }
+            TodoNewUpdateEvent.ToggleArchived -> {
+                _state.value = _state.value.copy(
+                    todo = _state.value.todo.copy(
+                        archived = !_state.value.todo.archived
+                    )
+                )
+            }
+            TodoNewUpdateEvent.ToggleCompleted -> {
+                _state.value = _state.value.copy(
+                    todo = _state.value.todo.copy(
+                        completed = !_state.value.todo.completed
+                    )
+                )
+            }
+        }
+    }
+
 }
