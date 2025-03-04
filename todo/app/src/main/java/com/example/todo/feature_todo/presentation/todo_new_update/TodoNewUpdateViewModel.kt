@@ -36,7 +36,7 @@ class TodoNewUpdateViewModel @Inject constructor (
     private var currentTodoId:Int? = null
 
     sealed class UiEvent {
-        data class ShowSnackbar(val message:String?):UiEvent()
+        data class ShowSnackbar(val message:String):UiEvent()
         object SaveTodo:UiEvent()
         object Back:UiEvent()
     }

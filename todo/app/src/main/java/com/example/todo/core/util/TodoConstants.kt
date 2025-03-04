@@ -27,6 +27,8 @@ object ContentDescriptions {
     const val SORTING_MENU = "Sorting Menu"
     const val BACKGROUND_IMAGE = "Background Image"
     const val LOADING_INDICATOR = "Loading"
+    const val SAVE_TODO = "Save Todo Item"
+    const val BACK = "Back"
 }
 
 object NewUpdateStrings {
@@ -36,4 +38,6 @@ object NewUpdateStrings {
     const val TITLE_HINT = "Title..."
     const val DESCRIPTION_HINT = "Description..."
 }
+
+
 
