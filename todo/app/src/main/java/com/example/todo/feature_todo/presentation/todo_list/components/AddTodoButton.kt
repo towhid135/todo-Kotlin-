@@ -10,7 +10,7 @@ import androidx.compose.runtime.Composable
 import com.example.todo.core.util.ContentDescriptions
 
 @Composable
-fun AddTodoButton(onAddButtonPress:() -> Unit){
+fun AddTodoButton(onAddButtonPress: () -> Unit) {
     FloatingActionButton(
         onClick = onAddButtonPress,
         shape = FloatingActionButtonDefaults.shape,
@@ -18,7 +18,8 @@ fun AddTodoButton(onAddButtonPress:() -> Unit){
     ) {
         Icon(
             imageVector = Icons.Default.Add,
-            contentDescription = ContentDescriptions.ADD_TODO
+            contentDescription = ContentDescriptions.ADD_TODO,
+            tint = MaterialTheme.colorScheme.onPrimary
         )
     }
 }

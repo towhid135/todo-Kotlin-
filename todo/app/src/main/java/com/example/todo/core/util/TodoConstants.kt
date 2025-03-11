@@ -33,10 +33,11 @@ object ContentDescriptions {
 
 object NewUpdateStrings {
     const val SAVE_ERROR = "Unable to save todo. Ensure the title and description are not blank."
+    const val SAVE_TODO_COMPLETE = "Todo has been saved"
     const val CONFIRM_DELETE = "Are you sure you want to delte this todo item?"
     const val YES = "Yes"
-    const val TITLE_HINT = "Title..."
-    const val DESCRIPTION_HINT = "Description..."
+    const val TITLE_PLACE_HOLDER = "Title..."
+    const val DESCRIPTION_PLACE_HOLDER = "Description..."
 }
 
 

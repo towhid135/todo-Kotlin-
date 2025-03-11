@@ -5,8 +5,11 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.statusBars
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.CircularProgressIndicator
@@ -29,16 +32,19 @@ import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
 import com.example.todo.core.util.ContentDescriptions
 import com.example.todo.core.util.TodoListStrings
 import com.example.todo.feature_todo.domain.model.TodoItem
 import com.example.todo.feature_todo.presentation.todo_list.TodoListEvent
+import com.example.todo.feature_todo.presentation.util.Screen
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TodoItemList(
+    modifier: Modifier = Modifier,
     backgroundImage: Painter,
     todoItems:List<TodoItem>,
     isLoading:Boolean,
@@ -47,16 +53,16 @@ fun TodoItemList(
     onEvent:(TodoListEvent) -> Unit,
     snackbarHostState: SnackbarHostState,
     scope: CoroutineScope,
+    navController: NavController
     ){
     val pullToRefreshState = rememberPullToRefreshState()
 
     fun onRefresh(){
         onPullToRefresh()
     }
-    Log.d("OnRefresh","isLoading: $isLoading")
 
     PullToRefreshBox(
-        modifier = Modifier.fillMaxSize()
+        modifier = modifier.fillMaxSize()
             .background(MaterialTheme.colorScheme.background),
         state = pullToRefreshState,
         isRefreshing = isLoading,
@@ -85,9 +91,9 @@ fun TodoItemList(
             LazyColumn(
                 modifier = Modifier.fillMaxSize()
                     .padding(horizontal = 12.dp)
-                    .padding(top = 64.dp)
+                    .padding(top = 10.dp)
             ) {
-                items(todoItems, key = {it.id}){ todoItem ->
+                items(todoItems, key = { it.id }){ todoItem ->
                     TodoItemCard(
                         todo=todoItem,
                         modifier = Modifier.fillMaxSize()
@@ -107,7 +113,11 @@ fun TodoItemList(
                         },
                         onArchiveClick = {onEvent(TodoListEvent.ToggleArchived(todoItem))},
                         onCompleteClick = {onEvent(TodoListEvent.ToggleCompleted(todoItem))},
-                        onCardClick = {}
+                        onCardClick = {
+                            navController.navigate(
+                                Screen.TodoNewUpdateScreen.route + "?todoId=${todoItem.id}"
+                            )
+                        }
                     )
                     VerticalDivider(
                         modifier = Modifier.fillMaxSize()

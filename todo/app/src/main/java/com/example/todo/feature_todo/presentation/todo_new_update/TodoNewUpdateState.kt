@@ -9,8 +9,10 @@ data class TodoNewUpdateState(
         timestamp = 0,
         completed = false,
         archived = false,
-        id = null
+        id = 0
     ),
     val isLoading:Boolean = true,
-    val error:String? = null
+    val error:String? = null,
+    val isTitleHintVisible: Boolean = true,
+    val isDescriptionHintVisible: Boolean = true
 )

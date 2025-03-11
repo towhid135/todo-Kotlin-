@@ -93,6 +93,16 @@ class TodoNewUpdateViewModel @Inject constructor (
                     )
                 )
             }
+            is TodoNewUpdateEvent.ChangedTitleFocus -> {
+                _state.value = _state.value.copy(
+                    isTitleHintVisible = !event.focusState.isFocused && _state.value.todo.title.isBlank()
+                )
+            }
+            is TodoNewUpdateEvent.ChangedDescriptionFocus -> {
+                _state.value = _state.value.copy(
+                    isDescriptionHintVisible = !event.focusState.isFocused && _state.value.todo.description.isBlank()
+                )
+            }
             TodoNewUpdateEvent.SaveTodo -> {
                 viewModelScope.launch {
                     try {
@@ -101,9 +111,10 @@ class TodoNewUpdateViewModel @Inject constructor (
                         }else{
                             todoUseCases.addTodoItem(_state.value.todo.copy(
                                 timestamp = System.currentTimeMillis(),
-                                id = null
+                                id = 0
                             ))
                         }
+                        _eventFlow.emit(UiEvent.ShowSnackbar(NewUpdateStrings.SAVE_TODO_COMPLETE))
                     }catch (e:Exception){
                         _eventFlow.emit(
                             UiEvent.ShowSnackbar(e.message ?: NewUpdateStrings.SAVE_ERROR)
