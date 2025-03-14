@@ -27,6 +27,7 @@ import com.example.todo.R
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import com.example.todo.core.presentation.components.LoadingModal
 import com.example.todo.feature_todo.presentation.todo_list.components.AddTodoButton
 import com.example.todo.feature_todo.presentation.todo_list.components.DrawerContent
 import com.example.todo.feature_todo.presentation.todo_list.components.TodoItemList
@@ -91,8 +92,7 @@ fun TodoListScreen(
                 scope = scope,
                 navController=navController
             )
-
-
+            LoadingModal(isLoading = state.isLoading || state.isToggleArchiveLoading || state.isToggleCompleteLoading || state.isDeleteLoading)
         }
     }
 }

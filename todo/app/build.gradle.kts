@@ -105,6 +105,9 @@ dependencies {
     implementation(libs.gson)
     implementation(libs.converter.gson)
 
+    //splash screen
+    implementation(libs.androidx.core.splashscreen)
+
 
 
 }

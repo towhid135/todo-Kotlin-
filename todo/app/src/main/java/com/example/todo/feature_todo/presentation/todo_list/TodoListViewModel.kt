@@ -36,9 +36,15 @@ class TodoListViewModel @Inject constructor(
         when(event){
             is TodoListEvent.Delete -> {
                 viewModelScope.launch(dispatcher+errorHandler) {
+                    _state.value = _state.value.copy(
+                        isToggleArchiveLoading = true
+                    )
                     todoUseCases.deleteTodoItem(event.todo)
                     getTodoItems()
                     undoTodoItem = event.todo
+                    _state.value = _state.value.copy(
+                        isToggleArchiveLoading = false
+                    )
                 }
             }
 
@@ -56,23 +62,41 @@ class TodoListViewModel @Inject constructor(
 
             is TodoListEvent.ToggleArchived -> {
                 viewModelScope.launch (dispatcher+errorHandler) {
+                    _state.value = _state.value.copy(
+                        isToggleArchiveLoading = true
+                    )
                     todoUseCases.toggleArchiveTodoItem(event.todo)
                     getTodoItems()
+                    _state.value = _state.value.copy(
+                        isToggleArchiveLoading = false
+                    )
                 }
             }
 
             is TodoListEvent.ToggleCompleted -> {
                 viewModelScope.launch(dispatcher+errorHandler){
+                    _state.value = _state.value.copy(
+                        isToggleArchiveLoading = true
+                    )
                     todoUseCases.toggleCompletedTodoItem(event.todo)
                     getTodoItems()
+                    _state.value = _state.value.copy(
+                        isToggleArchiveLoading = false
+                    )
                 }
             }
 
             is TodoListEvent.UndoDelete -> {
                 viewModelScope.launch(dispatcher+errorHandler){
+                    _state.value = _state.value.copy(
+                        isToggleArchiveLoading = true
+                    )
                     todoUseCases.addTodoItem(undoTodoItem ?: return@launch)
                     undoTodoItem = null
                     getTodoItems()
+                    _state.value = _state.value.copy(
+                        isToggleArchiveLoading = false
+                    )
                 }
             }
         }

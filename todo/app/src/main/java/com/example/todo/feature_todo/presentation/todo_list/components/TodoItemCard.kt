@@ -44,7 +44,8 @@ fun TodoItemCard(
     ) {
         Row(
             modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.Start
+            horizontalArrangement = Arrangement.Start,
+            verticalAlignment = Alignment.CenterVertically
         ) {
             CompleteButton(onCompleteClick,todoColors.checkColor,todo.completed)
             Text(

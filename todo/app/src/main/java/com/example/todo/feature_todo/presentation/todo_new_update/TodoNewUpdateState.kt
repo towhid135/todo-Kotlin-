@@ -11,7 +11,7 @@ data class TodoNewUpdateState(
         archived = false,
         id = 0
     ),
-    val isLoading:Boolean = true,
+    val isLoading:Boolean = false,
     val error:String? = null,
     val isTitleHintVisible: Boolean = true,
     val isDescriptionHintVisible: Boolean = true

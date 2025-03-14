@@ -55,6 +55,7 @@ import com.example.todo.R
 import com.example.todo.core.presentation.components.ArchiveButton
 import com.example.todo.core.presentation.components.CompleteButton
 import com.example.todo.core.presentation.components.DeleteButton
+import com.example.todo.core.presentation.components.LoadingModal
 import com.example.todo.core.presentation.components.getTodoColors
 import com.example.todo.core.util.ContentDescriptions
 import com.example.todo.core.util.NewUpdateStrings
@@ -251,6 +252,7 @@ fun TodoNewUpdateScreen(
                         )
                     })
             }
+            LoadingModal(isLoading = state.value.isLoading)
         }
     }
 }

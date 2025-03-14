@@ -106,6 +106,9 @@ class TodoNewUpdateViewModel @Inject constructor (
             TodoNewUpdateEvent.SaveTodo -> {
                 viewModelScope.launch {
                     try {
+                        _state.value = _state.value.copy(
+                            isLoading = !_state.value.isLoading
+                        )
                         if(currentTodoId != null){
                             todoUseCases.updateTodoItem(_state.value.todo)
                         }else{
@@ -118,6 +121,10 @@ class TodoNewUpdateViewModel @Inject constructor (
                     }catch (e:Exception){
                         _eventFlow.emit(
                             UiEvent.ShowSnackbar(e.message ?: NewUpdateStrings.SAVE_ERROR)
+                        )
+                    }finally {
+                        _state.value = _state.value.copy(
+                            isLoading = !_state.value.isLoading
                         )
                     }
                 }
