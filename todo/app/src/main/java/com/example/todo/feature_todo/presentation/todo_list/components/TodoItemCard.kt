@@ -27,17 +27,17 @@ import com.example.todo.ui.theme.TodoTheme
 
 @Composable
 fun TodoItemCard(
-    todo:TodoItem,
+    todo: TodoItem,
     modifier: Modifier = Modifier,
     onDeleteClick: () -> Unit,
     onCompleteClick: () -> Unit,
     onArchiveClick: () -> Unit,
     onCardClick: () -> Unit
-){
+) {
     val todoColors = getTodoColors(todo)
 
     Card(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = modifier.fillMaxWidth(),
         shape = RoundedCornerShape(24.dp),
         onClick = onCardClick,
         colors = CardDefaults.cardColors(containerColor = todoColors.backgroundColor)
@@ -47,53 +47,36 @@ fun TodoItemCard(
             horizontalArrangement = Arrangement.Start,
             verticalAlignment = Alignment.CenterVertically
         ) {
-            CompleteButton(onCompleteClick,todoColors.checkColor,todo.completed)
+            CompleteButton(onCompleteClick, todoColors.checkColor, todo.completed)
             Text(
                 text = todo.title,
                 style = MaterialTheme.typography.headlineMedium,
                 fontWeight = FontWeight.Bold,
                 color = todoColors.textColor,
-                fontSize = 32.sp,
+                fontSize = 18.sp,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis
             )
         }
-        Row(
-            verticalAlignment = Alignment.Top,
 
-        ) {
-            Column(
-                modifier = Modifier.fillMaxWidth()
-                    .padding(start = 8.dp)
-                    .weight(1f),
-                verticalArrangement = Arrangement.Top
-            ) {
-                Text(
-                    text = todo.description,
-                    style = MaterialTheme.typography.bodyLarge,
-                    color = todoColors.textColor,
-                    fontSize = 24.sp,
-                    maxLines = 10,
-                    overflow = TextOverflow.Ellipsis
-                )
-            }
-            Column(
-                verticalArrangement = Arrangement.Center,
-                horizontalAlignment = Alignment.CenterHorizontally,
-                modifier = Modifier.fillMaxWidth()
-                    .weight(0.1f)
-                    .padding(end = 4.dp)
-            ) {
-                ArchiveButton(onArchiveClick,todoColors.archiveIconColor)
-                DeleteButton(onDeleteClick)
-            }
-        }
+        Text(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(start = 15.dp, bottom = 16.dp, end = 8.dp),
+            text = todo.description,
+            style = MaterialTheme.typography.bodyLarge,
+            color = todoColors.textColor,
+            fontSize = 16.sp,
+            maxLines = 12,
+            overflow = TextOverflow.Ellipsis
+        )
+
     }
 }
 
 @Preview
 @Composable
-fun TodoItemCardPreview(){
+fun TodoItemCardPreview() {
     TodoTheme {
         TodoItemCard(
             TodoItem(

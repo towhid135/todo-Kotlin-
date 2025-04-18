@@ -34,7 +34,7 @@ fun CompleteButton(
                imageVector = Icons.Default.CheckCircleOutline,
                contentDescription = ContentDescriptions.COMPLETE_TODO_ITEM,
                tint = color,
-               modifier = Modifier.size(40.dp)
+               modifier = Modifier.size(20.dp)
            )
         }else{
             EmptyCircle(color=color)
@@ -43,9 +43,9 @@ fun CompleteButton(
 }
 
 @Composable
-fun EmptyCircle(color:Color,strokeWidth:Float = 9f){
+fun EmptyCircle(color:Color,strokeWidth:Float = 3f){
     Canvas(modifier = Modifier.fillMaxSize()) {
-        val radius = 34.0f
+        val radius = 18.0f
         drawCircle(
             color,
             center = center,

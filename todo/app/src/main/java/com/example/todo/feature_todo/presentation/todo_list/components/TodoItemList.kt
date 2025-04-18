@@ -1,27 +1,25 @@
 package com.example.todo.feature_todo.presentation.todo_list.components
 
-import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.WindowInsets
-import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.statusBars
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.layout.wrapContentHeight
+import androidx.compose.foundation.lazy.staggeredgrid.LazyVerticalStaggeredGrid
+import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridCells
+import androidx.compose.foundation.lazy.staggeredgrid.items
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.SnackbarResult
 import androidx.compose.material3.Text
-import androidx.compose.material3.VerticalDivider
-import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.material3.pulltorefresh.PullToRefreshDefaults
+import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -88,44 +86,42 @@ fun TodoItemList(
         Column(
             modifier = Modifier.fillMaxSize()
         ) {
-            LazyColumn(
-                modifier = Modifier.fillMaxSize()
-                    .padding(horizontal = 12.dp)
-                    .padding(top = 10.dp)
-            ) {
-                items(todoItems, key = { it.id }){ todoItem ->
-                    TodoItemCard(
-                        todo=todoItem,
-                        modifier = Modifier.fillMaxSize()
-                            .padding(4.dp),
-                        onDeleteClick = {
-                            onEvent(TodoListEvent.Delete(todoItem))
-                            scope.launch {
-                                val undo = snackbarHostState.showSnackbar(
-                                    message = TodoListStrings.TODO_ITEM_DELETED,
-                                    actionLabel = TodoListStrings.UNDO,
-                                    withDismissAction = true
-                                )
-                                if(undo == SnackbarResult.ActionPerformed){
-                                    onEvent(TodoListEvent.UndoDelete)
+            LazyVerticalStaggeredGrid(
+                columns = StaggeredGridCells.Fixed(2),
+                verticalItemSpacing = 4.dp,
+                horizontalArrangement = Arrangement.spacedBy(4.dp),
+                content = {
+                    items(todoItems, key = {it.id}){todoItem ->
+                        TodoItemCard(
+                            todo=todoItem,
+                            modifier = Modifier.fillMaxSize()
+                                .padding(4.dp),
+                            onDeleteClick = {
+                                onEvent(TodoListEvent.Delete(todoItem))
+                                scope.launch {
+                                    val undo = snackbarHostState.showSnackbar(
+                                        message = TodoListStrings.TODO_ITEM_DELETED,
+                                        actionLabel = TodoListStrings.UNDO,
+                                        withDismissAction = true
+                                    )
+                                    if(undo == SnackbarResult.ActionPerformed){
+                                        onEvent(TodoListEvent.UndoDelete)
+                                    }
                                 }
+                            },
+                            onArchiveClick = {onEvent(TodoListEvent.ToggleArchived(todoItem))},
+                            onCompleteClick = {onEvent(TodoListEvent.ToggleCompleted(todoItem))},
+                            onCardClick = {
+                                navController.navigate(
+                                    Screen.TodoNewUpdateScreen.route + "?todoId=${todoItem.id}"
+                                )
                             }
-                        },
-                        onArchiveClick = {onEvent(TodoListEvent.ToggleArchived(todoItem))},
-                        onCompleteClick = {onEvent(TodoListEvent.ToggleCompleted(todoItem))},
-                        onCardClick = {
-                            navController.navigate(
-                                Screen.TodoNewUpdateScreen.route + "?todoId=${todoItem.id}"
-                            )
-                        }
-                    )
-                    VerticalDivider(
-                        modifier = Modifier.fillMaxSize()
-                            .padding(vertical = 12.dp)
+                        )
 
-                    )
-                }
-            }
+                    }
+                },
+                modifier = Modifier.fillMaxSize()
+            )
             if(isLoading){
                 Column(
                     modifier = Modifier.fillMaxSize(),
