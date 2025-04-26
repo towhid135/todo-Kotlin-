@@ -2,14 +2,17 @@ package com.example.todo.feature_todo.data.local.dto
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+import com.example.todo.core.util.Category
+import com.example.todo.core.util.Priority
 
 @Entity(tableName = "todo")
 data class LocalTodoItem(
+    @PrimaryKey
+    val id: String,
+    val createdAt:Long,
     val title:String,
     val  description:String,
-    val timestamp:Long,
     val completed:Boolean,
-    val archived:Boolean,
-    @PrimaryKey(autoGenerate = true)
-    val id:Int
+    val category: Category,
+    val priority: Priority
 )

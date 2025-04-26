@@ -16,7 +16,7 @@ interface TodoApi {
     suspend fun getAllTodos(): List<RemoteTodoItem>
 
     @GET("/todo.json?orderBy=\"ID\"")
-    suspend fun getTodoItemById(@Query("equalTo") id:Int?): Map<String,RemoteTodoItem>
+    suspend fun getTodoItemById(@Query("equalTo") id: String?): Map<String,RemoteTodoItem>
 
 //    @POST
 //    suspend fun addTodo(@Url url:String, @Body updatedTodo:RemoteTodoItem):Response<Unit>
@@ -25,8 +25,8 @@ interface TodoApi {
     suspend fun addTodo(@Url url:String, @Body updatedTodo:RemoteTodoItem):Response<Unit>
 
     @DELETE("/todo/{id}.json")
-    suspend fun deleteTodo(@Path("id") id :Int?) : Response<Unit>
+    suspend fun deleteTodo(@Path("id") id : String?) : Response<Unit>
 
     @PUT("/todo/{id}.json")
-    suspend fun updateTodoItem(@Path("id") id:Int?,@Body todoItem:RemoteTodoItem):Response<Unit>
+    suspend fun updateTodoItem(@Path("id") id: String?, @Body todoItem:RemoteTodoItem):Response<Unit>
 }

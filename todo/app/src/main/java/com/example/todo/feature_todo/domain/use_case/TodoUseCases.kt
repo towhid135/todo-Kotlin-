@@ -34,10 +34,6 @@ class TodoUseCases @Inject constructor(
         repo.updateTodoItem(todo.copy(completed = !todo.completed))
     }
 
-    suspend fun toggleArchiveTodoItem(todo: TodoItem){
-        repo.updateTodoItem(todo.copy(archived = !todo.archived))
-    }
-
     suspend fun getTodoItemById(id: Int):TodoItem?{
         return repo.getSingleTodoItemById(id)
     }
@@ -53,21 +49,21 @@ class TodoUseCases @Inject constructor(
         val filteredTodos = if(todoItemOrder.showArchived){
             todos
         }else{
-            todos.filter { !it.archived }
+            todos
         }
 
         return when(todoItemOrder.sortingDirection){
             is SortingDirection.Down -> {
                 when(todoItemOrder){
                     is TodoItemOrder.Title -> TodoUseCaseResult.Success(filteredTodos.sortedByDescending { it.title.lowercase() })
-                    is TodoItemOrder.Time -> TodoUseCaseResult.Success(filteredTodos.sortedByDescending { it.timestamp })
+                    is TodoItemOrder.Time -> TodoUseCaseResult.Success(filteredTodos.sortedByDescending { it.createdAt })
                     is TodoItemOrder.Completed -> TodoUseCaseResult.Success(filteredTodos.sortedByDescending { it.completed })
                 }
             }
             is SortingDirection.Up -> {
                 when(todoItemOrder){
                     is TodoItemOrder.Title -> TodoUseCaseResult.Success(filteredTodos.sortedBy { it.title.lowercase() })
-                    is TodoItemOrder.Time -> TodoUseCaseResult.Success(filteredTodos.sortedBy { it.timestamp })
+                    is TodoItemOrder.Time -> TodoUseCaseResult.Success(filteredTodos.sortedBy { it.createdAt })
                     is TodoItemOrder.Completed -> TodoUseCaseResult.Success(filteredTodos.sortedBy { it.completed })
                 }
             }

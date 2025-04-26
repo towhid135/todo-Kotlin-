@@ -66,7 +66,7 @@ class TodoListRepoImpl(
 
     override suspend fun addTodoItem(todo: TodoItem){
         val newId = dao.addTodoItem(todo.toLocalTodoItem())
-        val id = newId.toInt()
+        val id = newId.toString()
         val url = "todo/$id.json"
         api.addTodo(url,todo.toRemoteTodoItem().copy(id = id))
     }

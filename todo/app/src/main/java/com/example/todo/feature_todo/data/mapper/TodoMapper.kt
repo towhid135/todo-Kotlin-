@@ -4,131 +4,144 @@ import com.example.todo.feature_todo.data.local.dto.LocalTodoItem
 import com.example.todo.feature_todo.data.remote.dto.RemoteTodoItem
 import com.example.todo.feature_todo.domain.model.TodoItem
 
-fun TodoItem.toLocalTodoItem():LocalTodoItem{
+fun TodoItem.toLocalTodoItem(): LocalTodoItem {
     return LocalTodoItem(
+        id = id,
+        createdAt = createdAt,
         title = title,
         description = description,
-        timestamp = timestamp,
         completed = completed,
-        archived = archived,
-        id = id
+        category = category,
+        priority = priority
     )
 }
 
-fun TodoItem.toRemoteTodoItem():RemoteTodoItem{
+fun TodoItem.toRemoteTodoItem(): RemoteTodoItem {
     return RemoteTodoItem(
+        id = id,
+        createdAt = createdAt,
         title = title,
         description = description,
-        timestamp = timestamp,
         completed = completed,
-        archived = archived,
-        id = id
+        category = category,
+        priority = priority
     )
 }
 
-fun LocalTodoItem.toTodoItem():TodoItem{
+fun LocalTodoItem.toTodoItem(): TodoItem {
     return TodoItem(
+        id = id,
+        createdAt = createdAt,
         title = title,
         description = description,
-        timestamp = timestamp,
         completed = completed,
-        archived = archived,
-        id = id
+        category = category,
+        priority = priority
     )
 }
 
-fun LocalTodoItem.toRemoteTodoItem():RemoteTodoItem{
+fun LocalTodoItem.toRemoteTodoItem(): RemoteTodoItem {
     return RemoteTodoItem(
+        id = id,
+        createdAt = createdAt,
         title = title,
         description = description,
-        timestamp = timestamp,
         completed = completed,
-        archived = archived,
-        id = id
+        category = category,
+        priority = priority
     )
 }
 
-fun RemoteTodoItem.toTodoItem():TodoItem{
+fun RemoteTodoItem.toTodoItem(): TodoItem {
     return TodoItem(
+        id = id,
+        createdAt = createdAt,
         title = title,
         description = description,
-        timestamp = timestamp,
         completed = completed,
-        archived = archived,
-        id = id
+        category = category,
+        priority = priority
     )
 }
 
-fun RemoteTodoItem.toLocalTodoItem():LocalTodoItem{
+fun RemoteTodoItem.toLocalTodoItem(): LocalTodoItem {
     return LocalTodoItem(
+        id = id,
+        createdAt = createdAt,
         title = title,
         description = description,
-        timestamp = timestamp,
         completed = completed,
-        archived = archived,
-        id = id
+        category = category,
+        priority = priority
     )
 }
 
-fun List<TodoItem>.toRemoteTodoItemList():List<RemoteTodoItem>{
-    return this.map { todo -> RemoteTodoItem(
-        title = todo.title,
-        description = todo.description,
-        timestamp = todo.timestamp,
-        completed = todo.completed,
-        archived = todo.archived,
-        id = todo.id
-    ) }
-}
-
-fun List<LocalTodoItem>.toTodoItemListFromLocal():List<TodoItem>{
-    return this.map{
-        todo -> TodoItem(
-        title = todo.title,
-        description = todo.description,
-        timestamp = todo.timestamp,
-        completed = todo.completed,
-        archived = todo.archived,
-        id = todo.id
+fun List<TodoItem>.toRemoteTodoItemList(): List<RemoteTodoItem> {
+    return this.map { todo ->
+        RemoteTodoItem(
+            id = todo.id,
+            createdAt = todo.createdAt,
+            title = todo.title,
+            description = todo.description,
+            completed = todo.completed,
+            category = todo.category,
+            priority = todo.priority
         )
     }
 }
 
-fun List<LocalTodoItem>.toRemoteTodoItemListFromLocal():List<RemoteTodoItem>{
-    return this.map{
-            todo -> RemoteTodoItem(
-        title = todo.title,
-        description = todo.description,
-        timestamp = todo.timestamp,
-        completed = todo.completed,
-        archived = todo.archived,
-        id = todo.id
-    )
-    }
-}
-
-fun List<RemoteTodoItem>.toTodoItemListFromRemote(): List<TodoItem>{
-    return this.map {todo ->
+fun List<LocalTodoItem>.toTodoItemListFromLocal(): List<TodoItem> {
+    return this.map { todo ->
         TodoItem(
+            id = todo.id,
+            createdAt = todo.createdAt,
             title = todo.title,
             description = todo.description,
-            timestamp = todo.timestamp,
             completed = todo.completed,
-            archived = todo.archived,
-            id = todo.id
+            category = todo.category,
+            priority = todo.priority
         )
     }
 }
 
-fun List<RemoteTodoItem>.toLocalTodoItemListFromRemote(): List<LocalTodoItem>{
-    return this.map {todo ->
-        LocalTodoItem(
+fun List<LocalTodoItem>.toRemoteTodoItemListFromLocal(): List<RemoteTodoItem> {
+    return this.map { todo ->
+        RemoteTodoItem(
+            id = todo.id,
+            createdAt = todo.createdAt,
             title = todo.title,
             description = todo.description,
-            timestamp = todo.timestamp,
             completed = todo.completed,
-            archived = todo.archived,
-            id = todo.id
+            category = todo.category,
+            priority = todo.priority
+        )
+    }
+}
+
+fun List<RemoteTodoItem>.toTodoItemListFromRemote(): List<TodoItem> {
+    return this.map { todo ->
+        TodoItem(
+            id = todo.id,
+            createdAt = todo.createdAt,
+            title = todo.title,
+            description = todo.description,
+            completed = todo.completed,
+            category = todo.category,
+            priority = todo.priority
+        )
+    }
+}
+
+fun List<RemoteTodoItem>.toLocalTodoItemListFromRemote(): List<LocalTodoItem> {
+    return this.map { todo ->
+        LocalTodoItem(
+            id = todo.id,
+            createdAt = todo.createdAt,
+            title = todo.title,
+            description = todo.description,
+            completed = todo.completed,
+            category = todo.category,
+            priority = todo.priority
         )
     }
 }
