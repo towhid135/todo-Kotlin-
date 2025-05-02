@@ -1,18 +1,17 @@
 package com.example.todo.feature_todo.domain.util
 
 sealed class TodoItemOrder(
-    val sortingDirection: SortingDirection,
-    val showArchived: Boolean
+    val sortingDirection: SortingDirection
 ){
-    class Title(sortingDirection: SortingDirection,showArchived: Boolean):TodoItemOrder(sortingDirection,showArchived)
-    class Time(sortingDirection: SortingDirection,showArchived: Boolean):TodoItemOrder(sortingDirection,showArchived)
-    class Completed(sortingDirection: SortingDirection,showArchived: Boolean):TodoItemOrder(sortingDirection,showArchived)
+    class Title(sortingDirection: SortingDirection):TodoItemOrder(sortingDirection)
+    class Time(sortingDirection: SortingDirection):TodoItemOrder(sortingDirection)
+    class Completed(sortingDirection: SortingDirection):TodoItemOrder(sortingDirection)
 
-    fun copy(sortingDirection: SortingDirection,showArchived: Boolean):TodoItemOrder{
+    fun copy(sortingDirection: SortingDirection):TodoItemOrder{
         return when(this){
-            is Title -> Title(sortingDirection,showArchived);
-            is Time -> Time(sortingDirection,showArchived);
-            is Completed -> Completed(sortingDirection,showArchived)
+            is Title -> Title(sortingDirection)
+            is Time -> Time(sortingDirection)
+            is Completed -> Completed(sortingDirection)
         }
     }
 }

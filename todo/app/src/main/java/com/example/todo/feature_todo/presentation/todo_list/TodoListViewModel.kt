@@ -37,21 +37,20 @@ class TodoListViewModel @Inject constructor(
             is TodoListEvent.Delete -> {
                 viewModelScope.launch(dispatcher+errorHandler) {
                     _state.value = _state.value.copy(
-                        isToggleArchiveLoading = true
+                        isDeleteLoading = true
                     )
                     todoUseCases.deleteTodoItem(event.todo)
                     getTodoItems()
                     undoTodoItem = event.todo
                     _state.value = _state.value.copy(
-                        isToggleArchiveLoading = false
+                        isDeleteLoading = false
                     )
                 }
             }
 
             is TodoListEvent.Sort -> {
                 val isStateOrderAlreadyMatchesEventOrder = event.todoItemOrder::class == _state.value.todoItemOrder::class &&
-                        event.todoItemOrder.sortingDirection == _state.value.todoItemOrder.sortingDirection &&
-                        event.todoItemOrder.showArchived == _state.value.todoItemOrder.showArchived
+                        event.todoItemOrder.sortingDirection == _state.value.todoItemOrder.sortingDirection
                 if(isStateOrderAlreadyMatchesEventOrder) return;
 
                 _state.value = _state.value.copy(
@@ -59,29 +58,15 @@ class TodoListViewModel @Inject constructor(
                 )
                 getTodoItems()
             }
-
-            is TodoListEvent.ToggleArchived -> {
-                viewModelScope.launch (dispatcher+errorHandler) {
-                    _state.value = _state.value.copy(
-                        isToggleArchiveLoading = true
-                    )
-                    todoUseCases.toggleArchiveTodoItem(event.todo)
-                    getTodoItems()
-                    _state.value = _state.value.copy(
-                        isToggleArchiveLoading = false
-                    )
-                }
-            }
-
             is TodoListEvent.ToggleCompleted -> {
                 viewModelScope.launch(dispatcher+errorHandler){
                     _state.value = _state.value.copy(
-                        isToggleArchiveLoading = true
+                        isToggleCompleteLoading = true
                     )
                     todoUseCases.toggleCompletedTodoItem(event.todo)
                     getTodoItems()
                     _state.value = _state.value.copy(
-                        isToggleArchiveLoading = false
+                        isToggleCompleteLoading = false
                     )
                 }
             }
@@ -89,13 +74,13 @@ class TodoListViewModel @Inject constructor(
             is TodoListEvent.UndoDelete -> {
                 viewModelScope.launch(dispatcher+errorHandler){
                     _state.value = _state.value.copy(
-                        isToggleArchiveLoading = true
+                        isDeleteLoading = true
                     )
                     todoUseCases.addTodoItem(undoTodoItem ?: return@launch)
                     undoTodoItem = null
                     getTodoItems()
                     _state.value = _state.value.copy(
-                        isToggleArchiveLoading = false
+                        isDeleteLoading = false
                     )
                 }
             }

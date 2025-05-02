@@ -4,19 +4,21 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.Surface
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.navigation.NavType
-import androidx.navigation.compose.NavHost
-import androidx.navigation.compose.composable
-import androidx.navigation.compose.rememberNavController
-import androidx.navigation.navArgument
-import com.example.todo.feature_todo.presentation.todo_list.TodoListScreen
-import com.example.todo.feature_todo.presentation.todo_list.TodoListViewModel
-import com.example.todo.feature_todo.presentation.todo_new_update.TodoNewUpdateScreen
-import com.example.todo.feature_todo.presentation.util.Screen
+import androidx.compose.ui.unit.dp
+import com.example.todo.core.presentation.components.CustomButton
+import com.example.todo.core.util.ButtonSize
+import com.example.todo.core.util.ButtonTitle
+import com.example.todo.core.util.ButtonType
 import com.example.todo.ui.theme.TodoTheme
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -27,33 +29,15 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             TodoTheme {
-                Surface(
-                    modifier = Modifier.fillMaxSize()
-                ) {
-                    val navController = rememberNavController()
-                    val listViewModel: TodoListViewModel = hiltViewModel()
-
-                    NavHost(
-                        navController = navController,
-                        startDestination = Screen.TodoItemListScreen.route
-                    ) {
-                        composable(route = Screen.TodoItemListScreen.route) {
-                            TodoListScreen(navController = navController, viewModel = listViewModel)
-                        }
-                        composable(route = Screen.TodoNewUpdateScreen.route + "?todoId={todoId}",
-                            arguments = listOf(
-                                navArgument(
-                                    name = "todoId"
-
-                                ) {
-                                    type = NavType.IntType
-                                    defaultValue = -1
-                                }
-                            )) {
-                            TodoNewUpdateScreen(
-                                navController
-                            )
-                        }
+                Surface(modifier = Modifier.fillMaxSize()) {
+                    Column (modifier = Modifier.fillMaxSize(), verticalArrangement = Arrangement.Center, horizontalAlignment = Alignment.CenterHorizontally){
+                        CustomButton(type = ButtonType.FILLED, size = ButtonSize.LARGE,title = ButtonTitle.LOGIN, isEnabled = true, onPress = {})
+                        Spacer(modifier = Modifier.height(16.dp))
+                        CustomButton(type = ButtonType.FILLED, size = ButtonSize.LARGE,title = ButtonTitle.GET_STARTED, isEnabled = false, onPress = {})
+                        Spacer(modifier = Modifier.height(16.dp))
+                        CustomButton(type = ButtonType.OUTLINED, size = ButtonSize.LARGE,title = ButtonTitle.GET_STARTED, isEnabled = true, onPress = {})
+                        Spacer(modifier = Modifier.height(16.dp))
+                        CustomButton(type = ButtonType.OUTLINED, size = ButtonSize.LARGE,title = ButtonTitle.GET_STARTED, isEnabled = false, onPress = {})
                     }
                 }
             }

@@ -15,7 +15,6 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.example.todo.R
@@ -34,7 +33,6 @@ fun TodoListScreen(
     viewModel: TodoListViewModel = hiltViewModel()
 ) {
     val state = viewModel.state.value
-    val topBarExtraPadding = 10.dp
     val snackbarHostState = remember { SnackbarHostState() }
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val scope = rememberCoroutineScope()
@@ -86,7 +84,7 @@ fun TodoListScreen(
                 scope = scope,
                 navController = navController
             )
-            LoadingModal(isLoading = state.isLoading || state.isToggleArchiveLoading || state.isToggleCompleteLoading || state.isDeleteLoading)
+            LoadingModal(isLoading = state.isLoading  || state.isToggleCompleteLoading || state.isDeleteLoading)
         }
     }
 }

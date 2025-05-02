@@ -1,111 +1,159 @@
 package com.example.todo.core.presentation.components
 
-import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.size
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Archive
-import androidx.compose.material.icons.filled.CheckCircleOutline
-import androidx.compose.material.icons.filled.Delete
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.example.todo.core.util.ContentDescriptions
+import androidx.compose.ui.unit.sp
+import com.example.todo.core.util.ButtonSize
+import com.example.todo.core.util.ButtonTitle
+import com.example.todo.core.util.ButtonType
 import com.example.todo.ui.theme.TodoTheme
 
-
 @Composable
-fun CompleteButton(
-    onCompleteClick: () -> Unit,
-    color: Color,
-    completed:Boolean,
-    modifier: Modifier = Modifier
-){
-    IconButton(onClick = onCompleteClick, modifier = Modifier) {
-        if(completed){
-           Icon(
-               imageVector = Icons.Default.CheckCircleOutline,
-               contentDescription = ContentDescriptions.COMPLETE_TODO_ITEM,
-               tint = color,
-               modifier = Modifier.size(20.dp)
-           )
-        }else{
-            EmptyCircle(color=color)
+fun CustomButton(
+    type: ButtonType = ButtonType.FILLED,
+    size: ButtonSize = ButtonSize.LARGE,
+    title: ButtonTitle = ButtonTitle.LOGIN,
+    leftIcon: Int? = null,
+    rightIcon: Int? = null,
+    isEnabled: Boolean = true,
+    onPress: () -> Unit
+) {
+    val buttonWidth = when (size) {
+        ButtonSize.SMALL -> 90.dp
+        ButtonSize.MEDIUM -> 150.dp
+        ButtonSize.LARGE -> 300.dp
+    }
+    val buttonHeight = 48.dp
+
+    when (type) {
+        ButtonType.FILLED -> {
+            FilledTonalButton(
+                modifier = Modifier
+                    .width(buttonWidth)
+                    .height(buttonHeight),
+                onClick = { onPress },
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = MaterialTheme.colorScheme.primary,
+                    disabledContainerColor = MaterialTheme.colorScheme.onSurface,
+                    contentColor = MaterialTheme.colorScheme.onPrimary,
+                    disabledContentColor = MaterialTheme.colorScheme.onSurface
+                ),
+                shape = RoundedCornerShape(5.dp),
+                enabled = isEnabled
+            ) {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(10.dp)
+                ) {
+                    leftIcon?.let {
+                        Image(
+                            painter = painterResource(it),
+                            contentDescription = null,
+                            modifier = Modifier.size(20.dp)
+                        )
+                    }
+                    Text(
+                        text = title.value,
+                        fontSize = 20.sp,
+                        color = MaterialTheme.colorScheme.onPrimary
+                    )
+                    rightIcon?.let {
+                        Image(
+                            painter = painterResource(it),
+                            contentDescription = null,
+                            modifier = Modifier.size(20.dp)
+                        )
+                    }
+                }
+            }
+        }
+
+        ButtonType.OUTLINED -> {
+            OutlinedButton(
+                modifier = Modifier
+                    .width(buttonWidth)
+                    .height(buttonHeight),
+                onClick = { onPress },
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = MaterialTheme.colorScheme.background,
+                    contentColor = MaterialTheme.colorScheme.onPrimary,
+                    disabledContainerColor = MaterialTheme.colorScheme.onSecondaryContainer,
+                    disabledContentColor = MaterialTheme.colorScheme.onSecondaryContainer
+                ),
+                shape = RoundedCornerShape(5.dp),
+                border = BorderStroke(
+                    1.dp,
+                    color = if (isEnabled) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface
+                ),
+                enabled = isEnabled
+
+            ) {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(10.dp)
+                ) {
+                    leftIcon?.let {
+                        Image(
+                            painter = painterResource(it),
+                            contentDescription = null,
+                            modifier = Modifier.size(20.dp)
+                        )
+                    }
+                    Text(
+                        text = title.value,
+                        fontSize = 20.sp,
+                        color = MaterialTheme.colorScheme.onPrimary
+                    )
+                    rightIcon?.let {
+                        Image(
+                            painter = painterResource(it),
+                            contentDescription = null,
+                            modifier = Modifier.size(20.dp)
+                        )
+                    }
+                }
+            }
         }
     }
+
+
 }
 
-@Composable
-fun EmptyCircle(color:Color,strokeWidth:Float = 3f){
-    Canvas(modifier = Modifier.fillMaxSize()) {
-        val radius = 18.0f
-        drawCircle(
-            color,
-            center = center,
-            radius = radius,
-            style = Stroke(width = strokeWidth)
-        )
-    }
-}
-
-@Composable
-fun ArchiveButton(
-    onArchiveClick: () -> Unit,
-    color:Color = MaterialTheme.colorScheme.secondary,
-    modifier: Modifier = Modifier
-){
-    IconButton(
-        onClick = onArchiveClick,
-        modifier = modifier
-    ) {
-        Icon(
-            imageVector = Icons.Default.Archive,
-            contentDescription = ContentDescriptions.ARCHIVE_TODO_ITEM,
-            tint = color,
-            modifier = Modifier.size(32.dp)
-        )
-    }
-}
-
-@Composable
-fun DeleteButton(
-    onDeleteClick:() -> Unit,
-    modifier:Modifier = Modifier
-){
-    IconButton(
-        onClick = onDeleteClick,
-        modifier = modifier
-    ) {
-        Icon(
-            imageVector = Icons.Default.Delete,
-            contentDescription = ContentDescriptions.DELETE_TODO_ITEM,
-            tint = MaterialTheme.colorScheme.error,
-            modifier = Modifier.size(32.dp)
-        )
-    }
-}
 
 @Preview
 @Composable
-fun ButtonsPreview(){
+fun ButtonsPreview() {
     TodoTheme {
         Column {
-            CompleteButton(
-                onCompleteClick = { print("completed")},
-                color = MaterialTheme.colorScheme.onSecondary,
-                completed = true
-            )
-            ArchiveButton(
-                onArchiveClick = { print("archive press") }
-            )
-            DeleteButton(onDeleteClick = { print("delete") })
+            CustomButton(
+                type = ButtonType.FILLED,
+                size = ButtonSize.LARGE,
+                title = ButtonTitle.LOGIN,
+                onPress = {})
+            CustomButton(
+                type = ButtonType.OUTLINED,
+                size = ButtonSize.LARGE,
+                title = ButtonTitle.LOGIN,
+                isEnabled = true,
+                onPress = {})
         }
     }
 }

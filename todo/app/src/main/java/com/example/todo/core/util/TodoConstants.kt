@@ -1,5 +1,7 @@
 package com.example.todo.core.util
 
+import com.example.todo.R
+
 object TodoConstants {
     const val EMPTY_TITLE_OR_DESCRIPTION = "Both the todo title and description must be populated."
 }
@@ -38,6 +40,27 @@ object NewUpdateStrings {
     const val YES = "Yes"
     const val TITLE_PLACE_HOLDER = "Title..."
     const val DESCRIPTION_PLACE_HOLDER = "Description..."
+}
+
+enum class ButtonSize {
+    SMALL,
+    MEDIUM,
+    LARGE
+}
+
+enum class ButtonType {
+    FILLED,
+    OUTLINED,
+}
+
+enum class ButtonTitle(val value: String) {
+    LOGIN("LOGIN"),
+    GET_STARTED("GET STARTED"),
+}
+
+enum class IconAsset(val id:Int) {
+    GOOGLE_LOGIN(R.drawable.google),
+    APPLE_LOGIN(R.drawable.applelogin),
 }
 
 

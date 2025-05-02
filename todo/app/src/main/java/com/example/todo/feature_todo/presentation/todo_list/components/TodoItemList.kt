@@ -109,7 +109,7 @@ fun TodoItemList(
                                     }
                                 }
                             },
-                            onArchiveClick = {onEvent(TodoListEvent.ToggleArchived(todoItem))},
+                            onArchiveClick = {},
                             onCompleteClick = {onEvent(TodoListEvent.ToggleCompleted(todoItem))},
                             onCardClick = {
                                 navController.navigate(

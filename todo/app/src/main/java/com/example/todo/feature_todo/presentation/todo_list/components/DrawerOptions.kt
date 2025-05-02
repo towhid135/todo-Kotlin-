@@ -17,7 +17,7 @@ fun DrawerOptions(
             DrawerItem(TodoListStrings.TITLE,isTitleSelected)
         },
         selected = false,
-        onClick = {onOrderChange(TodoItemOrder.Title(todoItemOrder.sortingDirection,todoItemOrder.showArchived))}
+        onClick = {onOrderChange(TodoItemOrder.Title(todoItemOrder.sortingDirection))}
     )
     val isTimeSelected = todoItemOrder::class == TodoItemOrder.Time::class
     NavigationDrawerItem(
@@ -26,7 +26,7 @@ fun DrawerOptions(
         },
         selected = false,
         onClick = {
-            onOrderChange(TodoItemOrder.Time(todoItemOrder.sortingDirection,todoItemOrder.showArchived))
+            onOrderChange(TodoItemOrder.Time(todoItemOrder.sortingDirection))
         }
     )
     val isCompletedSelected = todoItemOrder::class == TodoItemOrder.Completed::class
@@ -36,7 +36,7 @@ fun DrawerOptions(
         },
         selected = false,
         onClick = {
-            onOrderChange(TodoItemOrder.Completed(todoItemOrder.sortingDirection,todoItemOrder.showArchived))
+            onOrderChange(TodoItemOrder.Completed(todoItemOrder.sortingDirection))
         }
     )
     val isSortUpSelected = todoItemOrder.sortingDirection == SortingDirection.Up
@@ -46,7 +46,7 @@ fun DrawerOptions(
         },
         selected=false,
         onClick = {
-            onOrderChange(todoItemOrder.copy(sortingDirection = SortingDirection.Up,showArchived = todoItemOrder.showArchived))
+            onOrderChange(todoItemOrder.copy(sortingDirection = SortingDirection.Up))
         }
     )
     val isSortDownSelected = todoItemOrder.sortingDirection == SortingDirection.Down
@@ -56,7 +56,7 @@ fun DrawerOptions(
         },
         selected=false,
         onClick = {
-            onOrderChange(todoItemOrder.copy(sortingDirection = SortingDirection.Down,showArchived = todoItemOrder.showArchived))
+            onOrderChange(todoItemOrder.copy(sortingDirection = SortingDirection.Down))
         }
     )
 }

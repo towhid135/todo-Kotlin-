@@ -1,6 +1,5 @@
 package com.example.todo.feature_todo.domain.use_case
 
-import android.util.Log
 import com.example.todo.core.util.TodoConstants
 import com.example.todo.feature_todo.domain.model.TodoItem
 import com.example.todo.feature_todo.domain.repo.TodoListRepo
@@ -39,32 +38,28 @@ class TodoUseCases @Inject constructor(
     }
 
     suspend fun getTodoItems(
-        todoItemOrder: TodoItemOrder = TodoItemOrder.Time(SortingDirection.Down,true)
+        todoItemOrder: TodoItemOrder = TodoItemOrder.Time(SortingDirection.Down)
     ): TodoUseCaseResult{
         var todos = repo.getAllTodosFromLocalCache()
         if(todos.isEmpty()){
             todos = repo.getAllTodos()
         }
 
-        val filteredTodos = if(todoItemOrder.showArchived){
-            todos
-        }else{
-            todos
-        }
+        
 
         return when(todoItemOrder.sortingDirection){
             is SortingDirection.Down -> {
                 when(todoItemOrder){
-                    is TodoItemOrder.Title -> TodoUseCaseResult.Success(filteredTodos.sortedByDescending { it.title.lowercase() })
-                    is TodoItemOrder.Time -> TodoUseCaseResult.Success(filteredTodos.sortedByDescending { it.createdAt })
-                    is TodoItemOrder.Completed -> TodoUseCaseResult.Success(filteredTodos.sortedByDescending { it.completed })
+                    is TodoItemOrder.Title -> TodoUseCaseResult.Success(todos.sortedByDescending { it.title.lowercase() })
+                    is TodoItemOrder.Time -> TodoUseCaseResult.Success(todos.sortedByDescending { it.createdAt })
+                    is TodoItemOrder.Completed -> TodoUseCaseResult.Success(todos.sortedByDescending { it.completed })
                 }
             }
             is SortingDirection.Up -> {
                 when(todoItemOrder){
-                    is TodoItemOrder.Title -> TodoUseCaseResult.Success(filteredTodos.sortedBy { it.title.lowercase() })
-                    is TodoItemOrder.Time -> TodoUseCaseResult.Success(filteredTodos.sortedBy { it.createdAt })
-                    is TodoItemOrder.Completed -> TodoUseCaseResult.Success(filteredTodos.sortedBy { it.completed })
+                    is TodoItemOrder.Title -> TodoUseCaseResult.Success(todos.sortedBy { it.title.lowercase() })
+                    is TodoItemOrder.Time -> TodoUseCaseResult.Success(todos.sortedBy { it.createdAt })
+                    is TodoItemOrder.Completed -> TodoUseCaseResult.Success(todos.sortedBy { it.completed })
                 }
             }
         }
