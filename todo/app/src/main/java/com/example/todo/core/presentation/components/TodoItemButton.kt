@@ -24,6 +24,7 @@ import androidx.compose.ui.unit.sp
 import com.example.todo.core.util.ButtonSize
 import com.example.todo.core.util.ButtonTitle
 import com.example.todo.core.util.ButtonType
+import com.example.todo.core.util.IconAsset
 import com.example.todo.ui.theme.TodoTheme
 
 @Composable
@@ -147,6 +148,7 @@ fun ButtonsPreview() {
                 type = ButtonType.FILLED,
                 size = ButtonSize.LARGE,
                 title = ButtonTitle.LOGIN,
+                leftIcon = IconAsset.GOOGLE_LOGIN.id,
                 onPress = {})
             CustomButton(
                 type = ButtonType.OUTLINED,
