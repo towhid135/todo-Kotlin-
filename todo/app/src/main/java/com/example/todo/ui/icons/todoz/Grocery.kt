@@ -12,7 +12,6 @@ import androidx.compose.ui.graphics.StrokeCap.Companion.Round
 import androidx.compose.ui.graphics.StrokeJoin
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.graphics.vector.ImageVector.Builder
-import androidx.compose.ui.graphics.vector.group
 import androidx.compose.ui.graphics.vector.path
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -26,40 +25,37 @@ public val Todoz.Grocery: ImageVector
         }
         _grocery = Builder(name = "Grocery", defaultWidth = 32.0.dp, defaultHeight = 32.0.dp,
                 viewportWidth = 32.0f, viewportHeight = 32.0f).apply {
-            group {
-                path(fill = SolidColor(Color(0x00000000)), stroke = SolidColor(Color(0xFF000000)),
-                        strokeLineWidth = 2.0f, strokeLineCap = Round, strokeLineJoin =
-                        StrokeJoin.Companion.Round, strokeLineMiter = 4.0f, pathFillType =
-                        NonZero) {
-                    moveTo(22.989f, 0.4f)
-                    curveTo(24.688f, 2.7f, 21.188f, 2.7f, 22.989f, 5.4f)
-                    moveTo(15.988f, 15.8f)
-                    curveTo(29.489f, 15.8f, 29.188f, 19.6f, 28.889f, 15.8f)
-                    curveTo(28.588f, 11.6f, 23.989f, 8.4f, 15.988f, 8.4f)
-                    curveTo(7.988f, 8.4f, 3.388f, 11.6f, 3.088f, 15.8f)
-                    curveTo(2.788f, 19.6f, 2.488f, 15.8f, 15.988f, 15.8f)
-                    close()
-                    moveTo(15.988f, 13.4f)
-                    curveTo(15.988f, 11.9f, 16.088f, 10.2f, 16.989f, 8.4f)
-                    lineTo(15.988f, 13.4f)
-                    close()
-                    moveTo(9.988f, 13.4f)
-                    curveTo(9.988f, 11.9f, 10.089f, 10.8f, 10.988f, 9.1f)
-                    lineTo(9.988f, 13.4f)
-                    close()
-                    moveTo(21.989f, 13.4f)
-                    curveTo(21.989f, 12.1f, 22.088f, 11.0f, 22.788f, 9.5f)
-                    lineTo(21.989f, 13.4f)
-                    close()
-                    moveTo(15.988f, -0.6f)
-                    curveTo(17.688f, 1.7f, 14.189f, 1.7f, 15.988f, 4.4f)
-                    verticalLineTo(-0.6f)
-                    close()
-                    moveTo(8.988f, 0.4f)
-                    curveTo(10.689f, 2.7f, 7.188f, 2.7f, 8.988f, 5.4f)
-                    verticalLineTo(0.4f)
-                    close()
-                }
+            path(fill = SolidColor(Color(0x00000000)), stroke = SolidColor(Color(0xFF000000)),
+                    strokeLineWidth = 2.0f, strokeLineCap = Round, strokeLineJoin =
+                    StrokeJoin.Companion.Round, strokeLineMiter = 4.0f, pathFillType = NonZero) {
+                moveTo(22.989f, 8.0f)
+                curveTo(24.688f, 10.3f, 21.188f, 10.3f, 22.989f, 13.0f)
+                moveTo(15.988f, 23.4f)
+                curveTo(29.489f, 23.4f, 29.188f, 27.2f, 28.889f, 23.4f)
+                curveTo(28.588f, 19.2f, 23.989f, 16.0f, 15.988f, 16.0f)
+                curveTo(7.988f, 16.0f, 3.388f, 19.2f, 3.088f, 23.4f)
+                curveTo(2.788f, 27.2f, 2.488f, 23.4f, 15.988f, 23.4f)
+                close()
+                moveTo(15.988f, 21.0f)
+                curveTo(15.988f, 19.5f, 16.088f, 17.8f, 16.989f, 16.0f)
+                lineTo(15.988f, 21.0f)
+                close()
+                moveTo(9.988f, 21.0f)
+                curveTo(9.988f, 19.5f, 10.089f, 18.4f, 10.988f, 16.7f)
+                lineTo(9.988f, 21.0f)
+                close()
+                moveTo(21.989f, 21.0f)
+                curveTo(21.989f, 19.7f, 22.088f, 18.6f, 22.788f, 17.1f)
+                lineTo(21.989f, 21.0f)
+                close()
+                moveTo(15.988f, 7.0f)
+                curveTo(17.688f, 9.3f, 14.189f, 9.3f, 15.988f, 12.0f)
+                verticalLineTo(7.0f)
+                close()
+                moveTo(8.988f, 8.0f)
+                curveTo(10.689f, 10.3f, 7.188f, 10.3f, 8.988f, 13.0f)
+                verticalLineTo(8.0f)
+                close()
             }
         }
         .build()

@@ -63,5 +63,10 @@ enum class IconAsset(val id:Int) {
     APPLE_LOGIN(R.drawable.applelogin),
 }
 
+enum class CategoryBoxType(){
+    RECTANGLE,
+    SQUARE,
+}
+
 
 
