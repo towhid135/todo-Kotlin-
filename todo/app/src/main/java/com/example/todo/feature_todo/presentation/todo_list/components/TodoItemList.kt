@@ -91,34 +91,7 @@ fun TodoItemList(
                 verticalItemSpacing = 4.dp,
                 horizontalArrangement = Arrangement.spacedBy(4.dp),
                 content = {
-                    items(todoItems, key = {it.id}){todoItem ->
-                        TodoItemCard(
-                            todo=todoItem,
-                            modifier = Modifier.fillMaxSize()
-                                .padding(4.dp),
-                            onDeleteClick = {
-                                onEvent(TodoListEvent.Delete(todoItem))
-                                scope.launch {
-                                    val undo = snackbarHostState.showSnackbar(
-                                        message = TodoListStrings.TODO_ITEM_DELETED,
-                                        actionLabel = TodoListStrings.UNDO,
-                                        withDismissAction = true
-                                    )
-                                    if(undo == SnackbarResult.ActionPerformed){
-                                        onEvent(TodoListEvent.UndoDelete)
-                                    }
-                                }
-                            },
-                            onArchiveClick = {},
-                            onCompleteClick = {onEvent(TodoListEvent.ToggleCompleted(todoItem))},
-                            onCardClick = {
-                                navController.navigate(
-                                    Screen.TodoNewUpdateScreen.route + "?todoId=${todoItem.id}"
-                                )
-                            }
-                        )
 
-                    }
                 },
                 modifier = Modifier.fillMaxSize()
             )

@@ -68,5 +68,10 @@ enum class CategoryBoxType(){
     SQUARE,
 }
 
+data class FormattedDate(
+    val dayName: String,
+    val dayNumber: Int,
+)
+
 
 

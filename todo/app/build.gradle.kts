@@ -26,7 +26,7 @@ android {
 
     defaultConfig {
         applicationId = "com.example.todo"
-        minSdk = 24
+        minSdk = 26
         //noinspection OldTargetApi
         targetSdk = 34
         versionCode = 1

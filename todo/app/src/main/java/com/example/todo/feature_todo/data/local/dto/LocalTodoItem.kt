@@ -14,5 +14,5 @@ data class LocalTodoItem(
     val  description:String,
     val completed:Boolean,
     val category: Category,
-    val priority: Priority
+    val priority: Priority,
 )
