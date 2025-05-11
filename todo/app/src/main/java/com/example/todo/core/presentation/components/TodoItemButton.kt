@@ -25,6 +25,7 @@ import com.example.todo.core.util.ButtonSize
 import com.example.todo.core.util.ButtonTitle
 import com.example.todo.core.util.ButtonType
 import com.example.todo.core.util.IconAsset
+import com.example.todo.ui.theme.LocalTheme
 import com.example.todo.ui.theme.TodoTheme
 
 @Composable
@@ -44,6 +45,8 @@ fun CustomButton(
     }
     val buttonHeight = 48.dp
 
+    val theme = LocalTheme.current.colors
+
     when (type) {
         ButtonType.FILLED -> {
             FilledTonalButton(
@@ -52,7 +55,7 @@ fun CustomButton(
                     .height(buttonHeight),
                 onClick = { onPress },
                 colors = ButtonDefaults.buttonColors(
-                    containerColor = MaterialTheme.colorScheme.primary,
+                    containerColor = theme.primary,
                     disabledContainerColor = MaterialTheme.colorScheme.onSurface,
                     contentColor = MaterialTheme.colorScheme.onPrimary,
                     disabledContentColor = MaterialTheme.colorScheme.onSurface

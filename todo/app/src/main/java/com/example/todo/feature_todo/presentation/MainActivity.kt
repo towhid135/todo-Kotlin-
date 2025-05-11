@@ -4,6 +4,7 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.Orientation
 import androidx.compose.foundation.gestures.scrollable
 import androidx.compose.foundation.layout.Arrangement
@@ -18,6 +19,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material3.Surface
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.unit.dp
 import com.example.todo.core.presentation.components.BottomTabItem
 import com.example.todo.core.presentation.components.CustomButton
@@ -29,6 +31,7 @@ import com.example.todo.core.util.Category
 import com.example.todo.core.util.CategoryBoxType
 import com.example.todo.core.util.CategoryColor
 import com.example.todo.core.util.Priority
+import com.example.todo.core.util.dismissKeyboardAndClearFocusOnTapOutside
 import com.example.todo.feature_todo.domain.model.TodoItem
 import com.example.todo.feature_todo.presentation.todo_list.components.CategoryBox
 import com.example.todo.feature_todo.presentation.todo_list.components.CustomTextInput
@@ -44,6 +47,7 @@ import dagger.hilt.android.AndroidEntryPoint
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
+
         val mockCategory = Category(
             id = "1",
             title = "Work",
@@ -68,7 +72,11 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             TodoTheme {
-                Surface(modifier = Modifier.fillMaxSize()) {
+                val focusManager = LocalFocusManager.current
+                Surface(modifier = Modifier
+                    .fillMaxSize()
+                 ) {
+
                     Column (modifier = Modifier.fillMaxSize().scrollable(rememberScrollState(), orientation = Orientation.Horizontal), verticalArrangement = Arrangement.Center, horizontalAlignment = Alignment.CenterHorizontally){
                         CustomButton(type = ButtonType.FILLED, size = ButtonSize.LARGE,title = ButtonTitle.LOGIN, isEnabled = true, onPress = {})
                         Spacer(modifier = Modifier.height(16.dp))

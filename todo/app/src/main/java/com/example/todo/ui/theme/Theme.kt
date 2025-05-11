@@ -8,10 +8,13 @@ import androidx.compose.material3.dynamicDarkColorScheme
 import androidx.compose.material3.dynamicLightColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.Immutable
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import com.example.todo.ui.theme.Typography
+import com.example.todo.ui.theme.darkThemeColors
+import com.example.todo.ui.theme.lightThemeColors
 
 private val lightScheme = lightColorScheme(
     primary = primaryLight,
@@ -89,14 +92,6 @@ private val darkScheme = darkColorScheme(
     surfaceContainerHighest = surfaceContainerHighestDark,
 )
 
-@Immutable
-data class ColorFamily(
-    val color: Color,
-    val onColor: Color,
-    val colorContainer: Color,
-    val onColorContainer: Color
-)
-
 
 @Composable
 fun TodoTheme(
@@ -110,15 +105,19 @@ fun TodoTheme(
           val context = LocalContext.current
           if (darkTheme) dynamicDarkColorScheme(context) else dynamicLightColorScheme(context)
       }
-      
+
       darkTheme -> darkScheme
       else -> lightScheme
   }
 
-  MaterialTheme(
-    colorScheme = colorScheme,
-    typography = Typography,
-    content = content
-  )
+    val customThemeColors = if(isSystemInDarkTheme()) darkThemeColors else lightThemeColors
+
+    CompositionLocalProvider(LocalTheme provides CustomTheme().copy(colors = customThemeColors)){
+        MaterialTheme(
+            colorScheme = colorScheme,
+            typography = Typography,
+            content = content
+        )
+    }
 }
 
