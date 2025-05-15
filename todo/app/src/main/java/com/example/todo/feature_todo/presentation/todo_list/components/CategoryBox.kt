@@ -10,7 +10,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -25,6 +24,7 @@ import com.example.todo.core.util.CategoryBoxType
 import com.example.todo.core.util.CategoryColor
 import com.example.todo.ui.icons.Todoz
 import com.example.todo.ui.icons.todoz.University
+import com.example.todo.ui.theme.LocalTheme
 import com.example.todo.ui.theme.TodoTheme
 
 @Composable
@@ -33,6 +33,7 @@ fun CategoryBox(
     type: CategoryBoxType,
     onPress: () -> Unit
 ) {
+    val theme = LocalTheme.current
     val height = when (type) {
         CategoryBoxType.RECTANGLE -> 30.dp
         CategoryBoxType.SQUARE -> 64.dp
@@ -63,11 +64,11 @@ fun CategoryBox(
             modifier = Modifier.size(iconWidth,iconHeight),
             imageVector = category.icon,
             contentDescription = null,
-            tint = MaterialTheme.colorScheme.onSecondary,
+            tint = theme.colors.iconPrimary,
         )
         if(type == CategoryBoxType.RECTANGLE) {
             Spacer(modifier = Modifier.width(5.dp))
-            Text(text = category.title, fontSize = 10.sp, color = MaterialTheme.colorScheme.onSecondary, fontFamily = FontFamily.SansSerif)
+            Text(text = category.title, fontSize = 10.sp, color = theme.colors.textPrimary, fontFamily = FontFamily.SansSerif)
         }
     }
 }

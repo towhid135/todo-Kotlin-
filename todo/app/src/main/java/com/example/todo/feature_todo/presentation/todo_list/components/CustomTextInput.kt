@@ -1,24 +1,21 @@
 package com.example.todo.feature_todo.presentation.todo_list.components
 
-import android.util.Log
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.focus.onFocusChanged
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.todo.ui.theme.LocalTheme
 
 @Composable
 fun CustomTextInput(
@@ -29,32 +26,40 @@ fun CustomTextInput(
     onValueChange: (String) -> Unit,
     leadingIcon: ImageVector? = null
 ) {
+    val theme = LocalTheme.current
     TextField(
         modifier = Modifier,
         value = text,
+        textStyle = TextStyle(
+            color = theme.colors.textPrimary,
+            fontSize = 16.sp,
+            fontFamily = FontFamily.SansSerif
+        ),
         label = if (labelText.isNotEmpty()) {
-            { Text(
-                text = labelText,
-                fontSize = 14.sp,
-                color = Color.White,
-                fontFamily = FontFamily.SansSerif
-            ) }
+            {
+                Text(
+                    text = labelText,
+                    fontSize = 14.sp,
+                    color = theme.colors.textPrimary,
+                    fontFamily = FontFamily.SansSerif
+                )
+            }
         } else null,
         placeholder = {
             Text(
                 text = placeholderText,
                 fontSize = 10.sp,
-                color = Color.White,
+                color = theme.colors.placeHolderPrimary,
                 fontFamily = FontFamily.SansSerif
             )
         },
         onValueChange = { onValueChange(it) },
         colors = TextFieldDefaults.colors(
-            focusedContainerColor = Color.Gray,
-            unfocusedContainerColor = Color.Gray,
-            focusedIndicatorColor = Color.Transparent,
-            unfocusedIndicatorColor = Color.Transparent,
-            disabledIndicatorColor = Color.Transparent,
+            focusedContainerColor = theme.colors.textInputBackgroundPrimary,
+            unfocusedContainerColor = theme.colors.textInputBackgroundPrimary,
+            focusedIndicatorColor = theme.colors.transparent,
+            unfocusedIndicatorColor = theme.colors.transparent,
+            disabledIndicatorColor = theme.colors.transparent,
         ),
         visualTransformation = if (isSecureField) PasswordVisualTransformation() else VisualTransformation.None,
         leadingIcon = leadingIcon?.let {
@@ -63,7 +68,7 @@ fun CustomTextInput(
                     modifier = Modifier.size(24.dp, 24.dp),
                     imageVector = it,
                     contentDescription = null,
-                    tint = MaterialTheme.colorScheme.onSecondary,
+                    tint = theme.colors.iconSecondary,
                 )
             }
         }

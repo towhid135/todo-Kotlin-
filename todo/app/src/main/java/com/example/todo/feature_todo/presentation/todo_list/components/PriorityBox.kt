@@ -7,7 +7,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -20,10 +19,12 @@ import androidx.compose.ui.unit.sp
 import com.example.todo.core.util.Priority
 import com.example.todo.ui.icons.Todoz
 import com.example.todo.ui.icons.todoz.Flag
+import com.example.todo.ui.theme.LocalTheme
 import com.example.todo.ui.theme.TodoTheme
 
 @Composable
 fun PriorityBox(priority: Priority) {
+    val theme = LocalTheme.current
     val borderColor = when (priority) {
         Priority.LOW -> Color.Green
         Priority.MEDIUM -> Color.Yellow
@@ -43,13 +44,13 @@ fun PriorityBox(priority: Priority) {
                 .padding(top = 1.dp),
             imageVector = Todoz.Flag,
             contentDescription = null,
-            tint = MaterialTheme.colorScheme.secondary,
+            tint = theme.colors.iconPrimary,
         )
 
         Text(
             text = priority.value,
             fontSize = 10.sp,
-            color = MaterialTheme.colorScheme.secondary,
+            color = theme.colors.textPrimary,
             fontFamily = FontFamily.SansSerif
         )
 

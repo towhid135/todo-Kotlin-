@@ -11,7 +11,6 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.FilledTonalButton
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -33,19 +32,18 @@ fun CustomButton(
     type: ButtonType = ButtonType.FILLED,
     size: ButtonSize = ButtonSize.LARGE,
     title: ButtonTitle = ButtonTitle.LOGIN,
-    leftIcon: Int? = null,
-    rightIcon: Int? = null,
+    leftIcon: IconAsset? = null,
+    rightIcon: IconAsset? = null,
     isEnabled: Boolean = true,
     onPress: () -> Unit
 ) {
+    val theme = LocalTheme.current
     val buttonWidth = when (size) {
         ButtonSize.SMALL -> 90.dp
         ButtonSize.MEDIUM -> 150.dp
         ButtonSize.LARGE -> 300.dp
     }
     val buttonHeight = 48.dp
-
-    val theme = LocalTheme.current.colors
 
     when (type) {
         ButtonType.FILLED -> {
@@ -55,10 +53,10 @@ fun CustomButton(
                     .height(buttonHeight),
                 onClick = { onPress },
                 colors = ButtonDefaults.buttonColors(
-                    containerColor = theme.primary,
-                    disabledContainerColor = MaterialTheme.colorScheme.onSurface,
-                    contentColor = MaterialTheme.colorScheme.onPrimary,
-                    disabledContentColor = MaterialTheme.colorScheme.onSurface
+                    containerColor = theme.colors.primary,
+                    disabledContainerColor = theme.colors.secondary,
+                    contentColor = theme.colors.textPrimary,
+                    disabledContentColor = theme.colors.textPrimary
                 ),
                 shape = RoundedCornerShape(5.dp),
                 enabled = isEnabled
@@ -67,7 +65,7 @@ fun CustomButton(
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.spacedBy(10.dp)
                 ) {
-                    leftIcon?.let {
+                    leftIcon?.id?.let {
                         Image(
                             painter = painterResource(it),
                             contentDescription = null,
@@ -76,10 +74,10 @@ fun CustomButton(
                     }
                     Text(
                         text = title.value,
-                        fontSize = 20.sp,
-                        color = MaterialTheme.colorScheme.onPrimary
+                        fontSize = 16.sp,
+                        color = theme.colors.textPrimary
                     )
-                    rightIcon?.let {
+                    rightIcon?.id?.let {
                         Image(
                             painter = painterResource(it),
                             contentDescription = null,
@@ -97,15 +95,15 @@ fun CustomButton(
                     .height(buttonHeight),
                 onClick = { onPress },
                 colors = ButtonDefaults.buttonColors(
-                    containerColor = MaterialTheme.colorScheme.background,
-                    contentColor = MaterialTheme.colorScheme.onPrimary,
-                    disabledContainerColor = MaterialTheme.colorScheme.onSecondaryContainer,
-                    disabledContentColor = MaterialTheme.colorScheme.onSecondaryContainer
+                    containerColor = theme.colors.backgroundPrimary,
+                    contentColor = theme.colors.textPrimary,
+                    disabledContainerColor = theme.colors.secondary,
+                    disabledContentColor = theme.colors.textPrimary
                 ),
                 shape = RoundedCornerShape(5.dp),
                 border = BorderStroke(
                     1.dp,
-                    color = if (isEnabled) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface
+                    color = if (isEnabled) theme.colors.primary else theme.colors.buttonPrimary
                 ),
                 enabled = isEnabled
 
@@ -114,7 +112,7 @@ fun CustomButton(
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.spacedBy(10.dp)
                 ) {
-                    leftIcon?.let {
+                    leftIcon?.id?.let {
                         Image(
                             painter = painterResource(it),
                             contentDescription = null,
@@ -123,10 +121,10 @@ fun CustomButton(
                     }
                     Text(
                         text = title.value,
-                        fontSize = 20.sp,
-                        color = MaterialTheme.colorScheme.onPrimary
+                        fontSize = 16.sp,
+                        color = theme.colors.textPrimary
                     )
-                    rightIcon?.let {
+                    rightIcon?.id?.let {
                         Image(
                             painter = painterResource(it),
                             contentDescription = null,
@@ -142,8 +140,6 @@ fun CustomButton(
 }
 
 
-
-
 @Preview
 @Composable
 fun ButtonsPreview() {
@@ -153,7 +149,7 @@ fun ButtonsPreview() {
                 type = ButtonType.FILLED,
                 size = ButtonSize.LARGE,
                 title = ButtonTitle.LOGIN,
-                leftIcon = IconAsset.GOOGLE_LOGIN.id,
+                leftIcon = IconAsset.GOOGLE_LOGIN,
                 onPress = {})
             CustomButton(
                 type = ButtonType.OUTLINED,
