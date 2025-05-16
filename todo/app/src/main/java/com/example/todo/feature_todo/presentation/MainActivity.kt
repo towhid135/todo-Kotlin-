@@ -58,6 +58,7 @@ class MainActivity : ComponentActivity() {
         val mockTodoItem = TodoItem(
             id = "1",
             createdAt = System.currentTimeMillis(),
+            dueDate = System.currentTimeMillis(),
             title = "Complete HomeworkComplete Homework",
             description = "Finish math and science homework",
             completed = false,

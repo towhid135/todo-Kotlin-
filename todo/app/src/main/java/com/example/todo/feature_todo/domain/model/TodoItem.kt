@@ -6,6 +6,7 @@ import com.example.todo.core.util.Priority
 data class TodoItem(
     val id: String,
     val createdAt:Long,
+    val dueDate:Long,
     val title:String,
     val  description:String,
     val completed:Boolean,

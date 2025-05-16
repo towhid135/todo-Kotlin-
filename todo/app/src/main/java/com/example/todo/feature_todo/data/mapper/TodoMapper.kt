@@ -8,6 +8,7 @@ fun TodoItem.toLocalTodoItem(): LocalTodoItem {
     return LocalTodoItem(
         id = id,
         createdAt = createdAt,
+        dueDate = dueDate,
         title = title,
         description = description,
         completed = completed,
@@ -20,6 +21,7 @@ fun TodoItem.toRemoteTodoItem(): RemoteTodoItem {
     return RemoteTodoItem(
         id = id,
         createdAt = createdAt,
+        dueDate = dueDate,
         title = title,
         description = description,
         completed = completed,
@@ -32,6 +34,7 @@ fun LocalTodoItem.toTodoItem(): TodoItem {
     return TodoItem(
         id = id,
         createdAt = createdAt,
+        dueDate = dueDate,
         title = title,
         description = description,
         completed = completed,
@@ -44,6 +47,7 @@ fun LocalTodoItem.toRemoteTodoItem(): RemoteTodoItem {
     return RemoteTodoItem(
         id = id,
         createdAt = createdAt,
+        dueDate = dueDate,
         title = title,
         description = description,
         completed = completed,
@@ -56,6 +60,7 @@ fun RemoteTodoItem.toTodoItem(): TodoItem {
     return TodoItem(
         id = id,
         createdAt = createdAt,
+        dueDate = dueDate,
         title = title,
         description = description,
         completed = completed,
@@ -68,6 +73,7 @@ fun RemoteTodoItem.toLocalTodoItem(): LocalTodoItem {
     return LocalTodoItem(
         id = id,
         createdAt = createdAt,
+        dueDate = dueDate,
         title = title,
         description = description,
         completed = completed,
@@ -81,6 +87,7 @@ fun List<TodoItem>.toRemoteTodoItemList(): List<RemoteTodoItem> {
         RemoteTodoItem(
             id = todo.id,
             createdAt = todo.createdAt,
+            dueDate = todo.dueDate,
             title = todo.title,
             description = todo.description,
             completed = todo.completed,
@@ -95,6 +102,7 @@ fun List<LocalTodoItem>.toTodoItemListFromLocal(): List<TodoItem> {
         TodoItem(
             id = todo.id,
             createdAt = todo.createdAt,
+            dueDate = todo.dueDate,
             title = todo.title,
             description = todo.description,
             completed = todo.completed,
@@ -109,6 +117,7 @@ fun List<LocalTodoItem>.toRemoteTodoItemListFromLocal(): List<RemoteTodoItem> {
         RemoteTodoItem(
             id = todo.id,
             createdAt = todo.createdAt,
+            dueDate = todo.dueDate,
             title = todo.title,
             description = todo.description,
             completed = todo.completed,
@@ -123,6 +132,7 @@ fun List<RemoteTodoItem>.toTodoItemListFromRemote(): List<TodoItem> {
         TodoItem(
             id = todo.id,
             createdAt = todo.createdAt,
+            dueDate = todo.dueDate,
             title = todo.title,
             description = todo.description,
             completed = todo.completed,
@@ -137,6 +147,7 @@ fun List<RemoteTodoItem>.toLocalTodoItemListFromRemote(): List<LocalTodoItem> {
         LocalTodoItem(
             id = todo.id,
             createdAt = todo.createdAt,
+            dueDate = todo.dueDate,
             title = todo.title,
             description = todo.description,
             completed = todo.completed,
