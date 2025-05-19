@@ -1,6 +1,7 @@
 package com.example.todo.feature_todo.domain.use_case
 
 import com.example.todo.core.util.TodoConstants
+import com.example.todo.feature_todo.data.remote.dto.User
 import com.example.todo.feature_todo.domain.model.TodoItem
 import com.example.todo.feature_todo.domain.repo.TodoListRepo
 import com.example.todo.feature_todo.domain.util.InvalidTodoItemException
@@ -63,6 +64,14 @@ class TodoUseCases @Inject constructor(
                 }
             }
         }
+    }
+
+    suspend fun addUser(user: User){
+        repo.addUser(user)
+    }
+
+    suspend fun getUserById(user: User):Map<String,User> {
+        return repo.getUserById(user)
     }
 }
 

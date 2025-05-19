@@ -1,6 +1,7 @@
 package com.example.todo.feature_todo.data.repo
 
 import android.util.Log
+import com.example.todo.core.util.generateUuid
 import com.example.todo.feature_todo.data.di.IoDispatcher
 import com.example.todo.feature_todo.data.local.TodoDao
 import com.example.todo.feature_todo.data.mapper.toLocalTodoItem
@@ -9,6 +10,7 @@ import com.example.todo.feature_todo.data.mapper.toRemoteTodoItem
 import com.example.todo.feature_todo.data.mapper.toTodoItem
 import com.example.todo.feature_todo.data.mapper.toTodoItemListFromLocal
 import com.example.todo.feature_todo.data.remote.TodoApi
+import com.example.todo.feature_todo.data.remote.dto.User
 import com.example.todo.feature_todo.domain.model.TodoItem
 import com.example.todo.feature_todo.domain.repo.TodoListRepo
 import kotlinx.coroutines.CoroutineDispatcher
@@ -65,8 +67,7 @@ class TodoListRepoImpl(
     }
 
     override suspend fun addTodoItem(todo: TodoItem){
-        val newId = dao.addTodoItem(todo.toLocalTodoItem())
-        val id = newId.toString()
+        val id = generateUuid()
         val url = "todo/$id.json"
         api.addTodo(url,todo.toRemoteTodoItem().copy(id = id))
     }
@@ -92,5 +93,15 @@ class TodoListRepoImpl(
                 }else -> throw e
             }
         }
+    }
+
+    override suspend fun addUser(user: User) {
+        val id = generateUuid()
+        val url = "users/$id.json"
+        api.addUser(url = url, user=user)
+    }
+
+    override suspend fun getUserById(user: User):Map<String,User> {
+        return api.getUserById(user.id)
     }
 }
