@@ -1,4 +1,4 @@
-package com.example.todo.feature_todo.presentation.todo_list.components
+package com.example.todo.feature_todo.presentation.home.components
 
 import androidx.compose.material3.NavigationDrawerItem
 import androidx.compose.runtime.Composable
@@ -39,24 +39,24 @@ fun DrawerOptions(
             onOrderChange(TodoItemOrder.Completed(todoItemOrder.sortingDirection))
         }
     )
-    val isSortUpSelected = todoItemOrder.sortingDirection == SortingDirection.Up
+    val isSortUpSelected = todoItemOrder.sortingDirection == SortingDirection.DESC
     NavigationDrawerItem(
         label = {
             DrawerItem(TodoListStrings.SORT_UP,isSortUpSelected)
         },
         selected=false,
         onClick = {
-            onOrderChange(todoItemOrder.copy(sortingDirection = SortingDirection.Up))
+            onOrderChange(todoItemOrder.copy(sortingDirection = SortingDirection.DESC))
         }
     )
-    val isSortDownSelected = todoItemOrder.sortingDirection == SortingDirection.Down
+    val isSortDownSelected = todoItemOrder.sortingDirection == SortingDirection.ASC
     NavigationDrawerItem(
         label = {
             DrawerItem(TodoListStrings.SORT_DOWN,isSortDownSelected)
         },
         selected=false,
         onClick = {
-            onOrderChange(todoItemOrder.copy(sortingDirection = SortingDirection.Down))
+            onOrderChange(todoItemOrder.copy(sortingDirection = SortingDirection.ASC))
         }
     )
 }

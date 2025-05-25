@@ -1,5 +1,9 @@
-package com.example.todo.feature_todo.presentation.todo_list.components
+package com.example.todo.feature_todo.presentation.home.components
 
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material3.CenterAlignedTopAppBar
@@ -11,35 +15,48 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.dp
 import com.example.todo.core.util.ContentDescriptions
 import com.example.todo.core.util.TodoListStrings
+import com.example.todo.ui.icons.Todoz
+import com.example.todo.ui.icons.todoz.Filter
+import com.example.todo.ui.theme.LocalTheme
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TodoListScreenTopAppBar(onMenuButtonPress: () -> Unit){
+    val theme = LocalTheme.current
     CenterAlignedTopAppBar(
         title = {
             Text(
-                text = TodoListStrings.TODO_LIST,
+                text = TodoListStrings.INDEX,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
-                style = MaterialTheme.typography.headlineLarge,
-                color = MaterialTheme.colorScheme.onPrimary
+                style = MaterialTheme.typography.titleMedium,
+                color = theme.colors.textPrimary
             )
         },
-        navigationIcon = {},
-        actions = {
+        navigationIcon = {
             IconButton(onClick = onMenuButtonPress) {
-                Icon(imageVector = Icons.Default.Menu, contentDescription = ContentDescriptions.SORTING_MENU)
+                Icon(imageVector = Todoz.Filter, contentDescription = ContentDescriptions.SORTING_MENU)
+            }
+        },
+        actions = {
+            Column(
+                modifier = Modifier.background(theme.colors.iconPrimary, CircleShape).size(30.dp)
+            ) {
+
             }
         },
         colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
-            containerColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.7f),
+            containerColor = theme.colors.backgroundPrimary,
             scrolledContainerColor = MaterialTheme.colorScheme.primary,
-            navigationIconContentColor = MaterialTheme.colorScheme.onPrimary,
-            titleContentColor = MaterialTheme.colorScheme.onPrimary,
-            actionIconContentColor = MaterialTheme.colorScheme.onPrimary
+            navigationIconContentColor = theme.colors.iconPrimary,
+            titleContentColor = theme.colors.textPrimary,
+            actionIconContentColor = theme.colors.iconPrimary
         ),
         scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(rememberTopAppBarState())
     )

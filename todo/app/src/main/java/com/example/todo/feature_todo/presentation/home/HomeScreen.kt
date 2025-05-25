@@ -1,6 +1,7 @@
-package com.example.todo.feature_todo.presentation.todo_list
+package com.example.todo.feature_todo.presentation.home
 
 import android.annotation.SuppressLint
+import android.util.Log
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.ModalNavigationDrawer
@@ -14,23 +15,21 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalConfiguration
-import androidx.compose.ui.res.painterResource
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
-import com.example.todo.R
 import com.example.todo.core.presentation.components.LoadingModal
-import com.example.todo.feature_todo.presentation.todo_list.components.AddTodoButton
-import com.example.todo.feature_todo.presentation.todo_list.components.DrawerContent
-import com.example.todo.feature_todo.presentation.todo_list.components.TodoItemList
-import com.example.todo.feature_todo.presentation.todo_list.components.TodoListScreenTopAppBar
+import com.example.todo.feature_todo.presentation.home.components.AddTodoButton
+import com.example.todo.feature_todo.presentation.home.components.DrawerContent
+import com.example.todo.feature_todo.presentation.home.components.TodoItemList
+import com.example.todo.feature_todo.presentation.home.components.TodoListScreenTopAppBar
 import com.example.todo.feature_todo.presentation.util.Screen
 import kotlinx.coroutines.launch
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
-fun TodoListScreen(
+fun HomeScreen(
     navController: NavController,
-    viewModel: TodoListViewModel = hiltViewModel()
+    viewModel: HomeViewModel = hiltViewModel()
 ) {
     val state = viewModel.state.value
     val snackbarHostState = remember { SnackbarHostState() }
@@ -41,21 +40,17 @@ fun TodoListScreen(
     val isPortrait =
         configuration.orientation == android.content.res.Configuration.ORIENTATION_PORTRAIT
 
-    val backgroundImage = if (isPortrait) {
-        R.drawable.background_portrait
-    } else {
-        R.drawable.background_landscape
-    }
-
-    LaunchedEffect(key1 = true) {
-        viewModel.getTodoItems()
+    LaunchedEffect(key1 = state.user.id) {
+        state.user.id.takeIf { it.isNotEmpty() }?.let {
+            viewModel.getTodoItems(userId = it)
+        }
     }
 
     ModalNavigationDrawer(
         drawerState = drawerState,
         drawerContent = {
             DrawerContent(state.todoItemOrder, onOrderChange = { order ->
-                viewModel.onEvent(TodoListEvent.Sort(order))
+                viewModel.onEvent(HomeScreenEvent.Sort(order))
             })
         }
     ) {
@@ -70,21 +65,18 @@ fun TodoListScreen(
         ) { innerPadding ->
             TodoItemList(
                 modifier = Modifier.padding(innerPadding),
-                backgroundImage = painterResource(id = backgroundImage),
                 todoItems = state.todoItems,
+                user = state.user,
                 isLoading = state.isLoading,
                 error = state.error,
                 onPullToRefresh = {
-                    viewModel.getTodoItems()
+                    viewModel.getTodoItems(state.user.id)
                 },
                 onEvent = { event ->
                     viewModel.onEvent(event)
-                },
-                snackbarHostState = snackbarHostState,
-                scope = scope,
-                navController = navController
+                }
             )
-            LoadingModal(isLoading = state.isLoading  || state.isToggleCompleteLoading || state.isDeleteLoading)
+            LoadingModal(isLoading = state.isLoading)
         }
     }
 }

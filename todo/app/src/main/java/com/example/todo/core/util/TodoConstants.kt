@@ -8,7 +8,7 @@ object TodoConstants {
 
 object TodoListStrings {
     const val CANT_GET_TODOS = "Error: Could not retrieve Todo Items"
-    const val TODO_LIST = "TODO List"
+    const val INDEX = "Index"
     const val TITLE = "Title"
     const val TIME = "Time"
     const val Completed = "Completed"

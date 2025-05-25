@@ -1,5 +1,6 @@
-package com.example.todo.feature_todo.presentation.todo_list.components
+package com.example.todo.feature_todo.presentation.home.components
 
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.FloatingActionButton
@@ -14,7 +15,7 @@ fun AddTodoButton(onAddButtonPress: () -> Unit) {
     val theme = LocalTheme.current
     FloatingActionButton(
         onClick = onAddButtonPress,
-        shape = FloatingActionButtonDefaults.shape,
+        shape = CircleShape,
         containerColor = theme.colors.primary
     ) {
         Icon(

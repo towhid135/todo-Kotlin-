@@ -1,22 +1,17 @@
-package com.example.todo.feature_todo.presentation.todo_list.components
+package com.example.todo.feature_todo.presentation.home.components
 
-import androidx.compose.foundation.Image
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.wrapContentHeight
-import androidx.compose.foundation.lazy.staggeredgrid.LazyVerticalStaggeredGrid
-import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridCells
-import androidx.compose.foundation.lazy.staggeredgrid.items
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.SnackbarHostState
-import androidx.compose.material3.SnackbarResult
 import androidx.compose.material3.Text
+import androidx.compose.material3.VerticalDivider
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.material3.pulltorefresh.PullToRefreshDefaults
 import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
@@ -24,35 +19,28 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.painter.Painter
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.navigation.NavController
 import com.example.todo.core.util.ContentDescriptions
-import com.example.todo.core.util.TodoListStrings
+import com.example.todo.feature_todo.data.remote.dto.User
 import com.example.todo.feature_todo.domain.model.TodoItem
-import com.example.todo.feature_todo.presentation.todo_list.TodoListEvent
-import com.example.todo.feature_todo.presentation.util.Screen
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.launch
+import com.example.todo.feature_todo.presentation.home.HomeScreenEvent
+import com.example.todo.ui.theme.LocalTheme
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TodoItemList(
     modifier: Modifier = Modifier,
-    backgroundImage: Painter,
     todoItems:List<TodoItem>,
+    user: User,
     isLoading:Boolean,
     error:String? = null,
     onPullToRefresh:() -> Unit,
-    onEvent:(TodoListEvent) -> Unit,
-    snackbarHostState: SnackbarHostState,
-    scope: CoroutineScope,
-    navController: NavController
+    onEvent:(HomeScreenEvent) -> Unit
     ){
+    val theme = LocalTheme.current
     val pullToRefreshState = rememberPullToRefreshState()
 
     fun onRefresh(){
@@ -61,7 +49,7 @@ fun TodoItemList(
 
     PullToRefreshBox(
         modifier = modifier.fillMaxSize()
-            .background(MaterialTheme.colorScheme.background),
+            .background(theme.colors.backgroundPrimary),
         state = pullToRefreshState,
         isRefreshing = isLoading,
         onRefresh = {onRefresh()},
@@ -75,26 +63,32 @@ fun TodoItemList(
         }
 
     ){
-
-        Image(
-            painter = backgroundImage,
-            contentDescription = ContentDescriptions.BACKGROUND_IMAGE,
-            alignment = Alignment.TopStart,
-            modifier = Modifier.fillMaxSize(),
-            contentScale = ContentScale.FillWidth
-        )
         Column(
             modifier = Modifier.fillMaxSize()
         ) {
-            LazyVerticalStaggeredGrid(
-                columns = StaggeredGridCells.Fixed(2),
-                verticalItemSpacing = 4.dp,
-                horizontalArrangement = Arrangement.spacedBy(4.dp),
-                content = {
-
-                },
+            LazyColumn(
                 modifier = Modifier.fillMaxSize()
-            )
+                    .padding(horizontal = 12.dp)
+                    .padding(top = 10.dp)
+                ,
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                items(todoItems.size, key = {it}) { todoItemIndex ->
+                    val todoItem = todoItems[todoItemIndex]
+                    TodoItemCard(
+                        todo = todoItem,
+                        onCompleteClick = { onEvent(HomeScreenEvent.ToggleCompleted(user,todoItem)) },
+                        onCardClick = {
+
+                        }
+                    )
+                    VerticalDivider(
+                        modifier = Modifier.fillMaxSize()
+                            .padding(vertical = 12.dp)
+
+                    )
+                }
+            }
             if(isLoading){
                 Column(
                     modifier = Modifier.fillMaxSize(),

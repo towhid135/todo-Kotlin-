@@ -6,9 +6,8 @@ import com.example.todo.BuildConfig
 import com.example.todo.feature_todo.data.local.TodoDao
 import com.example.todo.feature_todo.data.local.TodoDatabase
 import com.example.todo.feature_todo.data.remote.TodoApi
-import com.example.todo.feature_todo.data.repo.TodoListRepoImpl
-import com.example.todo.feature_todo.domain.repo.TodoListRepo
-import com.google.gson.internal.GsonBuildConfig
+import com.example.todo.feature_todo.data.repo.HomeRepoImpl
+import com.example.todo.feature_todo.domain.repo.HomeRepo
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -56,8 +55,8 @@ object TodoModule {
 
     @Provides
     @Singleton
-    fun providesTodoRepo(db: TodoDatabase, api: TodoApi, @IoDispatcher dispatcher:CoroutineDispatcher): TodoListRepo{
-        return TodoListRepoImpl(db.dao,api,dispatcher)
+    fun providesTodoRepo(db: TodoDatabase, api: TodoApi, @IoDispatcher dispatcher:CoroutineDispatcher): HomeRepo{
+        return HomeRepoImpl(db.dao,api,dispatcher)
     }
 
 }

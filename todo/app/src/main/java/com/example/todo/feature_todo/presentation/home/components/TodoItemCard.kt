@@ -1,4 +1,4 @@
-package com.example.todo.feature_todo.presentation.todo_list.components
+package com.example.todo.feature_todo.presentation.home.components
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -22,11 +22,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.todo.core.util.Category
 import com.example.todo.core.util.CategoryBoxType
-import com.example.todo.core.util.CategoryColor
 import com.example.todo.core.util.Priority
 import com.example.todo.feature_todo.domain.model.TodoItem
-import com.example.todo.ui.icons.Todoz
-import com.example.todo.ui.icons.todoz.University
 import com.example.todo.ui.theme.LocalTheme
 import com.example.todo.ui.theme.TodoTheme
 import formatTimestampToHourMinute
@@ -41,12 +38,12 @@ fun TodoItemCard(
     val creationTime = formatTimestampToHourMinute(todo.createdAt)
     Card(
         onClick = onCardClick,
-        colors = CardDefaults.cardColors(containerColor = theme.colors.backgroundSecondary),
+        colors = CardDefaults.cardColors(containerColor = theme.colors.secondary),
     ) {
         Row(
             modifier = Modifier
                 .height(90.dp)
-                .width(335.dp),
+                .width(340.dp),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceBetween,
         ) {
@@ -107,8 +104,8 @@ fun TodoItemCardPreview() {
         category = Category(
             id = "1",
             title = "Work",
-            bgColor = CategoryColor.FUCHSIA_ROSE,
-            icon = Todoz.University
+            bgColor = "0xFFCC4173",
+            icon = "work"
         ),
         priority = Priority.HIGH
     )

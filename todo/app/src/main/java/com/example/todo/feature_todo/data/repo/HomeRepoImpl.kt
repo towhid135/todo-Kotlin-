@@ -10,22 +10,23 @@ import com.example.todo.feature_todo.data.mapper.toRemoteTodoItem
 import com.example.todo.feature_todo.data.mapper.toTodoItem
 import com.example.todo.feature_todo.data.mapper.toTodoItemListFromLocal
 import com.example.todo.feature_todo.data.remote.TodoApi
+import com.example.todo.feature_todo.data.remote.dto.RemoteTodoItem
 import com.example.todo.feature_todo.data.remote.dto.User
 import com.example.todo.feature_todo.domain.model.TodoItem
-import com.example.todo.feature_todo.domain.repo.TodoListRepo
+import com.example.todo.feature_todo.domain.repo.HomeRepo
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.withContext
 import retrofit2.HttpException
 import java.net.ConnectException
 import java.net.UnknownHostException
 
-class TodoListRepoImpl(
+class HomeRepoImpl(
     private val dao: TodoDao,
     private val api: TodoApi,
     @IoDispatcher private val dispatcher: CoroutineDispatcher
-) : TodoListRepo {
-    override suspend fun getAllTodos():List<TodoItem>{
-        getAllTodosFromRemote()
+) : HomeRepo {
+    override suspend fun getAllTodos(userId: String):List<TodoItem>{
+        getAllTodosFromRemote(userId)
         return dao.getAllTodoItems().toTodoItemListFromLocal()
     }
 
@@ -33,10 +34,10 @@ class TodoListRepoImpl(
         return dao.getAllTodoItems().toTodoItemListFromLocal()
     }
 
-    override suspend fun getAllTodosFromRemote(){
+    override suspend fun getAllTodosFromRemote(userId: String){
         return withContext(dispatcher){
             try {
-                refreshRoomCache()
+                refreshRoomCache(userId)
             }catch (e: Exception){
                 when(e){
                     is UnknownHostException, is ConnectException, is HttpException -> {
@@ -51,9 +52,14 @@ class TodoListRepoImpl(
         }
     }
 
-    private suspend fun refreshRoomCache(){
-        val remoteTodos = api.getAllTodos().filterNotNull()
-        dao.addAllTodoItems(remoteTodos.toLocalTodoItemListFromRemote())
+    private suspend fun refreshRoomCache(userId:String){
+        val remoteTodos = api.getAllTodos(userId)
+        val convertedRemoteTodos = convertToList(remoteTodos).filterNotNull()
+        dao.addAllTodoItems(convertedRemoteTodos.toLocalTodoItemListFromRemote())
+    }
+
+    private fun convertToList(response:  Map<String, RemoteTodoItem>): List<RemoteTodoItem> {
+        return response.values.toList()
     }
 
     private fun isCacheEmpty():Boolean{
@@ -72,9 +78,9 @@ class TodoListRepoImpl(
         api.addTodo(url,todo.toRemoteTodoItem().copy(id = id))
     }
 
-    override suspend fun updateTodoItem(todo: TodoItem){
+    override suspend fun updateTodoItem(user: User,todo: TodoItem){
         dao.addTodoItem(todo.toLocalTodoItem())
-        api.updateTodoItem(todo.id,todo.toRemoteTodoItem())
+        api.updateTodoItem(user.id,todo.id,todo.toRemoteTodoItem())
     }
 
     override suspend fun deleteTodoItem(todo: TodoItem) {
@@ -95,13 +101,14 @@ class TodoListRepoImpl(
         }
     }
 
-    override suspend fun addUser(user: User) {
-        val id = generateUuid()
+    override suspend fun addUser(user: Map<String,User>) {
+        val id = user.keys.first()
         val url = "users/$id.json"
         api.addUser(url = url, user=user)
     }
 
-    override suspend fun getUserById(user: User):Map<String,User> {
-        return api.getUserById(user.id)
+    override suspend fun getUserByMail(email: String):User {
+        val userRes = api.getUserByMail(email)
+        return userRes
     }
 }

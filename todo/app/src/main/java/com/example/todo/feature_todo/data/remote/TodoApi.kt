@@ -14,8 +14,8 @@ import retrofit2.http.Query
 import retrofit2.http.Url
 
 interface TodoApi {
-    @GET("/todos.json")
-    suspend fun getAllTodos(): List<RemoteTodoItem>
+    @GET("/todos/{userId}/.json")
+    suspend fun getAllTodos(@Path("userId") userId:String): Map<String, RemoteTodoItem>
 
     @GET("/todos.json?orderBy=\"ID\"")
     suspend fun getTodoItemById(@Query("equalTo") id: String?): Map<String,RemoteTodoItem>
@@ -29,12 +29,12 @@ interface TodoApi {
     @DELETE("/todo/{id}.json")
     suspend fun deleteTodo(@Path("id") id : String?) : Response<Unit>
 
-    @PUT("/todo/{id}.json")
-    suspend fun updateTodoItem(@Path("id") id: String?, @Body todoItem:RemoteTodoItem):Response<Unit>
+    @PUT("/todos/{userId}/{id}.json")
+    suspend fun updateTodoItem(@Path("userId") userId: String,@Path("id") id: String?, @Body todoItem:RemoteTodoItem):Response<Unit>
 
     @POST
-    suspend fun addUser(@Url url: String, @Body user:User)
+    suspend fun addUser(@Url url: String, @Body user: Map<String,User>)
 
-    @GET("/users.json?orderBy=\"ID\"")
-    suspend fun getUserById(@Query("equalTo") id: String?): Map<String,User>
+    @GET("/users/{email}/.json")
+    suspend fun getUserByMail(@Path("email") email: String): User
 }
