@@ -5,6 +5,7 @@ import androidx.compose.runtime.Composable
 import com.example.todo.core.util.TodoListStrings
 import com.example.todo.feature_todo.domain.util.SortingDirection
 import com.example.todo.feature_todo.domain.util.TodoItemOrder
+import com.example.todo.ui.theme.LocalTheme
 
 @Composable
 fun DrawerOptions(

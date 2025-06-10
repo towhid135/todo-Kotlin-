@@ -13,30 +13,32 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.sp
+import com.example.todo.ui.theme.LocalTheme
 import com.example.todo.ui.theme.TodoTheme
 
 @Composable
 fun DrawerItem(
     text: String = "",
     isChecked: Boolean = false,
-    modifier: Modifier = Modifier,
 ) {
+    val theme = LocalTheme.current
     Row(
-        modifier = modifier.fillMaxWidth(),
+        modifier = Modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically,
 
         ) {
         Text(
             text = text,
-            fontSize = 24.sp,
-            lineHeight = 30.sp
+            color = theme.colors.textPrimary,
+            fontSize = 18.sp,
+            lineHeight = 18.sp
         )
         if (isChecked) {
             Icon(
                 imageVector = Icons.Default.Check,
                 contentDescription = null,
-                tint = MaterialTheme.colorScheme.onSecondaryContainer
+                tint = theme.colors.iconPrimary
             )
         }
     }

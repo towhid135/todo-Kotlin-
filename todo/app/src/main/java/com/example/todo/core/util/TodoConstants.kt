@@ -15,7 +15,7 @@ object TodoListStrings {
     const val SORT_UP = "Sort Up"
     const val SORT_DOWN = "Sort Down"
     const val SHOW_ARCHIVED = "Show Archived"
-    const val SORT_BY = "Sort By"
+    const val SORT_BY = "Sort"
     const val TODO_ITEM_DELETED = "Todo Item has been deleted"
     const val UNDO = "Undo"
 }
@@ -72,6 +72,13 @@ data class FormattedDate(
     val dayName: String,
     val dayNumber: Int,
 )
+
+enum class BottomTabItemTitle(val title:String) {
+    INDEX("Index"),
+    CALENDER("Calendar"),
+    FOCUS("Focus"),
+    PROFILE("Profile")
+}
 
 
 
