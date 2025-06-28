@@ -38,7 +38,8 @@ fun TodoItemList(
     isLoading:Boolean,
     error:String? = null,
     onPullToRefresh:() -> Unit,
-    onEvent:(HomeScreenEvent) -> Unit
+    onEvent:(HomeScreenEvent) -> Unit,
+    onCardClick: () -> Unit
     ){
     val theme = LocalTheme.current
     val pullToRefreshState = rememberPullToRefreshState()
@@ -78,9 +79,7 @@ fun TodoItemList(
                     TodoItemCard(
                         todo = todoItem,
                         onCompleteClick = { onEvent(HomeScreenEvent.ToggleCompleted(user,todoItem)) },
-                        onCardClick = {
-
-                        }
+                        onCardClick = onCardClick
                     )
                     VerticalDivider(
                         modifier = Modifier.fillMaxSize()

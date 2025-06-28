@@ -8,13 +8,13 @@ object TodoConstants {
 
 object TodoListStrings {
     const val CANT_GET_TODOS = "Error: Could not retrieve Todo Items"
-    const val INDEX = "Index"
+    const val HOME = "Home"
     const val TITLE = "Title"
     const val TIME = "Time"
     const val Completed = "Completed"
     const val SORT_UP = "Sort Up"
     const val SORT_DOWN = "Sort Down"
-    const val SHOW_ARCHIVED = "Show Archived"
+    const val DETAILS = "Details"
     const val SORT_BY = "Sort"
     const val TODO_ITEM_DELETED = "Todo Item has been deleted"
     const val UNDO = "Undo"

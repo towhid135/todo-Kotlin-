@@ -1,5 +1,6 @@
 package com.example.todo.feature_todo.presentation.home
 
+import android.util.Log
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
@@ -71,7 +72,6 @@ class HomeViewModel @Inject constructor(
             is HomeScreenEvent.Sort -> {
                 val isStateOrderAlreadyMatchesEventOrder = event.todoItemOrder::class == _state.value.todoItemOrder::class &&
                         event.todoItemOrder.sortingDirection == _state.value.todoItemOrder.sortingDirection
-
                 if(isStateOrderAlreadyMatchesEventOrder) return;
 
                 _state.value = _state.value.copy(

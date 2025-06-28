@@ -14,6 +14,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.navigation.compose.currentBackStackEntryAsState
+import com.example.todo.navigation_graph.routes.Screen
 import com.example.todo.navigation_graph.routes.bottomTabRoutes
 import com.example.todo.ui.theme.LocalTheme
 
@@ -30,6 +31,12 @@ fun TodoBottomTab(navController: NavController){
    ) {
       val navBackStackEntry = navController.currentBackStackEntryAsState().value
       val currentDestination = navBackStackEntry?.destination
+       val bottomTabAllowedFor = listOf(Screen.Home.route,Screen.Calendar.route,Screen.Profile.route)
+
+       if(!bottomTabAllowedFor.contains(currentDestination?.route)){
+           return
+       }
+
         bottomTabRoutes.forEach { bottomTabItem ->
              BottomTabItem (
                 icon = bottomTabItem.icon,
