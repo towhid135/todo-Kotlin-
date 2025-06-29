@@ -8,5 +8,6 @@ sealed class HomeScreenEvent {
     data class ToggleCompleted(val user:User,val todo:TodoItem):HomeScreenEvent()
     data class TodoCardPress(val todo: TodoItem): HomeScreenEvent()
     data class Sort(val todoItemOrder: TodoItemOrder):HomeScreenEvent()
-
+    data class onChangeTitle(val title:String):HomeScreenEvent()
+    data class onChangeDescription(val description:String):HomeScreenEvent()
 }

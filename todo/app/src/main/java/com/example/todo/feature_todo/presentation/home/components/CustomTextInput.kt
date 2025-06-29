@@ -1,5 +1,6 @@
 package com.example.todo.feature_todo.presentation.home.components
 
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
@@ -28,7 +29,7 @@ fun CustomTextInput(
 ) {
     val theme = LocalTheme.current
     TextField(
-        modifier = Modifier,
+        modifier = Modifier.fillMaxWidth(),
         value = text,
         textStyle = TextStyle(
             color = theme.colors.textPrimary,

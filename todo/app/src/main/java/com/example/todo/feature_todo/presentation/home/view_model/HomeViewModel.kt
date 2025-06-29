@@ -1,6 +1,5 @@
-package com.example.todo.feature_todo.presentation.home
+package com.example.todo.feature_todo.presentation.home.view_model
 
-import android.util.Log
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
@@ -9,6 +8,8 @@ import com.example.todo.feature_todo.data.di.IoDispatcher
 import com.example.todo.feature_todo.domain.use_case.TodoResult
 import com.example.todo.feature_todo.domain.use_case.TodoUseCases
 import com.example.todo.feature_todo.domain.use_case.UserResult
+import com.example.todo.feature_todo.presentation.home.HomeScreenEvent
+import com.example.todo.feature_todo.presentation.home.HomeScreenState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineExceptionHandler
@@ -78,6 +79,14 @@ class HomeViewModel @Inject constructor(
                     todoItemOrder = event.todoItemOrder
                 )
                 getTodoItems(_state.value.user.id)
+            }
+
+            is HomeScreenEvent.onChangeTitle -> {
+                _state.value = _state.value.copy(title = event.title)
+            }
+
+            is HomeScreenEvent.onChangeDescription -> {
+                _state.value = _state.value.copy(description = event.description)
             }
         }
     }

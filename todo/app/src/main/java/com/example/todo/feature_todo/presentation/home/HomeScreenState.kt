@@ -6,6 +6,8 @@ import com.example.todo.feature_todo.domain.util.SortingDirection
 import com.example.todo.feature_todo.domain.util.TodoItemOrder
 
 data class HomeScreenState(
+    val title:String = "",
+    val description:String = "",
     val todoItems:List<TodoItem> = emptyList(),
     val user:User = User(
         id = "",
