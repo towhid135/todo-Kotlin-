@@ -7,6 +7,7 @@ import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.DELETE
 import retrofit2.http.GET
+import retrofit2.http.PATCH
 import retrofit2.http.POST
 import retrofit2.http.PUT
 import retrofit2.http.Path
@@ -23,8 +24,8 @@ interface TodoApi {
 //    @POST
 //    suspend fun addTodo(@Url url:String, @Body updatedTodo:RemoteTodoItem):Response<Unit>
 
-    @PUT
-    suspend fun addTodo(@Url url:String, @Body updatedTodo:RemoteTodoItem):Response<Unit>
+    @PATCH
+    suspend fun addTodo(@Url url:String, @Body updatedTodo:Map<String,RemoteTodoItem>):Response<Unit>
 
     @DELETE("/todo/{id}.json")
     suspend fun deleteTodo(@Path("id") id : String?) : Response<Unit>

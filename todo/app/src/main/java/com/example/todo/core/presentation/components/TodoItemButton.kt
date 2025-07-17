@@ -51,7 +51,7 @@ fun CustomButton(
                 modifier = Modifier
                     .width(buttonWidth)
                     .height(buttonHeight),
-                onClick = { onPress },
+                onClick = { onPress() },
                 colors = ButtonDefaults.buttonColors(
                     containerColor = theme.colors.primary,
                     disabledContainerColor = theme.colors.secondary,

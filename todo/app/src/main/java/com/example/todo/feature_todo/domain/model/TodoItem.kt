@@ -8,7 +8,7 @@ data class TodoItem(
     val createdAt:Long,
     val dueDate:Long,
     val title:String,
-    val  description:String,
+    val description:String,
     val completed:Boolean,
     val category: Category,
     val priority: Priority

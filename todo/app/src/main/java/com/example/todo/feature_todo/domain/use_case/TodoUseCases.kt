@@ -12,54 +12,53 @@ import javax.inject.Inject
 class TodoUseCases @Inject constructor(
     private val repo: HomeRepo
 ) {
-    suspend fun addTodoItem(todo:TodoItem){
-        if(todo.title.isBlank() || todo.description.isBlank()){
+    suspend fun addTodoItem(user: User, todo: TodoItem) {
+        if (todo.title.isBlank() || todo.description.isBlank()) {
             throw InvalidTodoItemException(TodoConstants.EMPTY_TITLE_OR_DESCRIPTION)
         }
-        repo.addTodoItem(todo)
+        repo.addTodoItem(user, todo)
     }
 
-    suspend fun updateTodoItem(user: User,todo: TodoItem){
-        if(todo.title.isBlank() || todo.description.isBlank()){
+    suspend fun updateTodoItem(user: User, todo: TodoItem) {
+        if (todo.title.isBlank() || todo.description.isBlank()) {
             throw InvalidTodoItemException(TodoConstants.EMPTY_TITLE_OR_DESCRIPTION)
         }
-        repo.updateTodoItem(user,todo)
+        repo.updateTodoItem(user, todo)
     }
 
-    suspend fun deleteTodoItem(todo: TodoItem){
+    suspend fun deleteTodoItem(todo: TodoItem) {
         repo.deleteTodoItem(todo)
     }
 
-    suspend fun toggleCompletedTodoItem(user: User,todo: TodoItem){
-        repo.updateTodoItem(user,todo.copy(completed = !todo.completed))
+    suspend fun toggleCompletedTodoItem(user: User, todo: TodoItem) {
+        repo.updateTodoItem(user, todo.copy(completed = !todo.completed))
     }
 
-    suspend fun getTodoItemById(id: Int):TodoItem?{
+    suspend fun getTodoItemById(id: Int): TodoItem? {
         return repo.getSingleTodoItemById(id)
     }
 
     suspend fun getTodoItems(
-        userId:String,
+        userId: String,
         todoItemOrder: TodoItemOrder = TodoItemOrder.Time(SortingDirection.DESC)
-    ): TodoResult{
+    ): TodoResult {
 //        var todos = repo.getAllTodosFromLocalCache()
         val todos = repo.getAllTodos(userId)
 //        if(todos.isEmpty()){
 //            todos = repo.getAllTodos()
 //        }
 
-        
-
-        return when(todoItemOrder.sortingDirection){
+        return when (todoItemOrder.sortingDirection) {
             is SortingDirection.DESC -> {
-                when(todoItemOrder){
+                when (todoItemOrder) {
                     is TodoItemOrder.Title -> TodoResult.Success(todos.sortedByDescending { it.title.lowercase() })
                     is TodoItemOrder.Time -> TodoResult.Success(todos.sortedByDescending { it.createdAt })
                     is TodoItemOrder.Completed -> TodoResult.Success(todos.sortedByDescending { it.completed })
                 }
             }
+
             is SortingDirection.ASC -> {
-                when(todoItemOrder){
+                when (todoItemOrder) {
                     is TodoItemOrder.Title -> TodoResult.Success(todos.sortedBy { it.title.lowercase() })
                     is TodoItemOrder.Time -> TodoResult.Success(todos.sortedBy { it.createdAt })
                     is TodoItemOrder.Completed -> TodoResult.Success(todos.sortedBy { it.completed })
@@ -68,26 +67,26 @@ class TodoUseCases @Inject constructor(
         }
     }
 
-    suspend fun addUser(user: Map<String,User>){
+    suspend fun addUser(user: Map<String, User>) {
         repo.addUser(user)
     }
 
-    suspend fun getUserByMail(email: String):UserResult {
+    suspend fun getUserByMail(email: String): UserResult {
         try {
             val userResponse = repo.getUserByMail(email)
             return UserResult.Success(userResponse)
-        }catch (error:Error){
+        } catch (error: Error) {
             return UserResult.Error(error.message ?: "getUserByMail error")
         }
     }
 }
 
 sealed class UserResult {
-    data class Success(val user:User):UserResult()
-    data class Error(val message: String):UserResult()
+    data class Success(val user: User) : UserResult()
+    data class Error(val message: String) : UserResult()
 }
 
-sealed class TodoResult{
-    data class Success(val todoItems: List<TodoItem>):TodoResult()
-    data class Error(val message:String):TodoResult()
+sealed class TodoResult {
+    data class Success(val todoItems: List<TodoItem>) : TodoResult()
+    data class Error(val message: String) : TodoResult()
 }

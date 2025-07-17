@@ -19,15 +19,15 @@ import javax.inject.Inject
 
 @HiltViewModel
 class HomeViewModel @Inject constructor(
-    private val todoUseCases:TodoUseCases,
-    @IoDispatcher private val dispatcher:CoroutineDispatcher
-):ViewModel() {
+    private val todoUseCases: TodoUseCases,
+    @IoDispatcher private val dispatcher: CoroutineDispatcher
+) : ViewModel() {
     private val _state = mutableStateOf(HomeScreenState())
-    val state:State<HomeScreenState> = _state
+    val state: State<HomeScreenState> = _state
 
-    private var getTodoItemJob:Job? = null
+    private var getTodoItemJob: Job? = null
 
-    private val errorHandler = CoroutineExceptionHandler{_,e ->
+    private val errorHandler = CoroutineExceptionHandler { _, e ->
         e.printStackTrace()
         _state.value = _state.value.copy(error = e.message, isLoading = false)
     }
@@ -35,12 +35,13 @@ class HomeViewModel @Inject constructor(
     init {
         viewModelScope.launch(dispatcher + errorHandler) {
             val userEmail = "towhidulislam252"
-            when(val userResponse:UserResult = todoUseCases.getUserByMail(userEmail)){
+            when (val userResponse: UserResult = todoUseCases.getUserByMail(userEmail)) {
                 is UserResult.Success -> {
                     _state.value = _state.value.copy(
                         user = userResponse.user
                     )
                 }
+
                 is UserResult.Error -> {
                     _state.value = _state.value.copy(
                         error = userResponse.message
@@ -51,14 +52,14 @@ class HomeViewModel @Inject constructor(
         }
     }
 
-    fun onEvent(event: HomeScreenEvent){
-        when(event){
+    fun onEvent(event: HomeScreenEvent) {
+        when (event) {
             is HomeScreenEvent.ToggleCompleted -> {
-                viewModelScope.launch(dispatcher+errorHandler){
+                viewModelScope.launch(dispatcher + errorHandler) {
                     _state.value = _state.value.copy(
                         isLoading = true
                     )
-                    todoUseCases.toggleCompletedTodoItem(event.user,event.todo)
+                    todoUseCases.toggleCompletedTodoItem(event.user, event.todo)
                     getTodoItems(_state.value.user.id)
                     _state.value = _state.value.copy(
                         isLoading = false
@@ -71,9 +72,10 @@ class HomeViewModel @Inject constructor(
             }
 
             is HomeScreenEvent.Sort -> {
-                val isStateOrderAlreadyMatchesEventOrder = event.todoItemOrder::class == _state.value.todoItemOrder::class &&
-                        event.todoItemOrder.sortingDirection == _state.value.todoItemOrder.sortingDirection
-                if(isStateOrderAlreadyMatchesEventOrder) return;
+                val isStateOrderAlreadyMatchesEventOrder =
+                    event.todoItemOrder::class == _state.value.todoItemOrder::class &&
+                            event.todoItemOrder.sortingDirection == _state.value.todoItemOrder.sortingDirection
+                if (isStateOrderAlreadyMatchesEventOrder) return;
 
                 _state.value = _state.value.copy(
                     todoItemOrder = event.todoItemOrder
@@ -81,22 +83,66 @@ class HomeViewModel @Inject constructor(
                 getTodoItems(_state.value.user.id)
             }
 
-            is HomeScreenEvent.onChangeTitle -> {
-                _state.value = _state.value.copy(title = event.title)
+            is HomeScreenEvent.OnChangeTitle -> {
+                _state.value = _state.value.copy(
+                    newTodo = _state.value.newTodo.copy(title = event.title)
+                )
             }
 
-            is HomeScreenEvent.onChangeDescription -> {
-                _state.value = _state.value.copy(description = event.description)
+            is HomeScreenEvent.OnChangeDescription -> {
+                _state.value = _state.value.copy(
+                    newTodo = _state.value.newTodo.copy(description = event.description)
+                )
             }
+
+            is HomeScreenEvent.OnSelectCategory -> {
+                _state.value = _state.value.copy(
+                    newTodo = _state.value.newTodo.copy(category = event.category.copy(isSelected = !event.category.isSelected))
+                )
+            }
+
+            is HomeScreenEvent.OnSelectPriority -> {
+                _state.value = _state.value.copy(
+                    newTodo = _state.value.newTodo.copy(priority = event.priority)
+                )
+            }
+
+            is HomeScreenEvent.OnSelectDueDate -> {
+                _state.value = _state.value.copy(
+                    newTodo = _state.value.newTodo.copy(dueDate = event.dueDate)
+                )
+            }
+
+            is HomeScreenEvent.OnPressAddTodo -> {
+                viewModelScope.launch(dispatcher + errorHandler) {
+                    _state.value = _state.value.copy(isLoading = true)
+                    try {
+                        todoUseCases.addTodoItem(event.user, event.newTodo)
+                        getTodoItems(_state.value.user.id)
+                        _state.value = _state.value.copy(
+                            newTodo = HomeScreenState().newTodo,
+                            isLoading = false
+                        )
+                    } catch (e: Exception) {
+                        _state.value = _state.value.copy(
+                            error = e.message,
+                            isLoading = false
+                        )
+                    }
+                }
+            }
+
         }
     }
 
-    fun getTodoItems(userId:String){
+    fun getTodoItems(userId: String) {
         getTodoItemJob?.cancel()
-        getTodoItemJob = viewModelScope.launch(dispatcher+errorHandler){
+        getTodoItemJob = viewModelScope.launch(dispatcher + errorHandler) {
             _state.value = _state.value.copy(isLoading = true)
-            val result = todoUseCases.getTodoItems(userId,todoItemOrder = _state.value.todoItemOrder)
-            when(result){
+            val result =
+                todoUseCases.getTodoItems(userId, todoItemOrder = _state.value.todoItemOrder)
+
+            when (result) {
                 is TodoResult.Success -> {
                     _state.value = _state.value.copy(
                         todoItems = result.todoItems,
@@ -104,6 +150,7 @@ class HomeViewModel @Inject constructor(
                         isLoading = false
                     )
                 }
+
                 is TodoResult.Error -> {
                     _state.value = _state.value.copy(
                         error = result.message,

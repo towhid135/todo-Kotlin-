@@ -72,10 +72,11 @@ class HomeRepoImpl(
         return dao.getSingleTodoItemById(id)?.toTodoItem()
     }
 
-    override suspend fun addTodoItem(todo: TodoItem){
-        val id = generateUuid()
-        val url = "todo/$id.json"
-        api.addTodo(url,todo.toRemoteTodoItem().copy(id = id))
+    override suspend fun addTodoItem(user: User,todo: TodoItem){
+        val url = "todos/${user.id}.json"
+        val uuid = generateUuid()
+        val newTodoItem = todo.toRemoteTodoItem().copy(id = uuid)
+        api.addTodo(url, mapOf(uuid to newTodoItem))
     }
 
     override suspend fun updateTodoItem(user: User,todo: TodoItem){

@@ -1,11 +1,13 @@
 package com.example.todo.feature_todo.presentation.home.components
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -22,7 +24,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.todo.core.util.Category
 import com.example.todo.core.util.CategoryBoxType
-import com.example.todo.core.util.CategoryColor
 import com.example.todo.ui.icons.IconsNamed
 import com.example.todo.ui.icons.Todoz
 import com.example.todo.ui.icons.todoz.University
@@ -33,19 +34,19 @@ import com.example.todo.ui.theme.TodoTheme
 fun CategoryBox(
     category: Category,
     type: CategoryBoxType,
-    onPress: () -> Unit
+    onPress: (category: Category) -> Unit
 ) {
     val theme = LocalTheme.current
     val height = when (type) {
         CategoryBoxType.RECTANGLE -> 30.dp
-        CategoryBoxType.SQUARE -> 64.dp
+        CategoryBoxType.SQUARE -> 70.dp
 
     }
     val width = when (type) {
         CategoryBoxType.RECTANGLE -> 85.dp
-        CategoryBoxType.SQUARE -> 64.dp
+        CategoryBoxType.SQUARE -> 70.dp
     }
-    val iconHeight = when(type){
+    val iconHeight = when (type) {
         CategoryBoxType.RECTANGLE -> 15.dp
         CategoryBoxType.SQUARE -> 32.dp
     }
@@ -53,26 +54,90 @@ fun CategoryBox(
         CategoryBoxType.RECTANGLE -> 15.dp
         CategoryBoxType.SQUARE -> 32.dp
     }
-    Row(
-        modifier = Modifier
-            .height(height)
-            .width(width)
-            .clip(RoundedCornerShape(5.dp))
-            .background(color = Color(category.bgColor.removePrefix("0x").toLong(radix = 16))),
-        horizontalArrangement = Arrangement.Center,
-        verticalAlignment = Alignment.CenterVertically,
+    if (type == CategoryBoxType.RECTANGLE) {
+        Row(
+            modifier = Modifier
+                .height(height)
+                .width(width)
+                .clip(RoundedCornerShape(5.dp))
+                .background(color = Color(category.bgColor.removePrefix("0x").toLong(radix = 16)))
+                .clickable { onPress(category) },
+            horizontalArrangement = Arrangement.Center,
+            verticalAlignment = Alignment.CenterVertically,
         ) {
-        Icon(
-            modifier = Modifier.size(iconWidth,iconHeight),
-            imageVector = Todoz.IconsNamed[category.icon] ?: Todoz.University,
-            contentDescription = null,
-            tint = theme.colors.iconPrimary,
-        )
-        if(type == CategoryBoxType.RECTANGLE) {
+            Icon(
+                modifier = Modifier.size(iconWidth, iconHeight),
+                imageVector = Todoz.IconsNamed[category.icon] ?: Todoz.University,
+                contentDescription = null,
+                tint = theme.colors.iconPrimary,
+            )
+
             Spacer(modifier = Modifier.width(5.dp))
-            Text(text = category.title, fontSize = 10.sp, color = theme.colors.textPrimary, fontFamily = FontFamily.SansSerif)
+            Text(
+                text = category.title,
+                fontSize = 10.sp,
+                color = theme.colors.textPrimary,
+                fontFamily = FontFamily.SansSerif
+            )
+
         }
+
+    } else {
+        Column(
+            modifier = Modifier
+                .height(height + 20.dp)
+                .width(width),
+        ) {
+            Column(
+                modifier = Modifier
+                    .height(height)
+                    .width(width)
+                    .clip(RoundedCornerShape(5.dp))
+                    .background(
+                        color = Color(
+                            category.bgColor.removePrefix("0x").toLong(radix = 16)
+                        )
+                    )
+                    .padding(5.dp)
+                    .clickable { onPress(category) },
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Icon(
+                    modifier = Modifier.size(iconWidth, iconHeight),
+                    imageVector = Todoz.IconsNamed[category.icon] ?: Todoz.University,
+                    contentDescription = null,
+                    tint = theme.colors.iconPrimary,
+                )
+
+                Spacer(modifier = Modifier.width(5.dp))
+                Text(
+                    text = category.title,
+                    fontSize = 10.sp,
+                    color = theme.colors.textPrimary,
+                    fontFamily = FontFamily.SansSerif
+                )
+            }
+
+            if (category.isSelected) {
+                Column(
+                    modifier = Modifier
+                        .padding(top = 10.dp)
+                        .background(
+                            theme.colors.primary,
+                            shape = RoundedCornerShape(topStart = 8.dp, topEnd = 8.dp)
+                        )
+                        .height(3.dp)
+                        .width(width),
+                    verticalArrangement = Arrangement.Center,
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    // Additional content can be added here if needed
+                }
+            }
+        }
+
     }
+
 }
 
 @Preview
@@ -81,12 +146,13 @@ fun CategoryBoxPreview() {
     val mockCategory = Category(
         id = "1",
         title = "Work",
+        isSelected = true,
         bgColor = "0xFFCC4173",
         icon = "calendar" // Replace with an appropriate ImageVector
     )
 
     TodoTheme {
-        Column(verticalArrangement = Arrangement.spacedBy(10.dp)){
+        Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
             CategoryBox(
                 category = mockCategory,
                 type = CategoryBoxType.RECTANGLE,
@@ -95,7 +161,7 @@ fun CategoryBoxPreview() {
             CategoryBox(
                 category = mockCategory,
                 type = CategoryBoxType.SQUARE,
-                onPress = { /* Handle click */ }
+                onPress = { /* Handle click */ },
             )
         }
     }

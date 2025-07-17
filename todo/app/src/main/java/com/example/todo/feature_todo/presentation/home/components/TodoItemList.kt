@@ -1,6 +1,5 @@
 package com.example.todo.feature_todo.presentation.home.components
 
-import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -9,7 +8,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.VerticalDivider
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
@@ -33,27 +31,28 @@ import com.example.todo.ui.theme.LocalTheme
 @Composable
 fun TodoItemList(
     modifier: Modifier = Modifier,
-    todoItems:List<TodoItem>,
+    todoItems: List<TodoItem>,
     user: User,
-    isLoading:Boolean,
-    error:String? = null,
-    onPullToRefresh:() -> Unit,
-    onEvent:(HomeScreenEvent) -> Unit,
+    isLoading: Boolean,
+    error: String? = null,
+    onPullToRefresh: () -> Unit,
+    onEvent: (HomeScreenEvent) -> Unit,
     onCardClick: () -> Unit
-    ){
+) {
     val theme = LocalTheme.current
     val pullToRefreshState = rememberPullToRefreshState()
 
-    fun onRefresh(){
+    fun onRefresh() {
         onPullToRefresh()
     }
 
     PullToRefreshBox(
-        modifier = modifier.fillMaxSize()
+        modifier = modifier
+            .fillMaxSize()
             .background(theme.colors.backgroundPrimary),
         state = pullToRefreshState,
         isRefreshing = isLoading,
-        onRefresh = {onRefresh()},
+        onRefresh = { onRefresh() },
         indicator = {
             PullToRefreshDefaults.Indicator(
                 state = pullToRefreshState,
@@ -63,57 +62,60 @@ fun TodoItemList(
             )
         }
 
-    ){
-        Column(
-            modifier = Modifier.fillMaxSize()
+    ) {
+        LazyColumn(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(horizontal = 12.dp)
+                .padding(top = 10.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            LazyColumn(
-                modifier = Modifier.fillMaxSize()
-                    .padding(horizontal = 12.dp)
-                    .padding(top = 10.dp)
-                ,
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                items(todoItems.size, key = {it}) { todoItemIndex ->
-                    val todoItem = todoItems[todoItemIndex]
-                    TodoItemCard(
-                        todo = todoItem,
-                        onCompleteClick = { onEvent(HomeScreenEvent.ToggleCompleted(user,todoItem)) },
-                        onCardClick = onCardClick
-                    )
-                    VerticalDivider(
-                        modifier = Modifier.fillMaxSize()
-                            .padding(vertical = 12.dp)
+            items(todoItems.size, key = { it }) { todoItemIndex ->
+                val todoItem = todoItems[todoItemIndex]
 
-                    )
+                TodoItemCard(
+                    todo = todoItem,
+                    onCompleteClick = { onEvent(HomeScreenEvent.ToggleCompleted(user, todoItem)) },
+                    onCardClick = onCardClick
+                )
+                VerticalDivider(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(vertical = 12.dp)
+
+                )
+            }
+            if (isLoading) {
+                item {
+                    Column(
+                        modifier = Modifier.fillMaxSize(),
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        verticalArrangement = Arrangement.Center
+                    ) {
+                        CircularProgressIndicator(
+                            modifier = Modifier.semantics {
+                                this.contentDescription = ContentDescriptions.LOADING_INDICATOR
+                            }
+                        )
+                    }
                 }
             }
-            if(isLoading){
-                Column(
-                    modifier = Modifier.fillMaxSize(),
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    verticalArrangement = Arrangement.Center
-                ) {
-                    CircularProgressIndicator(
-                        modifier = Modifier.semantics {
-                            this.contentDescription = ContentDescriptions.LOADING_INDICATOR
-                        }
-                    )
-                }
-            }
-            if(error != null){
-                Column(
-                    modifier = Modifier.fillMaxSize(),
-                    verticalArrangement = Arrangement.Center,
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-                    Text(
-                        text = error,
-                        fontSize = 30.sp,
-                        lineHeight = 36.sp
-                    )
+            if (error != null) {
+                item {
+                    Column(
+                        modifier = Modifier.fillMaxSize(),
+                        verticalArrangement = Arrangement.Center,
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        Text(
+                            text = error,
+                            fontSize = 30.sp,
+                            lineHeight = 36.sp
+                        )
+                    }
                 }
             }
         }
+
     }
 }

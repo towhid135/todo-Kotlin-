@@ -56,6 +56,7 @@ enum class ButtonType {
 enum class ButtonTitle(val value: String) {
     LOGIN("Login with Google"),
     GET_STARTED("Login with Apple"),
+    CLOSE("Close"),
 }
 
 enum class IconAsset(val id:Int) {

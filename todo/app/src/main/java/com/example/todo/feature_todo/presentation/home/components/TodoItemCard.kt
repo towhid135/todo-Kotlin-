@@ -96,7 +96,7 @@ fun TodoItemCard(
 fun TodoItemCardPreview() {
     val mockTodoItem = TodoItem(
         id = "1",
-        createdAt = System.currentTimeMillis(),
+        createdAt = 0L,
         dueDate = System.currentTimeMillis(),
         title = "Complete Homework",
         description = "Finish math and science homework",

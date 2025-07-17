@@ -98,14 +98,24 @@ fun HomeScreen(
                 )
 
                 CreateTodoModalBottomSheet(
-                    title = state.title,
-                    description = state.description,
+                    newTodo = state.newTodo,
                     sheetState = sheetState,
                     showBottomSheet = showBottomSheet,
                     toggleShowBottomSheet = { toggleShowBottomSheet() },
                     scope = scope,
-                    onTitleChange = { viewModel.onEvent(HomeScreenEvent.onChangeTitle(it)) },
-                    onDescriptionChange = { viewModel.onEvent(HomeScreenEvent.onChangeDescription(it)) }
+                    onTitleChange = { viewModel.onEvent(HomeScreenEvent.OnChangeTitle(it)) },
+                    onDescriptionChange = { viewModel.onEvent(HomeScreenEvent.OnChangeDescription(it)) },
+                    onCategoryChange = { viewModel.onEvent(HomeScreenEvent.OnSelectCategory(it)) },
+                    onPriorityChange = { viewModel.onEvent(HomeScreenEvent.OnSelectPriority(it)) },
+                    onChangeDueDate = { viewModel.onEvent(HomeScreenEvent.OnSelectDueDate(it)) },
+                    onPressAddTodo = {
+                        viewModel.onEvent(
+                            HomeScreenEvent.OnPressAddTodo(
+                                state.user,
+                                it
+                            )
+                        )
+                    }
                 )
 
                 LoadingModal(isLoading = state.isLoading)

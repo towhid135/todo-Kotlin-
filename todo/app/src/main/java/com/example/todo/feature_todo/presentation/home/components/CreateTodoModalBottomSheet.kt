@@ -20,6 +20,12 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.example.todo.core.util.Category
+import com.example.todo.core.util.Priority
+import com.example.todo.feature_todo.data.remote.dto.User
+import com.example.todo.feature_todo.domain.model.TodoItem
+import com.example.todo.feature_todo.presentation.category.components.ChooseCategoryDialog
+import com.example.todo.feature_todo.presentation.category.components.ChoosePriorityDialog
 import com.example.todo.ui.icons.Todoz
 import com.example.todo.ui.icons.todoz.Clock
 import com.example.todo.ui.icons.todoz.Flag
@@ -32,21 +38,35 @@ import kotlinx.coroutines.launch
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CreateTodoModalBottomSheet(
-    title: String = "",
-    description: String = "",
+    newTodo:TodoItem,
     sheetState: SheetState,
     showBottomSheet: Boolean,
     toggleShowBottomSheet: () -> Unit,
     scope: CoroutineScope,
     onTitleChange: (String) -> Unit,
     onDescriptionChange: (String) -> Unit,
+    onCategoryChange: (category:Category) -> Unit,
+    onPriorityChange: (priority:Priority) -> Unit,
+    onChangeDueDate:(dueDate:Long) -> Unit,
+    onPressAddTodo: (newTodo: TodoItem) -> Unit,
 ) {
     val theme = LocalTheme.current
 
     var showDatePicker by remember { mutableStateOf(false) }
 
+    var showCategory by remember { mutableStateOf(false) }
+    var showPriority by remember { mutableStateOf(false) }
+
     fun toggleShowDatePicker() {
         showDatePicker = !showDatePicker
+    }
+
+    fun toggleShowCategory() {
+        showCategory = !showCategory
+    }
+
+    fun toggleShowPriority() {
+        showPriority = !showPriority
     }
 
     if (showBottomSheet) {
@@ -65,13 +85,13 @@ fun CreateTodoModalBottomSheet(
             ) {
                 CustomTextInput(
                     labelText = "Title",
-                    text = title,
+                    text = newTodo?.title ?: "",
                     placeholderText = "Enter title",
                     onValueChange = { onTitleChange(it) }
                 )
                 CustomTextInput(
                     labelText = "Description",
-                    text = description,
+                    text = newTodo?.description ?: "",
                     placeholderText = "Enter description",
                     onValueChange = { onDescriptionChange(it) }
                 )
@@ -94,13 +114,13 @@ fun CreateTodoModalBottomSheet(
                             tint = theme.colors.iconPrimary,
                         )
                         Icon(
-                            modifier = Modifier.clickable { },
+                            modifier = Modifier.clickable {toggleShowCategory()},
                             imageVector = Todoz.Tag,
                             contentDescription = null,
                             tint = theme.colors.iconPrimary,
                         )
                         Icon(
-                            modifier = Modifier.clickable { },
+                            modifier = Modifier.clickable { toggleShowPriority() },
                             imageVector = Todoz.Flag,
                             contentDescription = null,
                             tint = theme.colors.iconPrimary,
@@ -108,6 +128,7 @@ fun CreateTodoModalBottomSheet(
                     }
                     Icon(
                         modifier = Modifier.clickable {
+                            onPressAddTodo(newTodo)
                             scope.launch { sheetState.hide() }.invokeOnCompletion {
                                 if (!sheetState.isVisible) {
                                     toggleShowBottomSheet()
@@ -125,7 +146,10 @@ fun CreateTodoModalBottomSheet(
 
     TodoDatePickerModal(
         showDatePicker = showDatePicker,
-        toggleShowDatePicker = { toggleShowDatePicker() }
+        toggleShowDatePicker = { toggleShowDatePicker() },
+        onChangeDueDate = {onChangeDueDate(it)}
     )
+    ChooseCategoryDialog(showCategory=showCategory, selectedCategory = newTodo.category,toggleShowCategory={toggleShowCategory()},onCategoryChange={onCategoryChange(it)})
+    ChoosePriorityDialog(showPriority, toggleShowPriority = {toggleShowPriority()}, selectedPriority = newTodo.priority,onPriorityChange={onPriorityChange(it)})
 
 }
