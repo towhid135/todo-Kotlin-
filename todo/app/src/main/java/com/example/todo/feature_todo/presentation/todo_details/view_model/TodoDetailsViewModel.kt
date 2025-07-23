@@ -1,10 +1,13 @@
 package com.example.todo.feature_todo.presentation.todo_details.view_model
 
+import android.util.Log
+import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.todo.feature_todo.data.di.IoDispatcher
 import com.example.todo.feature_todo.domain.use_case.TodoUseCases
+import com.example.todo.feature_todo.presentation.todo_details.TodoDetailsState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -18,12 +21,27 @@ class TodoDetailsViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     @IoDispatcher private val dispatcher: CoroutineDispatcher
 ):ViewModel(){
+
+    private val _state = mutableStateOf(TodoDetailsState())
+    val state = _state
+
     sealed class UiEvent {
         data object BackButton:UiEvent()
     }
 
     private val _uiEventFlow = MutableSharedFlow<UiEvent>()
     val uiEventFlow = _uiEventFlow.asSharedFlow()
+
+    init {
+        savedStateHandle.get<String>("todoId")?.let {
+            viewModelScope.launch {
+                val todoItem = todoUseCases.getTodoItemById(it)
+                _state.value = _state.value.copy(
+                    todo = todoItem
+                )
+            }
+        }
+    }
 
     fun onUiEvent(event:UiEvent){
         when(event){

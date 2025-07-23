@@ -68,7 +68,7 @@ class HomeRepoImpl(
         return isEmpty
     }
 
-    override suspend fun getSingleTodoItemById(id: Int): TodoItem?{
+    override suspend fun getSingleTodoItemById(id: String): TodoItem?{
         return dao.getSingleTodoItemById(id)?.toTodoItem()
     }
 

@@ -20,6 +20,13 @@ object TodoListStrings {
     const val UNDO = "Undo"
 }
 
+object TodoDetailsStrings {
+    const val DUE_DATE = "Due Date:"
+    const val TASK_CATEGORY = "Task Category:"
+    const val TASK_PRIORITY = "Task Priority:"
+    const val DELETE_TASK = "Delete Task"
+}
+
 object ContentDescriptions {
     const val DELETE_TODO_ITEM = "Delete Todo Item"
     const val COMPLETE_TODO_ITEM = "Complete Todo Item"
@@ -57,6 +64,7 @@ enum class ButtonTitle(val value: String) {
     LOGIN("Login with Google"),
     GET_STARTED("Login with Apple"),
     CLOSE("Close"),
+    EDIT_TASK("Edit Task"),
 }
 
 enum class IconAsset(val id:Int) {
@@ -72,6 +80,9 @@ enum class CategoryBoxType(){
 data class FormattedDate(
     val dayName: String,
     val dayNumber: Int,
+    val monthName: String = "",
+    val monthNumber: Int = 0,
+    val year: Int = 0
 )
 
 enum class BottomTabItemTitle(val title:String) {

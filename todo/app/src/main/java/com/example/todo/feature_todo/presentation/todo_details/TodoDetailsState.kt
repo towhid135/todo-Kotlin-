@@ -1,17 +1,15 @@
-package com.example.todo.feature_todo.presentation.home
+package com.example.todo.feature_todo.presentation.todo_details
 
 import com.example.todo.core.util.Category
 import com.example.todo.core.util.CategoryColor
 import com.example.todo.core.util.Priority
 import com.example.todo.feature_todo.data.remote.dto.User
 import com.example.todo.feature_todo.domain.model.TodoItem
-import com.example.todo.feature_todo.domain.util.SortingDirection
-import com.example.todo.feature_todo.domain.util.TodoItemOrder
 import com.example.todo.ui.icons.Todoz
 import com.example.todo.ui.icons.todoz.Work
 
-data class HomeScreenState(
-    val newTodo:TodoItem = TodoItem(
+data class TodoDetailsState(
+    val todo: TodoItem? = TodoItem(
         id = "",
         title = "",
         description = "",
@@ -26,13 +24,11 @@ data class HomeScreenState(
         createdAt = 0L,
         dueDate = 0L,
     ),
-    val todoItems:List<TodoItem> = emptyList(),
-    val user:User = User(
+    val user: User = User(
         id = "",
         name = "",
         email = ""
     ),
-    val todoItemOrder:TodoItemOrder = TodoItemOrder.Time(SortingDirection.DESC),
-    val isLoading:Boolean = true,
-    val error:String? = null
+    val isLoading: Boolean = true,
+    val error: String? = null
 )

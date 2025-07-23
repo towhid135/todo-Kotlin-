@@ -7,7 +7,7 @@ interface HomeRepo {
     suspend fun getAllTodos(userId:String):List<TodoItem>
     suspend fun getAllTodosFromLocalCache():List<TodoItem>
     suspend fun getAllTodosFromRemote(userId: String)
-    suspend fun getSingleTodoItemById(id: Int): TodoItem?
+    suspend fun getSingleTodoItemById(id: String): TodoItem?
     suspend fun addTodoItem(user: User,todo: TodoItem)
     suspend fun updateTodoItem(user: User,todo: TodoItem)
     suspend fun deleteTodoItem(todo: TodoItem)

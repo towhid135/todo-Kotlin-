@@ -34,7 +34,7 @@ class TodoUseCases @Inject constructor(
         repo.updateTodoItem(user, todo.copy(completed = !todo.completed))
     }
 
-    suspend fun getTodoItemById(id: Int): TodoItem? {
+    suspend fun getTodoItemById(id: String): TodoItem? {
         return repo.getSingleTodoItemById(id)
     }
 

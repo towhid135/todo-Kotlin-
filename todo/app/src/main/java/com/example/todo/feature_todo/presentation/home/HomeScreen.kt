@@ -34,7 +34,7 @@ import kotlinx.coroutines.launch
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
 fun HomeScreen(
-    onCardClick: () -> Unit,
+    onCardClick: (route:String) -> Unit,
     viewModel: HomeViewModel = hiltViewModel()
 ) {
     val state = viewModel.state.value
@@ -87,7 +87,6 @@ fun HomeScreen(
                     todoItems = state.todoItems,
                     user = state.user,
                     isLoading = state.isLoading,
-                    error = state.error,
                     onPullToRefresh = {
                         viewModel.getTodoItems(state.user.id)
                     },

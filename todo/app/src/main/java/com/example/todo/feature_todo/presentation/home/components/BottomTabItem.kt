@@ -3,6 +3,7 @@ package com.example.todo.feature_todo.presentation.home.components
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -11,6 +12,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.todo.ui.icons.Todoz
 import com.example.todo.ui.icons.todoz.Home
@@ -31,7 +33,7 @@ fun BottomTabItem(
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Icon(imageVector = icon,contentDescription = null, tint = selectedIconColor)
+        Icon(modifier = Modifier.size(20.dp),imageVector = icon,contentDescription = null, tint = selectedIconColor)
         Text(text = title, fontSize = 10.sp, color = selectedTextColor, fontFamily = FontFamily.SansSerif)
     }
 }

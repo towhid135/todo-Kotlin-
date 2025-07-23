@@ -24,20 +24,22 @@ import com.example.todo.core.util.Category
 import com.example.todo.core.util.CategoryBoxType
 import com.example.todo.core.util.Priority
 import com.example.todo.feature_todo.domain.model.TodoItem
+import com.example.todo.navigation_graph.routes.Screen
 import com.example.todo.ui.theme.LocalTheme
 import com.example.todo.ui.theme.TodoTheme
 import formatTimestampToHourMinute
+import timeStampToDate
 
 @Composable
 fun TodoItemCard(
     todo: TodoItem,
     onCompleteClick: () -> Unit,
-    onCardClick: () -> Unit
+    onCardClick: (route:String) -> Unit
 ) {
     val theme = LocalTheme.current
-    val creationTime = formatTimestampToHourMinute(todo.createdAt)
+    val dueDate = timeStampToDate(todo.dueDate)
     Card(
-        onClick = onCardClick,
+        onClick = {onCardClick(Screen.TodoDetails.route + "?todoId=${todo.id}")},
         colors = CardDefaults.cardColors(containerColor = theme.colors.secondary),
     ) {
         Row(
@@ -72,7 +74,7 @@ fun TodoItemCard(
                     horizontalArrangement = Arrangement.spacedBy(10.dp),
                 ) {
                     Text(
-                        text = "created at: $creationTime",
+                        text = "Due: ${dueDate.dayNumber}/${dueDate.monthNumber}/${dueDate.year}",
                         fontSize = 14.sp,
                         color = theme.colors.textPrimary,
                         fontFamily = FontFamily.SansSerif

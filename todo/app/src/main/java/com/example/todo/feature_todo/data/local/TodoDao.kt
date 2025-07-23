@@ -13,7 +13,7 @@ interface TodoDao {
     fun getAllTodoItems(): List<LocalTodoItem>
 
     @Query("SELECT * FROM todo WHERE id = :id")
-    suspend fun getSingleTodoItemById(id: Int): LocalTodoItem?
+    suspend fun getSingleTodoItemById(id: String): LocalTodoItem?
 
     //for inserting remotely fetched data into local data base (room db)
     @Insert(onConflict = OnConflictStrategy.REPLACE)

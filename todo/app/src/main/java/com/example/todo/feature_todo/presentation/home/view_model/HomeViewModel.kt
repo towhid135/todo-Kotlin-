@@ -14,6 +14,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -24,6 +25,13 @@ class HomeViewModel @Inject constructor(
 ) : ViewModel() {
     private val _state = mutableStateOf(HomeScreenState())
     val state: State<HomeScreenState> = _state
+
+    sealed class UiEvent {
+        data object ShowSnackbar:UiEvent()
+    }
+
+    private val _uiEventFlow = MutableSharedFlow<UiEvent>()
+    val uiEventFlow = _uiEventFlow
 
     private var getTodoItemJob: Job? = null
 
@@ -128,6 +136,7 @@ class HomeViewModel @Inject constructor(
                             error = e.message,
                             isLoading = false
                         )
+                        _uiEventFlow.emit(UiEvent.ShowSnackbar)
                     }
                 }
             }

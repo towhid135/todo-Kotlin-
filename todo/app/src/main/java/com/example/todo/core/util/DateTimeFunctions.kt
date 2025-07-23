@@ -16,8 +16,18 @@ fun timeStampToDate(timestamp: Long): FormattedDate {
         .withZone(ZoneId.systemDefault())
     val dayNumberFormatter = DateTimeFormatter.ofPattern("d")
         .withZone(ZoneId.systemDefault())
+        .withZone(ZoneId.systemDefault())
+    val monthNameFormatter = DateTimeFormatter.ofPattern("MMMM")
+        .withZone(ZoneId.systemDefault())
+    val monthNumberFormatter = DateTimeFormatter.ofPattern("MM")
+        .withZone(ZoneId.systemDefault())
+    val yearFormatter = DateTimeFormatter.ofPattern("yy")
+        .withZone(ZoneId.systemDefault())
     return FormattedDate(
         dayName = dayNameFormatter.format(instant),
-        dayNumber = dayNumberFormatter.format(instant).toInt()
+        dayNumber = dayNumberFormatter.format(instant).toInt(),
+        monthName = monthNameFormatter.format(instant),
+        monthNumber = monthNumberFormatter.format(instant).toInt(),
+        year = yearFormatter.format(instant).toInt()
     )
 }
