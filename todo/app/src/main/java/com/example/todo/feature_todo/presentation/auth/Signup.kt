@@ -51,15 +51,15 @@ fun Signup(
     }
 
     Scaffold(
-        modifier = Modifier.background(theme.colors.backgroundPrimary),
         topBar = {
             TodoListScreenTopAppBar(
                 leftIcon = Icons.AutoMirrored.Filled.ArrowBackIos,
-                onLeftIconClick = { })
+                onLeftIconClick = { authViewModel.onUiEvent(AuthViewModel.UiEvent.BackButton) })
         }
     ) { innerPadding ->
         Column(
             modifier = Modifier
+                .background(theme.colors.backgroundPrimary)
                 .fillMaxHeight()
                 .padding(innerPadding)
                 .padding(horizontal = 24.dp),

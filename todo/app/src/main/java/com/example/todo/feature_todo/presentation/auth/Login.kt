@@ -8,6 +8,8 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBackIos
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -27,6 +29,7 @@ import com.example.todo.core.util.ButtonType
 import com.example.todo.core.util.IconAsset
 import com.example.todo.feature_todo.presentation.auth.viewmodel.AuthViewModel
 import com.example.todo.feature_todo.presentation.home.components.CustomTextInput
+import com.example.todo.feature_todo.presentation.home.components.TodoListScreenTopAppBar
 import com.example.todo.ui.theme.LocalTheme
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
@@ -38,12 +41,13 @@ fun Login(
     val theme = LocalTheme.current
     val state by authViewModel.state
     Scaffold(
-        modifier = Modifier
-            .background(theme.colors.backgroundPrimary)
-            .padding(top = 64.dp),
+        topBar = {
+            TodoListScreenTopAppBar()
+        }
     ) { innerPadding ->
         Column(
             modifier = Modifier
+                .background(theme.colors.backgroundPrimary)
                 .fillMaxHeight()
                 .padding(innerPadding)
                 .padding(horizontal = 24.dp),
