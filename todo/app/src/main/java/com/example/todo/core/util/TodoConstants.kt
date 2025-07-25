@@ -35,7 +35,7 @@ object ContentDescriptions {
 
 object AuthStrings {
     const val REGISTER = "Register"
-    const val USER_NAME = "Username"
+    const val EMAIL = "Email"
     const val USER_NAME_PLACEHOLDER = "Enter your username"
     const val PASSWORD = "Password"
     const val PASSWORD_PLACEHOLDER = "Enter your password"

@@ -8,12 +8,11 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBackIos
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontFamily
@@ -26,16 +25,22 @@ import com.example.todo.core.util.ButtonSize
 import com.example.todo.core.util.ButtonTitle
 import com.example.todo.core.util.ButtonType
 import com.example.todo.core.util.IconAsset
+import com.example.todo.feature_todo.presentation.auth.viewmodel.AuthViewModel
 import com.example.todo.feature_todo.presentation.home.components.CustomTextInput
-import com.example.todo.feature_todo.presentation.home.components.TodoListScreenTopAppBar
 import com.example.todo.ui.theme.LocalTheme
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
-fun Login(onRegisterClick: () -> Unit) {
+fun Login(
+    authViewModel: AuthViewModel,
+    onRegisterClick: () -> Unit
+) {
     val theme = LocalTheme.current
+    val state by authViewModel.state
     Scaffold(
-        modifier = Modifier.background(theme.colors.backgroundPrimary).padding(top = 64.dp),
+        modifier = Modifier
+            .background(theme.colors.backgroundPrimary)
+            .padding(top = 64.dp),
     ) { innerPadding ->
         Column(
             modifier = Modifier
@@ -53,24 +58,24 @@ fun Login(onRegisterClick: () -> Unit) {
                 fontFamily = FontFamily.SansSerif
             )
             CustomTextInput(
-                labelText = AuthStrings.USER_NAME,
-                text = "",
+                labelText = AuthStrings.EMAIL,
+                text = state.email,
                 placeholderText = AuthStrings.USER_NAME_PLACEHOLDER,
-                onValueChange = { }
+                onValueChange = { authViewModel.onEvent(AuthEvent.onEmailChange(it)) }
             )
             CustomTextInput(
                 isSecureField = true,
                 labelText = AuthStrings.PASSWORD,
-                text = "",
+                text = state.password,
                 placeholderText = AuthStrings.PASSWORD_PLACEHOLDER,
-                onValueChange = { }
+                onValueChange = { authViewModel.onEvent(AuthEvent.onPasswordChange(it)) }
             )
 
             CustomButton(
                 type = ButtonType.FILLED,
                 size = ButtonSize.EXTRA_LARGE,
                 title = ButtonTitle.LOGIN,
-                onPress = {}
+                onPress = { authViewModel.onEvent(AuthEvent.onLoginClick) }
             )
             Row(
                 horizontalArrangement = Arrangement.spacedBy(10.dp),
@@ -114,7 +119,7 @@ fun Login(onRegisterClick: () -> Unit) {
                 )
 
                 Text(
-                    modifier = Modifier.clickable {onRegisterClick()},
+                    modifier = Modifier.clickable { onRegisterClick() },
                     text = AuthStrings.REGISTER,
                     fontSize = 12.sp,
                     fontWeight = FontWeight.Normal,

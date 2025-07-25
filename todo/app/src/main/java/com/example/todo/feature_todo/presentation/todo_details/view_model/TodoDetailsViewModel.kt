@@ -1,6 +1,5 @@
 package com.example.todo.feature_todo.presentation.todo_details.view_model
 
-import android.util.Log
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
@@ -11,6 +10,7 @@ import com.example.todo.feature_todo.presentation.todo_details.TodoDetailsState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -30,7 +30,7 @@ class TodoDetailsViewModel @Inject constructor(
     }
 
     private val _uiEventFlow = MutableSharedFlow<UiEvent>()
-    val uiEventFlow = _uiEventFlow.asSharedFlow()
+    val uiEventFlow:SharedFlow<UiEvent> = _uiEventFlow.asSharedFlow()
 
     init {
         savedStateHandle.get<String>("todoId")?.let {
