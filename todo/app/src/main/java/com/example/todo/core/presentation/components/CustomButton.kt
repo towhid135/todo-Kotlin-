@@ -1,5 +1,6 @@
 package com.example.todo.core.presentation.components
 
+import android.annotation.SuppressLint
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
@@ -16,6 +17,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -27,21 +29,25 @@ import com.example.todo.core.util.IconAsset
 import com.example.todo.ui.theme.LocalTheme
 import com.example.todo.ui.theme.TodoTheme
 
+@SuppressLint("ConfigurationScreenWidthHeight")
 @Composable
 fun CustomButton(
     type: ButtonType = ButtonType.FILLED,
     size: ButtonSize = ButtonSize.LARGE,
-    title: ButtonTitle = ButtonTitle.LOGIN,
+    title: ButtonTitle = ButtonTitle.REGISTER_WITH_GOOGLE,
     leftIcon: IconAsset? = null,
     rightIcon: IconAsset? = null,
     isEnabled: Boolean = true,
     onPress: () -> Unit
 ) {
+    val screenWidth = LocalConfiguration.current.screenWidthDp
+    val extraLargeButtonWidth = screenWidth - (2 * 24) // 24.dp padding on each side
     val theme = LocalTheme.current
     val buttonWidth = when (size) {
         ButtonSize.SMALL -> 90.dp
         ButtonSize.MEDIUM -> 150.dp
         ButtonSize.LARGE -> 300.dp
+        ButtonSize.EXTRA_LARGE -> extraLargeButtonWidth.dp
     }
     val buttonHeight = 48.dp
 
@@ -148,15 +154,10 @@ fun ButtonsPreview() {
             CustomButton(
                 type = ButtonType.FILLED,
                 size = ButtonSize.LARGE,
-                title = ButtonTitle.LOGIN,
+                title = ButtonTitle.REGISTER_WITH_GOOGLE,
                 leftIcon = IconAsset.GOOGLE_LOGIN,
                 onPress = {})
-            CustomButton(
-                type = ButtonType.OUTLINED,
-                size = ButtonSize.LARGE,
-                title = ButtonTitle.LOGIN,
-                isEnabled = true,
-                onPress = {})
+
         }
     }
 }

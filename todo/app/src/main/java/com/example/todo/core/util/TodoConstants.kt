@@ -28,31 +28,30 @@ object TodoDetailsStrings {
 }
 
 object ContentDescriptions {
-    const val DELETE_TODO_ITEM = "Delete Todo Item"
-    const val COMPLETE_TODO_ITEM = "Complete Todo Item"
-    const val ARCHIVE_TODO_ITEM = "Archive Todo Item"
-    const val SELECTED = "Selected"
     const val ADD_TODO = "Add Todo Item"
     const val SORTING_MENU = "Sorting Menu"
-    const val BACKGROUND_IMAGE = "Background Image"
     const val LOADING_INDICATOR = "Loading"
-    const val SAVE_TODO = "Save Todo Item"
-    const val BACK = "Back"
 }
 
-object NewUpdateStrings {
-    const val SAVE_ERROR = "Unable to save todo. Ensure the title and description are not blank."
-    const val SAVE_TODO_COMPLETE = "Todo has been saved"
-    const val CONFIRM_DELETE = "Are you sure you want to delte this todo item?"
-    const val YES = "Yes"
-    const val TITLE_PLACE_HOLDER = "Title..."
-    const val DESCRIPTION_PLACE_HOLDER = "Description..."
+object AuthStrings {
+    const val REGISTER = "Register"
+    const val USER_NAME = "Username"
+    const val USER_NAME_PLACEHOLDER = "Enter your username"
+    const val PASSWORD = "Password"
+    const val PASSWORD_PLACEHOLDER = "Enter your password"
+    const val CONFIRM_PASSWORD = "Confirm Password"
+    const val CONFIRM_PASSWORD_PLACEHOLDER = "Confirm your password"
+    const val OR = "or"
+    const val ALREADY_HAVE_AN_ACCOUNT = "Already have an account?"
+    const val LOG_IN = "Login"
+    const val DONT_HAVE_AN_ACCOUNT = "Don't have an account?"
 }
 
 enum class ButtonSize {
     SMALL,
     MEDIUM,
-    LARGE
+    LARGE,
+    EXTRA_LARGE,
 }
 
 enum class ButtonType {
@@ -61,10 +60,12 @@ enum class ButtonType {
 }
 
 enum class ButtonTitle(val value: String) {
-    LOGIN("Login with Google"),
-    GET_STARTED("Login with Apple"),
     CLOSE("Close"),
     EDIT_TASK("Edit Task"),
+    REGISTER("Register"),
+    REGISTER_WITH_GOOGLE("Register with Google"),
+    LOGIN("Login"),
+    LOGIN_WITH_GOOGLE("Login with Google"),
 }
 
 enum class IconAsset(val id:Int) {

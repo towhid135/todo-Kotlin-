@@ -10,9 +10,12 @@ import com.example.todo.navigation_graph.routes.GraphRoutes
 @Composable
 fun RootNavGraph(){
     val navController = rememberNavController()
-    NavHost(navController=navController, route = GraphRoutes.ROOT ,startDestination = GraphRoutes.HOME) {
+    NavHost(navController=navController, route = GraphRoutes.ROOT ,startDestination = GraphRoutes.AUTH) {
         composable(route=GraphRoutes.HOME){
             HomeScaffold()
+        }
+        composable(route = GraphRoutes.AUTH){
+            AuthNavGraph()
         }
     }
 }
