@@ -21,6 +21,8 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontFamily
@@ -28,10 +30,12 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.example.todo.core.presentation.components.CommonDialog
 import com.example.todo.core.presentation.components.CustomButton
 import com.example.todo.core.util.ButtonSize
 import com.example.todo.core.util.ButtonTitle
 import com.example.todo.core.util.ButtonType
+import com.example.todo.core.util.DialogStrings
 import com.example.todo.core.util.TodoDetailsStrings
 import com.example.todo.core.util.TodoListStrings
 import com.example.todo.feature_todo.presentation.home.components.TodoListScreenTopAppBar
@@ -53,6 +57,8 @@ fun TodoDetailsScreen(
     navigateUp: () -> Unit,
     todoDetailsViewModel: TodoDetailsViewModel = hiltViewModel()
 ) {
+    val showDeleteWarningDialog = remember { mutableStateOf(false) }
+
     val theme = LocalTheme.current
     val state = todoDetailsViewModel.state
     val todo = state.value.todo
@@ -65,6 +71,9 @@ fun TodoDetailsScreen(
         uiEventFlow.collectLatest { event ->
             when (event) {
                 TodoDetailsViewModel.UiEvent.BackButton -> navigateUp()
+                is TodoDetailsViewModel.UiEvent.DeleteButton -> {
+                    showDeleteWarningDialog.value = event.showDialog
+                }
             }
         }
     }
@@ -139,7 +148,7 @@ fun TodoDetailsScreen(
                 todo.priority.toString().lowercase().replaceFirstChar { it.uppercase() })
             Spacer(modifier = Modifier.height(80.dp))
             Row(
-                modifier = Modifier.clickable { },
+                modifier = Modifier.clickable { todoDetailsViewModel.onUiEvent(TodoDetailsViewModel.UiEvent.DeleteButton(true)) },
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.spacedBy(10.dp)
             ) {
@@ -171,6 +180,19 @@ fun TodoDetailsScreen(
                     title = ButtonTitle.EDIT_TASK,
                     onPress = { }
                 )
+            }
+
+            CommonDialog(
+                showDeleteWarningDialog.value,
+                DialogStrings.DELETE_TODO_ITEM_TITLE,
+                DialogStrings.DELETE_TODO_ITEM_MESSAGE,
+                onNegativeActionClick = {todoDetailsViewModel.onUiEvent(TodoDetailsViewModel.UiEvent.DeleteButton(!showDeleteWarningDialog.value))}
+            ){
+                todoDetailsViewModel.onEvent(TodoDetailsEvent.OnDeleteTodo(state.value.user,
+                    state.value.todo!!
+                ))
+                todoDetailsViewModel.onUiEvent(TodoDetailsViewModel.UiEvent.DeleteButton(!showDeleteWarningDialog.value))
+                navigateUp()
             }
         }
     }

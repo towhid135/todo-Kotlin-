@@ -27,8 +27,8 @@ interface TodoApi {
     @PATCH
     suspend fun addTodo(@Url url:String, @Body updatedTodo:Map<String,RemoteTodoItem>):Response<Unit>
 
-    @DELETE("/todo/{id}.json")
-    suspend fun deleteTodo(@Path("id") id : String?) : Response<Unit>
+    @DELETE("/todos/{userId}/{todoId}.json")
+    suspend fun deleteTodo(@Path("userId") userId: String,@Path("todoId") todoId : String?) : Response<Unit>
 
     @PUT("/todos/{userId}/{id}.json")
     suspend fun updateTodoItem(@Path("userId") userId: String,@Path("id") id: String?, @Body todoItem:RemoteTodoItem):Response<Unit>

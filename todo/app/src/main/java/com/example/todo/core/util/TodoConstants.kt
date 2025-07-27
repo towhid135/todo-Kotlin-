@@ -47,6 +47,13 @@ object AuthStrings {
     const val DONT_HAVE_AN_ACCOUNT = "Don't have an account?"
 }
 
+object DialogStrings {
+    const val DELETE = "Delete"
+    const val CANCEL = "Cancel"
+    const val DELETE_TODO_ITEM_TITLE = "Are you sure you want to delete this todo item?"
+    const val DELETE_TODO_ITEM_MESSAGE = "This action cannot be undone."
+}
+
 enum class ButtonSize {
     SMALL,
     MEDIUM,

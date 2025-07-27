@@ -84,9 +84,9 @@ class HomeRepoImpl(
         api.updateTodoItem(user.id,todo.id,todo.toRemoteTodoItem())
     }
 
-    override suspend fun deleteTodoItem(todo: TodoItem) {
+    override suspend fun deleteTodoItem(user: User,todo: TodoItem) {
         try{
-            val response = api.deleteTodo(todo.id)
+            val response = api.deleteTodo(user.id,todo.id)
             if(response.isSuccessful){
                 dao.deleteTodoItem(todo.toLocalTodoItem())
             }else{

@@ -26,8 +26,8 @@ class TodoUseCases @Inject constructor(
         repo.updateTodoItem(user, todo)
     }
 
-    suspend fun deleteTodoItem(todo: TodoItem) {
-        repo.deleteTodoItem(todo)
+    suspend fun deleteTodoItem(user: User,todo: TodoItem) {
+        repo.deleteTodoItem(user,todo)
     }
 
     suspend fun toggleCompletedTodoItem(user: User, todo: TodoItem) {

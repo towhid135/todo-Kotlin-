@@ -10,7 +10,7 @@ import androidx.datastore.preferences.preferencesDataStore
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 
-val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = "todoStore")
+val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = "todoUserDataStore")
 
 object TodoPreferenceStore {
     private val USER_NAME = stringPreferencesKey("user_name")
