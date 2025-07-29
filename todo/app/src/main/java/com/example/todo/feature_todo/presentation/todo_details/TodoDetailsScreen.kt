@@ -14,15 +14,20 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBackIos
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.RadioButtonDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontFamily
@@ -32,12 +37,14 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.todo.core.presentation.components.CommonDialog
 import com.example.todo.core.presentation.components.CustomButton
+import com.example.todo.core.presentation.components.LoadingModal
 import com.example.todo.core.util.ButtonSize
 import com.example.todo.core.util.ButtonTitle
 import com.example.todo.core.util.ButtonType
 import com.example.todo.core.util.DialogStrings
 import com.example.todo.core.util.TodoDetailsStrings
 import com.example.todo.core.util.TodoListStrings
+import com.example.todo.feature_todo.presentation.home.components.CreateTodoModalBottomSheet
 import com.example.todo.feature_todo.presentation.home.components.TodoListScreenTopAppBar
 import com.example.todo.feature_todo.presentation.todo_details.components.TodoDetailsItem
 import com.example.todo.feature_todo.presentation.todo_details.view_model.TodoDetailsViewModel
@@ -51,13 +58,19 @@ import com.example.todo.ui.theme.LocalTheme
 import kotlinx.coroutines.flow.collectLatest
 import timeStampToDate
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 fun TodoDetailsScreen(
     navigateUp: () -> Unit,
     todoDetailsViewModel: TodoDetailsViewModel = hiltViewModel()
 ) {
+    val scope = rememberCoroutineScope()
     val showDeleteWarningDialog = remember { mutableStateOf(false) }
+    val sheetState = rememberModalBottomSheetState(
+        skipPartiallyExpanded = false,
+    )
+    var showBottomSheet by remember { mutableStateOf(false) }
 
     val theme = LocalTheme.current
     val state = todoDetailsViewModel.state
@@ -66,6 +79,10 @@ fun TodoDetailsScreen(
     val dueDateString = "${dueDate.dayNumber} ${dueDate.monthName}, ${dueDate.year}"
 
     val uiEventFlow = todoDetailsViewModel.uiEventFlow
+
+    fun toggleShowBottomSheet() {
+        showBottomSheet = !showBottomSheet
+    }
 
     LaunchedEffect(key1 = true) {
         uiEventFlow.collectLatest { event ->
@@ -130,8 +147,10 @@ fun TodoDetailsScreen(
                 }
                 Icon(
                     modifier = Modifier
-
-                        .size(25.dp),
+                        .size(25.dp)
+                        .clickable {
+                            toggleShowBottomSheet()
+                        },
                     imageVector = Todoz.Edit,
                     contentDescription = null,
                     tint = theme.colors.iconPrimary,
@@ -148,7 +167,13 @@ fun TodoDetailsScreen(
                 todo.priority.toString().lowercase().replaceFirstChar { it.uppercase() })
             Spacer(modifier = Modifier.height(80.dp))
             Row(
-                modifier = Modifier.clickable { todoDetailsViewModel.onUiEvent(TodoDetailsViewModel.UiEvent.DeleteButton(true)) },
+                modifier = Modifier.clickable {
+                    todoDetailsViewModel.onUiEvent(
+                        TodoDetailsViewModel.UiEvent.DeleteButton(
+                            true
+                        )
+                    )
+                },
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.spacedBy(10.dp)
             ) {
@@ -178,7 +203,7 @@ fun TodoDetailsScreen(
                     type = ButtonType.FILLED,
                     size = ButtonSize.LARGE,
                     title = ButtonTitle.EDIT_TASK,
-                    onPress = { }
+                    onPress = { toggleShowBottomSheet() }
                 )
             }
 
@@ -186,14 +211,62 @@ fun TodoDetailsScreen(
                 showDeleteWarningDialog.value,
                 DialogStrings.DELETE_TODO_ITEM_TITLE,
                 DialogStrings.DELETE_TODO_ITEM_MESSAGE,
-                onNegativeActionClick = {todoDetailsViewModel.onUiEvent(TodoDetailsViewModel.UiEvent.DeleteButton(!showDeleteWarningDialog.value))}
-            ){
-                todoDetailsViewModel.onEvent(TodoDetailsEvent.OnDeleteTodo(state.value.user,
-                    state.value.todo!!
-                ))
+                onNegativeActionClick = {
+                    todoDetailsViewModel.onUiEvent(
+                        TodoDetailsViewModel.UiEvent.DeleteButton(
+                            !showDeleteWarningDialog.value
+                        )
+                    )
+                }
+            ) {
+                todoDetailsViewModel.onEvent(
+                    TodoDetailsEvent.OnDeleteTodo(
+                        state.value.user,
+                        state.value.todo!!
+                    )
+                )
                 todoDetailsViewModel.onUiEvent(TodoDetailsViewModel.UiEvent.DeleteButton(!showDeleteWarningDialog.value))
                 navigateUp()
             }
+            CreateTodoModalBottomSheet(
+                newTodo = todo,
+                sheetState = sheetState,
+                showBottomSheet = showBottomSheet,
+                toggleShowBottomSheet = { toggleShowBottomSheet() },
+                scope = scope,
+                onTitleChange = { todoDetailsViewModel.onEvent(TodoDetailsEvent.OnChangeTitle(it)) },
+                onDescriptionChange = {
+                    todoDetailsViewModel.onEvent(
+                        TodoDetailsEvent.OnChangeDescription(
+                            it
+                        )
+                    )
+                },
+                onCategoryChange = {
+                    todoDetailsViewModel.onEvent(
+                        TodoDetailsEvent.OnSelectCategory(
+                            it
+                        )
+                    )
+                },
+                onPriorityChange = {
+                    todoDetailsViewModel.onEvent(
+                        TodoDetailsEvent.OnSelectPriority(
+                            it
+                        )
+                    )
+                },
+                onChangeDueDate = { todoDetailsViewModel.onEvent(TodoDetailsEvent.OnSelectDueDate(it)) },
+                onPressAddTodo = {
+                    todoDetailsViewModel.onEvent(
+                        TodoDetailsEvent.OnPressAddTodo(
+                            state.value.user,
+                            it
+                        )
+                    )
+                }
+            )
+            LoadingModal(isLoading = state.value.isLoading)
         }
     }
 

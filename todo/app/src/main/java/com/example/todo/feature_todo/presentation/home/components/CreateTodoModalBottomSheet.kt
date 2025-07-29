@@ -145,6 +145,7 @@ fun CreateTodoModalBottomSheet(
     }
 
     TodoDatePickerModal(
+        initialSelectedDateMillis = newTodo.dueDate,
         showDatePicker = showDatePicker,
         toggleShowDatePicker = { toggleShowDatePicker() },
         onChangeDueDate = {onChangeDueDate(it)}

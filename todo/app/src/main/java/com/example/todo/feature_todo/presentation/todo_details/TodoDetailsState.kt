@@ -29,6 +29,6 @@ data class TodoDetailsState(
         name = "",
         email = ""
     ),
-    val isLoading: Boolean = true,
+    val isLoading: Boolean = false,
     val error: String? = null
 )

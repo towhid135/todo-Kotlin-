@@ -20,12 +20,13 @@ import java.time.ZoneId
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TodoDatePickerModal(
+    initialSelectedDateMillis: Long?,
     showDatePicker: Boolean,
     toggleShowDatePicker: () -> Unit,
     onChangeDueDate: (dueDate: Long) -> Unit
 ) {
     if (showDatePicker) {
-        val currentTimeMillis = System.currentTimeMillis()
+        val currentTimeMillis = initialSelectedDateMillis?.takeIf { it > 0L } ?: System.currentTimeMillis()
         // Get today's date at start of day (00:00)
         val todayMillis = LocalDate.now()
             .atStartOfDay(ZoneId.systemDefault())
