@@ -27,6 +27,10 @@ object TodoDetailsStrings {
     const val DELETE_TASK = "Delete Task"
 }
 
+object CalenderScreenStrings {
+    const val CALENDER = "Calender"
+}
+
 object ContentDescriptions {
     const val ADD_TODO = "Add Todo Item"
     const val SORTING_MENU = "Sorting Menu"

@@ -16,29 +16,39 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.todo.ui.theme.LocalTheme
 import timeStampToDate
+import java.time.LocalDate
+import java.time.format.TextStyle
+import java.util.Locale
 
 @Composable
 fun DateItem(
-    date: Long
+    modifier: Modifier= Modifier,
+    date: LocalDate,
+    today: LocalDate,
 ) {
     val theme = LocalTheme.current
-    val convertedDate = timeStampToDate(date)
+    val dayName = date.dayOfWeek.getDisplayName(TextStyle.SHORT, Locale.getDefault())
+    val dayNumber = date.dayOfMonth.toString()
+    val isSelected = date == today
+
+    val selectedDateBgColor = if (isSelected) theme.colors.backgroundPrimaryLight else theme.colors.backgroundTertiary
+
     Column(
-        modifier = Modifier
+        modifier = modifier
             .size(40.dp, 50.dp)
-            .background(theme.colors.primary, shape = RoundedCornerShape(5.dp)),
+            .background(selectedDateBgColor, shape = RoundedCornerShape(5.dp)),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Text(
-            text = convertedDate.dayName.uppercase(),
+            text = dayName,
             fontSize = 10.sp,
             color = theme.colors.textPrimary,
             fontFamily = FontFamily.SansSerif,
             fontWeight = FontWeight.Bold
         )
         Text(
-            text = convertedDate.dayNumber.toString(),
+            text = dayNumber,
             fontSize = 10.sp,
             color = theme.colors.textPrimary,
             fontFamily = FontFamily.SansSerif,
@@ -50,5 +60,5 @@ fun DateItem(
 @Preview(showBackground = true)
 @Composable
 fun PreviewDateItem() {
-    DateItem(date = System.currentTimeMillis())
+    DateItem(date = LocalDate.now(), today = LocalDate.now())
 }

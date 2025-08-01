@@ -7,7 +7,9 @@ import androidx.compose.ui.graphics.Color
 
 data class CustomColors(
     val backgroundPrimary: Color,
+    val backgroundPrimaryLight: Color,
     val backgroundSecondary: Color,
+    val backgroundTertiary: Color,
     val borderPrimary: Color,
     val borderSecondary: Color,
     val borderTertiary: Color,
@@ -36,7 +38,9 @@ data class CustomColors(
 
 val darkThemeColors = CustomColors(
     backgroundPrimary = Color(0xFF121212),
+    backgroundPrimaryLight = Color(0xFF8687E7),
     backgroundSecondary = Color(0xFF363636),
+    backgroundTertiary = Color(0xFF272727),
     borderPrimary = Color(0xFF8875FF),
     borderSecondary = Color(0xFF979797),
     borderTertiary = Color(0xFFFFFFFF),
@@ -65,7 +69,9 @@ val darkThemeColors = CustomColors(
 
 val lightThemeColors = CustomColors(
     backgroundPrimary = Color(0xFF121212),
+    backgroundPrimaryLight = Color(0xFF8687E7),
     backgroundSecondary = Color(0xFF363636),
+    backgroundTertiary = Color(0xFF272727),
     borderPrimary = Color(0xFF8875FF),
     borderSecondary = Color(0xFF979797),
     borderTertiary = Color(0xFFFFFFFF),
@@ -94,7 +100,7 @@ val lightThemeColors = CustomColors(
 
 
 data class CustomTheme(
-      val colors: CustomColors = lightThemeColors,
+      val colors: CustomColors = lightThemeColors
 //    val typography: CustomTypography,
 //    val shapes: CustomShapes,
 //    val dimensions: CustomDimensions
