@@ -8,14 +8,19 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.todo.core.util.CalenderScreenStrings
 import com.example.todo.feature_todo.presentation.calendar.components.TodoWeekCalendar
+import com.example.todo.feature_todo.presentation.calendar.viewmodel.CalendarViewModel
 import com.example.todo.feature_todo.presentation.home.components.TodoListScreenTopAppBar
 import com.example.todo.ui.theme.LocalTheme
 
 @Composable
-fun CalendarScreen() {
+fun CalendarScreen(
+    calendarViewModel: CalendarViewModel = hiltViewModel()
+) {
     val theme = LocalTheme.current
+    val state = calendarViewModel.state.value
     Scaffold(
         modifier = Modifier.fillMaxSize(),
         topBar = {
@@ -31,7 +36,10 @@ fun CalendarScreen() {
                 .padding(innerPaddingValues)
         ) {
 
-            TodoWeekCalendar() { }
+            TodoWeekCalendar(
+                selectedDate = state.selectedDate,
+                onDateSelect = {calendarViewModel.onEvent(CalendarEvent.OnDateSelect(it))}
+            )
 
         }
     }

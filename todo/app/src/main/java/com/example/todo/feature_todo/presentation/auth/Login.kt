@@ -21,6 +21,7 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.todo.core.presentation.components.CustomButton
 import com.example.todo.core.util.AuthStrings
 import com.example.todo.core.util.ButtonSize
@@ -35,7 +36,7 @@ import com.example.todo.ui.theme.LocalTheme
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
 fun Login(
-    authViewModel: AuthViewModel,
+    authViewModel: AuthViewModel = hiltViewModel(),
     onRegisterClick: () -> Unit
 ) {
     val theme = LocalTheme.current

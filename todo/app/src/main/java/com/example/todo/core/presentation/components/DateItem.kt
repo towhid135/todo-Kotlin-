@@ -1,6 +1,7 @@
 package com.example.todo.core.presentation.components
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.size
@@ -24,17 +25,19 @@ import java.util.Locale
 fun DateItem(
     modifier: Modifier= Modifier,
     date: LocalDate,
-    today: LocalDate,
+    selectedDate: LocalDate,
+    onDateSelect: (LocalDate) -> Unit = {},
 ) {
     val theme = LocalTheme.current
     val dayName = date.dayOfWeek.getDisplayName(TextStyle.SHORT, Locale.getDefault())
     val dayNumber = date.dayOfMonth.toString()
-    val isSelected = date == today
+    val isSelected = date == selectedDate
 
     val selectedDateBgColor = if (isSelected) theme.colors.backgroundPrimaryLight else theme.colors.backgroundTertiary
 
     Column(
         modifier = modifier
+            .clickable { onDateSelect(date) }
             .size(40.dp, 50.dp)
             .background(selectedDateBgColor, shape = RoundedCornerShape(5.dp)),
         verticalArrangement = Arrangement.Center,
@@ -60,5 +63,5 @@ fun DateItem(
 @Preview(showBackground = true)
 @Composable
 fun PreviewDateItem() {
-    DateItem(date = LocalDate.now(), today = LocalDate.now())
+    DateItem(date = LocalDate.now(), selectedDate = LocalDate.now())
 }

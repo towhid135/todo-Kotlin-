@@ -21,6 +21,7 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.todo.core.presentation.components.CustomButton
 import com.example.todo.core.util.AuthStrings
 import com.example.todo.core.util.ButtonSize
@@ -31,11 +32,12 @@ import com.example.todo.feature_todo.presentation.home.components.CustomTextInpu
 import com.example.todo.feature_todo.presentation.home.components.TodoListScreenTopAppBar
 import com.example.todo.ui.theme.LocalTheme
 import kotlinx.coroutines.flow.collectLatest
+import javax.inject.Inject
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
 fun Signup(
-    authViewModel: AuthViewModel,
+    authViewModel: AuthViewModel = hiltViewModel(),
     onBackButtonClick: () -> Unit,
     onLoginClick: () -> Unit = { }
 ) {
