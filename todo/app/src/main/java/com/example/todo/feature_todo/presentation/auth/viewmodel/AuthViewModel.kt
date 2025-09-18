@@ -47,26 +47,26 @@ class AuthViewModel @Inject constructor(
 
     fun onEvent(event: AuthEvent) {
         when (event) {
-            is AuthEvent.onEmailChange -> {
+            is AuthEvent.OnEmailChange -> {
                 _state.value = _state.value.copy(email = event.email)
             }
 
-            is AuthEvent.onPasswordChange -> {
+            is AuthEvent.OnPasswordChange -> {
                 _state.value = _state.value.copy(password = event.password)
             }
 
-            is AuthEvent.onConfirmPasswordChange -> {
+            is AuthEvent.OnConfirmPasswordChange -> {
                 _state.value = _state.value.copy(confirmPassword = event.confirmPassword)
             }
 
-            AuthEvent.onLoginClick -> {
+            AuthEvent.OnLoginClick -> {
                 //TODO: Implement login logic
                 viewModelScope.launch {
                     _isAuthenticated.emit(true)
                 }
             }
 
-            AuthEvent.onRegisterClick -> {
+            AuthEvent.OnRegisterClick -> {
                 //TODO: Implement register logic
             }
         }

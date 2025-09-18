@@ -18,7 +18,7 @@ fun RootNavGraph(authViewModel: AuthViewModel = hiltViewModel()) {
     NavHost(
         navController = navController,
         route = GraphRoutes.ROOT,
-        startDestination =  GraphRoutes.HOME
+        startDestination = if(isAuthenticated) GraphRoutes.HOME else GraphRoutes.AUTH
     ) {
         composable(route = GraphRoutes.HOME) {
             HomeScaffold()

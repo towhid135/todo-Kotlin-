@@ -66,21 +66,21 @@ fun Login(
                 labelText = AuthStrings.EMAIL,
                 text = state.email,
                 placeholderText = AuthStrings.USER_NAME_PLACEHOLDER,
-                onValueChange = { authViewModel.onEvent(AuthEvent.onEmailChange(it)) }
+                onValueChange = { authViewModel.onEvent(AuthEvent.OnEmailChange(it)) }
             )
             CustomTextInput(
                 isSecureField = true,
                 labelText = AuthStrings.PASSWORD,
                 text = state.password,
                 placeholderText = AuthStrings.PASSWORD_PLACEHOLDER,
-                onValueChange = { authViewModel.onEvent(AuthEvent.onPasswordChange(it)) }
+                onValueChange = { authViewModel.onEvent(AuthEvent.OnPasswordChange(it)) }
             )
 
             CustomButton(
                 type = ButtonType.FILLED,
                 size = ButtonSize.EXTRA_LARGE,
                 title = ButtonTitle.LOGIN,
-                onPress = { authViewModel.onEvent(AuthEvent.onLoginClick) }
+                onPress = { authViewModel.onEvent(AuthEvent.OnLoginClick) }
             )
             Row(
                 horizontalArrangement = Arrangement.spacedBy(10.dp),

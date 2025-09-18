@@ -4,7 +4,7 @@
     <selectionStates>
       <SelectionState runConfigName="todo.app">
         <option name="selectionMode" value="DROPDOWN" />
-        <DropdownSelection timestamp="2025-08-01T08:05:12.699885Z">
+        <DropdownSelection timestamp="2025-08-20T02:02:55.947965Z">
           <Target type="DEFAULT_BOOT">
             <handle>
               <DeviceId pluginId="PhysicalDevice" identifier="serial=3284148e" />

@@ -79,21 +79,21 @@ fun Signup(
                 labelText = AuthStrings.EMAIL,
                 text = state.email,
                 placeholderText = AuthStrings.USER_NAME_PLACEHOLDER,
-                onValueChange = { authViewModel.onEvent(AuthEvent.onEmailChange(it)) }
+                onValueChange = { authViewModel.onEvent(AuthEvent.OnEmailChange(it)) }
             )
             CustomTextInput(
                 isSecureField = true,
                 labelText = AuthStrings.PASSWORD,
                 text = state.password,
                 placeholderText = AuthStrings.PASSWORD_PLACEHOLDER,
-                onValueChange = { authViewModel.onEvent(AuthEvent.onPasswordChange(it)) }
+                onValueChange = { authViewModel.onEvent(AuthEvent.OnPasswordChange(it)) }
             )
             CustomTextInput(
                 isSecureField = true,
                 labelText = AuthStrings.CONFIRM_PASSWORD,
                 text = state.confirmPassword,
                 placeholderText = AuthStrings.CONFIRM_PASSWORD_PLACEHOLDER,
-                onValueChange = { authViewModel.onEvent(AuthEvent.onConfirmPasswordChange(it)) }
+                onValueChange = { authViewModel.onEvent(AuthEvent.OnConfirmPasswordChange(it)) }
             )
 
             CustomButton(
