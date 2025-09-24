@@ -6,8 +6,12 @@ import com.example.todo.BuildConfig
 import com.example.todo.feature_todo.data.local.TodoDao
 import com.example.todo.feature_todo.data.local.TodoDatabase
 import com.example.todo.feature_todo.data.remote.TodoApi
+import com.example.todo.feature_todo.data.repo.AuthRepoImpl
 import com.example.todo.feature_todo.data.repo.HomeRepoImpl
+import com.example.todo.feature_todo.domain.repo.AuthRepo
 import com.example.todo.feature_todo.domain.repo.HomeRepo
+import com.google.firebase.Firebase
+import com.google.firebase.auth.auth
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -58,5 +62,9 @@ object TodoModule {
     fun providesTodoRepo(db: TodoDatabase, api: TodoApi, @IoDispatcher dispatcher:CoroutineDispatcher): HomeRepo{
         return HomeRepoImpl(db.dao,api,dispatcher)
     }
+
+    @Provides
+    @Singleton
+    fun provideAuthRepository():AuthRepo = AuthRepoImpl(auth = Firebase.auth)
 
 }

@@ -1,11 +1,8 @@
 package com.example.todo.feature_todo.domain.repo
 
-sealed class AuthResponse {
-    data class Success(val data: Boolean) : AuthResponse()
-    data class Error(val message: String) : AuthResponse()
-}
+import com.example.todo.feature_todo.domain.use_case.AuthResult
 
 
 interface AuthRepo {
-    suspend fun firebaseSignUpWithEmailAndPassword(email: String, password: String): AuthResponse
+    suspend fun firebaseSignUpWithEmailAndPassword(email: String, password: String):AuthResult
 }

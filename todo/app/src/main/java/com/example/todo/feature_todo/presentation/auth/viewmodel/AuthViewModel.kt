@@ -5,7 +5,8 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.todo.feature_todo.data.di.IoDispatcher
-import com.example.todo.feature_todo.domain.use_case.TodoUseCases
+import com.example.todo.feature_todo.domain.use_case.AuthResult
+import com.example.todo.feature_todo.domain.use_case.AuthUseCases
 import com.example.todo.feature_todo.presentation.auth.AuthEvent
 import com.example.todo.feature_todo.presentation.auth.AuthState
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -19,7 +20,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class AuthViewModel @Inject constructor(
-    private val todoUseCases: TodoUseCases,
+    private val authUseCases: AuthUseCases,
     @IoDispatcher private val dispatcher: CoroutineDispatcher
 ) : ViewModel() {
     private val _state = mutableStateOf(AuthState())
@@ -67,7 +68,33 @@ class AuthViewModel @Inject constructor(
             }
 
             AuthEvent.OnRegisterClick -> {
-                //TODO: Implement register logic
+                viewModelScope.launch {
+                    _state.value = _state.value.copy(isLoading = true)
+                    if (_state.value.password != _state.value.confirmPassword) {
+                        _state.value = _state.value.copy(
+                            isLoading = false,
+                            error = "Passwords do not match"
+                        )
+                        return@launch
+                    }
+
+                    when (val result = authUseCases.firebaseSignUpWithEmailAndPassword(
+                        _state.value.email,
+                        _state.value.password
+                    )) {
+                        is AuthResult.Success -> {
+                            _state.value = _state.value.copy(isLoading = false)
+                            _isAuthenticated.emit(true)
+                        }
+
+                        is AuthResult.Error -> {
+                            _state.value = _state.value.copy(
+                                isLoading = false,
+                                error = result.message ?: "An unexpected error occurred"
+                            )
+                        }
+                    }
+                }
             }
         }
     }

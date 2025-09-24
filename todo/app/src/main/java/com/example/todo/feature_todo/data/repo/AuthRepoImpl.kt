@@ -1,7 +1,6 @@
 package com.example.todo.feature_todo.data.repo
-
 import com.example.todo.feature_todo.domain.repo.AuthRepo
-import com.example.todo.feature_todo.domain.repo.AuthResponse
+import com.example.todo.feature_todo.domain.use_case.AuthResult
 import com.google.firebase.auth.FirebaseAuth
 import kotlinx.coroutines.tasks.await
 import javax.inject.Singleton
@@ -13,12 +12,12 @@ class AuthRepoImpl(
     override suspend fun firebaseSignUpWithEmailAndPassword(
         email: String,
         password: String
-    ): AuthResponse {
+    ):AuthResult {
         return try {
-            val authRes = auth.createUserWithEmailAndPassword(email, password).await()
-            AuthResponse.Success(authRes.user != null)
-        } catch (e: Exception) {
-            AuthResponse.Error(e.message ?: "Unknown error occurred")
+            val signupRes = auth.createUserWithEmailAndPassword(email, password).await()
+            AuthResult.Success(signupRes.user != null)
+        }catch (e:Exception){
+            AuthResult.Error(e.message ?: "Something went wrong")
         }
     }
 }
