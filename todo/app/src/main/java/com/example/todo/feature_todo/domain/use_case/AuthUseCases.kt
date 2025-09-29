@@ -7,6 +7,14 @@ class AuthUseCases @Inject constructor(private val repo: AuthRepo) {
     suspend fun firebaseSignUpWithEmailAndPassword(email: String, password: String):AuthResult{
         return repo.firebaseSignUpWithEmailAndPassword(email,password)
     }
+
+    suspend fun firebaseLoginWithEmailAndPassword(email: String, password: String):AuthResult{
+        return repo.firebaseLoginWithEmailAndPassword(email,password)
+    }
+
+    suspend fun signOut(){
+        return repo.signOut()
+    }
 }
 
 sealed class AuthResult {

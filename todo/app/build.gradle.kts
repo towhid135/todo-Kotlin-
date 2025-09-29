@@ -7,6 +7,7 @@ plugins {
     alias(libs.plugins.ksp)
     alias(libs.plugins.kotlin.kapt)
     alias(libs.plugins.hilt)
+    id("com.google.gms.google-services")
 }
 
 val localPropertiesFile = rootProject.file("local.properties")

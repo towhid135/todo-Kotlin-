@@ -36,6 +36,9 @@ class AuthViewModel @Inject constructor(
     private val _isAuthenticated = MutableStateFlow<Boolean>(false)
     val isAuthenticated: StateFlow<Boolean> = _isAuthenticated
 
+    private val _isSignupSuccess = MutableStateFlow<Boolean>(false)
+    val isSignupSuccess: StateFlow<Boolean> = _isSignupSuccess
+
     fun onUiEvent(event: UiEvent) {
         when (event) {
             UiEvent.BackButton -> {
@@ -63,7 +66,23 @@ class AuthViewModel @Inject constructor(
             AuthEvent.OnLoginClick -> {
                 //TODO: Implement login logic
                 viewModelScope.launch {
-                    _isAuthenticated.emit(true)
+                    _state.value = _state.value.copy(isLoading = true)
+                    when (val result = authUseCases.firebaseLoginWithEmailAndPassword(
+                        _state.value.email,
+                        _state.value.password
+                    )) {
+                        is AuthResult.Success -> {
+                            _state.value = _state.value.copy(isLoading = false)
+                            _isAuthenticated.emit(true)
+                        }
+
+                        is AuthResult.Error -> {
+                            _state.value = _state.value.copy(
+                                isLoading = false,
+                                error = result.message ?: "An unexpected error occurred"
+                            )
+                        }
+                    }
                 }
             }
 
@@ -84,7 +103,7 @@ class AuthViewModel @Inject constructor(
                     )) {
                         is AuthResult.Success -> {
                             _state.value = _state.value.copy(isLoading = false)
-                            _isAuthenticated.emit(true)
+                            _isSignupSuccess.emit(true)
                         }
 
                         is AuthResult.Error -> {

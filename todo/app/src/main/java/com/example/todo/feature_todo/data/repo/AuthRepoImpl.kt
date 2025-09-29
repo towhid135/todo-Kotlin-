@@ -20,6 +20,22 @@ class AuthRepoImpl(
             AuthResult.Error(e.message ?: "Something went wrong")
         }
     }
+
+    override suspend fun firebaseLoginWithEmailAndPassword(
+        email: String,
+        password: String
+    ):AuthResult {
+        return try {
+            val loginRes = auth.signInWithEmailAndPassword(email, password).await()
+            AuthResult.Success(loginRes.user != null)
+        }catch (e:Exception){
+            AuthResult.Error(e.message ?: "Something went wrong")
+        }
+    }
+
+    override suspend fun signOut() {
+        auth.signOut()
+    }
 }
 
 

@@ -14,6 +14,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -42,6 +43,7 @@ fun Signup(
     onLoginClick: () -> Unit = { }
 ) {
     val state by authViewModel.state
+    val isSignupSuccess by authViewModel.isSignupSuccess.collectAsState()
     val theme = LocalTheme.current
 
     LaunchedEffect(true) {
@@ -49,6 +51,12 @@ fun Signup(
             when (event) {
                 AuthViewModel.UiEvent.BackButton -> onBackButtonClick()
             }
+        }
+    }
+
+    LaunchedEffect(isSignupSuccess) {
+        if (isSignupSuccess) {
+            onLoginClick()
         }
     }
 
@@ -100,7 +108,9 @@ fun Signup(
                 type = ButtonType.FILLED,
                 size = ButtonSize.EXTRA_LARGE,
                 title = ButtonTitle.REGISTER,
-                onPress = {}
+                onPress = {
+                    authViewModel.onEvent(AuthEvent.OnRegisterClick)
+                }
             )
             Row(
                 verticalAlignment = Alignment.CenterVertically
