@@ -80,7 +80,9 @@ fun Login(
                 type = ButtonType.FILLED,
                 size = ButtonSize.EXTRA_LARGE,
                 title = ButtonTitle.LOGIN,
-                onPress = { authViewModel.onEvent(AuthEvent.OnLoginClick) }
+                onPress = { authViewModel.onEvent(AuthEvent.OnLoginClick) },
+                isLoading = state.isLoading,
+                isEnabled = !state.isLoading
             )
             Row(
                 horizontalArrangement = Arrangement.spacedBy(10.dp),

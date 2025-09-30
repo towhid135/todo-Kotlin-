@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
@@ -38,7 +39,8 @@ fun CustomButton(
     leftIcon: IconAsset? = null,
     rightIcon: IconAsset? = null,
     isEnabled: Boolean = true,
-    onPress: () -> Unit
+    onPress: () -> Unit,
+    isLoading: Boolean = false
 ) {
     val screenWidth = LocalConfiguration.current.screenWidthDp
     val extraLargeButtonWidth = screenWidth - (2 * 24) // 24.dp padding on each side
@@ -71,24 +73,31 @@ fun CustomButton(
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.spacedBy(10.dp)
                 ) {
-                    leftIcon?.id?.let {
-                        Image(
-                            painter = painterResource(it),
-                            contentDescription = null,
-                            modifier = Modifier.size(20.dp)
+                    if (isLoading) {
+                        CircularProgressIndicator(
+                            modifier = Modifier.size(20.dp),
+                            color = theme.colors.textPrimary
                         )
-                    }
-                    Text(
-                        text = title.value,
-                        fontSize = 16.sp,
-                        color = theme.colors.textPrimary
-                    )
-                    rightIcon?.id?.let {
-                        Image(
-                            painter = painterResource(it),
-                            contentDescription = null,
-                            modifier = Modifier.size(20.dp)
+                    } else {
+                        leftIcon?.id?.let {
+                            Image(
+                                painter = painterResource(it),
+                                contentDescription = null,
+                                modifier = Modifier.size(20.dp)
+                            )
+                        }
+                        Text(
+                            text = title.value,
+                            fontSize = 16.sp,
+                            color = theme.colors.textPrimary
                         )
+                        rightIcon?.id?.let {
+                            Image(
+                                painter = painterResource(it),
+                                contentDescription = null,
+                                modifier = Modifier.size(20.dp)
+                            )
+                        }
                     }
                 }
             }
@@ -118,25 +127,33 @@ fun CustomButton(
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.spacedBy(10.dp)
                 ) {
-                    leftIcon?.id?.let {
-                        Image(
-                            painter = painterResource(it),
-                            contentDescription = null,
-                            modifier = Modifier.size(20.dp)
+                    if (isLoading) {
+                        CircularProgressIndicator(
+                            modifier = Modifier.size(20.dp),
+                            color = theme.colors.textPrimary
                         )
-                    }
-                    Text(
-                        text = title.value,
-                        fontSize = 16.sp,
-                        color = theme.colors.textPrimary
-                    )
-                    rightIcon?.id?.let {
-                        Image(
-                            painter = painterResource(it),
-                            contentDescription = null,
-                            modifier = Modifier.size(20.dp)
+                    } else {
+                        leftIcon?.id?.let {
+                            Image(
+                                painter = painterResource(it),
+                                contentDescription = null,
+                                modifier = Modifier.size(20.dp)
+                            )
+                        }
+                        Text(
+                            text = title.value,
+                            fontSize = 16.sp,
+                            color = theme.colors.textPrimary
                         )
+                        rightIcon?.id?.let {
+                            Image(
+                                painter = painterResource(it),
+                                contentDescription = null,
+                                modifier = Modifier.size(20.dp)
+                            )
+                        }
                     }
+
                 }
             }
         }
@@ -152,6 +169,14 @@ fun ButtonsPreview() {
     TodoTheme {
         Column {
             CustomButton(
+                type = ButtonType.FILLED,
+                size = ButtonSize.LARGE,
+                title = ButtonTitle.REGISTER_WITH_GOOGLE,
+                leftIcon = IconAsset.GOOGLE_LOGIN,
+                onPress = {})
+            CustomButton(
+                isLoading = true,
+                isEnabled = false,
                 type = ButtonType.FILLED,
                 size = ButtonSize.LARGE,
                 title = ButtonTitle.REGISTER_WITH_GOOGLE,

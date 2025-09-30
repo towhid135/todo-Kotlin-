@@ -1,15 +1,18 @@
 package com.example.todo.feature_todo.presentation.auth.viewmodel
 
+import android.content.Context
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.todo.feature_todo.data.datastore.TodoPreferenceStore
 import com.example.todo.feature_todo.data.di.IoDispatcher
 import com.example.todo.feature_todo.domain.use_case.AuthResult
 import com.example.todo.feature_todo.domain.use_case.AuthUseCases
 import com.example.todo.feature_todo.presentation.auth.AuthEvent
 import com.example.todo.feature_todo.presentation.auth.AuthState
 import dagger.hilt.android.lifecycle.HiltViewModel
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -21,7 +24,8 @@ import javax.inject.Inject
 @HiltViewModel
 class AuthViewModel @Inject constructor(
     private val authUseCases: AuthUseCases,
-    @IoDispatcher private val dispatcher: CoroutineDispatcher
+    @IoDispatcher private val dispatcher: CoroutineDispatcher,
+    @ApplicationContext private val context: Context
 ) : ViewModel() {
     private val _state = mutableStateOf(AuthState())
     val state: State<AuthState> = _state
@@ -74,6 +78,7 @@ class AuthViewModel @Inject constructor(
                         is AuthResult.Success -> {
                             _state.value = _state.value.copy(isLoading = false)
                             _isAuthenticated.emit(true)
+                            TodoPreferenceStore.setUserEmail(context, _state.value.email.split("@")[0])
                         }
 
                         is AuthResult.Error -> {

@@ -33,6 +33,6 @@ data class HomeScreenState(
         email = ""
     ),
     val todoItemOrder:TodoItemOrder = TodoItemOrder.Time(SortingDirection.DESC),
-    val isLoading:Boolean = true,
+    val isLoading:Boolean = false,
     val error:String? = null
 )

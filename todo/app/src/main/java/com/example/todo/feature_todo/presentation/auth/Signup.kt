@@ -110,7 +110,9 @@ fun Signup(
                 title = ButtonTitle.REGISTER,
                 onPress = {
                     authViewModel.onEvent(AuthEvent.OnRegisterClick)
-                }
+                },
+                isLoading = state.isLoading,
+                isEnabled = !state.isLoading
             )
             Row(
                 verticalAlignment = Alignment.CenterVertically

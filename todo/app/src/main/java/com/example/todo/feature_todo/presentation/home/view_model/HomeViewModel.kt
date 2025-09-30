@@ -1,9 +1,12 @@
 package com.example.todo.feature_todo.presentation.home.view_model
 
+import android.content.Context
+import android.util.Log
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.todo.feature_todo.data.datastore.TodoPreferenceStore
 import com.example.todo.feature_todo.data.di.IoDispatcher
 import com.example.todo.feature_todo.domain.use_case.TodoResult
 import com.example.todo.feature_todo.domain.use_case.TodoUseCases
@@ -11,6 +14,7 @@ import com.example.todo.feature_todo.domain.use_case.UserResult
 import com.example.todo.feature_todo.presentation.home.HomeScreenEvent
 import com.example.todo.feature_todo.presentation.home.HomeScreenState
 import dagger.hilt.android.lifecycle.HiltViewModel
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.Job
@@ -22,17 +26,18 @@ import javax.inject.Inject
 @HiltViewModel
 class HomeViewModel @Inject constructor(
     private val todoUseCases: TodoUseCases,
-    @IoDispatcher private val dispatcher: CoroutineDispatcher
+    @IoDispatcher private val dispatcher: CoroutineDispatcher,
+    @ApplicationContext private val context: Context
 ) : ViewModel() {
     private val _state = mutableStateOf(HomeScreenState())
     val state: State<HomeScreenState> = _state
 
     sealed class UiEvent {
-        data object ShowSnackbar:UiEvent()
+        data object ShowSnackbar : UiEvent()
     }
 
     private val _uiEventFlow = MutableSharedFlow<UiEvent>()
-    val uiEventFlow:SharedFlow<UiEvent> = _uiEventFlow
+    val uiEventFlow: SharedFlow<UiEvent> = _uiEventFlow
 
     private var getTodoItemJob: Job? = null
 
@@ -43,20 +48,26 @@ class HomeViewModel @Inject constructor(
 
     init {
         viewModelScope.launch(dispatcher + errorHandler) {
-            val userEmail = "towhidulislam252"
-            when (val userResponse: UserResult = todoUseCases.getUserByMail(userEmail)) {
-                is UserResult.Success -> {
-                    _state.value = _state.value.copy(
-                        user = userResponse.user
-                    )
-                }
+            TodoPreferenceStore.getUserEmail(context).collect { email ->
+                Log.d("preference_store", "User email from DataStore: $email")
+                email?.let { userEmail ->
+                    when (val userResponse: UserResult = todoUseCases.getUserByMail(userEmail)) {
+                        is UserResult.Success -> {
+                            _state.value = _state.value.copy(
+                                user = userResponse.user
+                            )
+                        }
 
-                is UserResult.Error -> {
-                    _state.value = _state.value.copy(
-                        error = userResponse.message
-                    )
+                        is UserResult.Error -> {
+                            _state.value = _state.value.copy(
+                                error = userResponse.message
+                            )
+                        }
+                    }
+
                 }
             }
+
 
         }
     }
