@@ -67,6 +67,6 @@ object TodoModule {
 
     @Provides
     @Singleton
-    fun provideAuthRepository():AuthRepo = AuthRepoImpl(auth = Firebase.auth)
+    fun provideAuthRepository(api: TodoApi):AuthRepo = AuthRepoImpl(auth = Firebase.auth, api)
 
 }

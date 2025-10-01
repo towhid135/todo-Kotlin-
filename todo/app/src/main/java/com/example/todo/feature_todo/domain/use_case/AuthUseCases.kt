@@ -4,11 +4,11 @@ import com.example.todo.feature_todo.domain.repo.AuthRepo
 import javax.inject.Inject
 
 class AuthUseCases @Inject constructor(private val repo: AuthRepo) {
-    suspend fun firebaseSignUpWithEmailAndPassword(email: String, password: String):AuthResult{
+    suspend fun firebaseSignUpWithEmailAndPassword(email: String, password: String): SignupResult {
         return repo.firebaseSignUpWithEmailAndPassword(email,password)
     }
 
-    suspend fun firebaseLoginWithEmailAndPassword(email: String, password: String):AuthResult{
+    suspend fun firebaseLoginWithEmailAndPassword(email: String, password: String): SignInResult{
         return repo.firebaseLoginWithEmailAndPassword(email,password)
     }
 
@@ -17,8 +17,18 @@ class AuthUseCases @Inject constructor(private val repo: AuthRepo) {
     }
 }
 
-sealed class AuthResult {
-    data class Success(val isSuccess: Boolean): AuthResult()
-    data class Error(val message: String): AuthResult()
+data class SignInResponse(
+    val email: String,
+    val localId: String
+)
+
+sealed class SignupResult {
+    data class Success(val isSuccess: Boolean): SignupResult()
+    data class Error(val message: String): SignupResult()
+}
+
+sealed class SignInResult {
+    data class Success(val data: SignInResponse): SignInResult()
+    data class Error(val message: String): SignInResult()
 }
 

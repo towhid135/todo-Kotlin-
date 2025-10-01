@@ -7,8 +7,9 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.todo.feature_todo.data.datastore.TodoPreferenceStore
 import com.example.todo.feature_todo.data.di.IoDispatcher
-import com.example.todo.feature_todo.domain.use_case.AuthResult
 import com.example.todo.feature_todo.domain.use_case.AuthUseCases
+import com.example.todo.feature_todo.domain.use_case.SignInResult
+import com.example.todo.feature_todo.domain.use_case.SignupResult
 import com.example.todo.feature_todo.presentation.auth.AuthEvent
 import com.example.todo.feature_todo.presentation.auth.AuthState
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -75,13 +76,20 @@ class AuthViewModel @Inject constructor(
                         _state.value.email,
                         _state.value.password
                     )) {
-                        is AuthResult.Success -> {
+                        is SignInResult.Success -> {
                             _state.value = _state.value.copy(isLoading = false)
                             _isAuthenticated.emit(true)
-                            TodoPreferenceStore.setUserEmail(context, _state.value.email.split("@")[0])
+                            TodoPreferenceStore.setUserEmail(
+                                context = context,
+                                userEmail = result.data.email.split("@")[0]
+                            )
+                            TodoPreferenceStore.setUserId(
+                                context = context,
+                                userId = result.data.localId
+                            )
                         }
 
-                        is AuthResult.Error -> {
+                        is SignInResult.Error -> {
                             _state.value = _state.value.copy(
                                 isLoading = false,
                                 error = result.message ?: "An unexpected error occurred"
@@ -106,12 +114,12 @@ class AuthViewModel @Inject constructor(
                         _state.value.email,
                         _state.value.password
                     )) {
-                        is AuthResult.Success -> {
+                        is SignupResult.Success -> {
                             _state.value = _state.value.copy(isLoading = false)
                             _isSignupSuccess.emit(true)
                         }
 
-                        is AuthResult.Error -> {
+                        is SignupResult.Error -> {
                             _state.value = _state.value.copy(
                                 isLoading = false,
                                 error = result.message ?: "An unexpected error occurred"

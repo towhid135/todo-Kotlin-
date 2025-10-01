@@ -13,11 +13,24 @@ import kotlinx.coroutines.flow.map
 val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = "todoUserDataStore")
 
 object TodoPreferenceStore {
+    private val USER_ID = stringPreferencesKey("user_id")
     private val USER_NAME = stringPreferencesKey("user_name")
     private val USER_EMAIL = stringPreferencesKey("user_email")
     private val USER_PROFILE_IMAGE = stringPreferencesKey("user_image")
     private val IS_FRESH_APP_USER = booleanPreferencesKey("is_fresh_app_user")
     private val IS_LOGGED_IN = booleanPreferencesKey("is_logged_in")
+
+    suspend fun setUserId(context: Context, userId: String) {
+        context.dataStore.edit { preferences ->
+            preferences[USER_ID] = userId
+        }
+    }
+
+    fun getUserId(context: Context): Flow<String?> {
+        return context.dataStore.data.map { preferences ->
+            preferences[USER_ID]
+        }
+    }
 
     suspend fun setUserName(context: Context, userName: String) {
         context.dataStore.edit { preferences ->

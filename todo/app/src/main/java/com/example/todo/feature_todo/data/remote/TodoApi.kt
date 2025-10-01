@@ -33,7 +33,7 @@ interface TodoApi {
     @PUT("/todos/{userId}/{id}.json")
     suspend fun updateTodoItem(@Path("userId") userId: String,@Path("id") id: String?, @Body todoItem:RemoteTodoItem):Response<Unit>
 
-    @POST
+    @PATCH
     suspend fun addUser(@Url url: String, @Body user: Map<String,User>)
 
     @GET("/users/{email}/.json")
