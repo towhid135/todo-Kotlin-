@@ -8,6 +8,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.todo.feature_todo.data.datastore.TodoPreferenceStore
 import com.example.todo.feature_todo.data.di.IoDispatcher
+import com.example.todo.feature_todo.data.remote.dto.User
 import com.example.todo.feature_todo.domain.use_case.TodoResult
 import com.example.todo.feature_todo.domain.use_case.TodoUseCases
 import com.example.todo.feature_todo.domain.use_case.UserResult
@@ -48,27 +49,17 @@ class HomeViewModel @Inject constructor(
 
     init {
         viewModelScope.launch(dispatcher + errorHandler) {
-            TodoPreferenceStore.getUserEmail(context).collect { email ->
-                Log.d("preference_store", "User email from DataStore: $email")
-                email?.let { userEmail ->
-                    when (val userResponse: UserResult = todoUseCases.getUserByMail(userEmail)) {
-                        is UserResult.Success -> {
-                            _state.value = _state.value.copy(
-                                user = userResponse.user
-                            )
-                        }
-
-                        is UserResult.Error -> {
-                            _state.value = _state.value.copy(
-                                error = userResponse.message
-                            )
-                        }
-                    }
-
+            TodoPreferenceStore.getUserId(context).collect { userId ->
+                userId?.takeIf { it.isNotEmpty() }?.let {
+                    _state.value = _state.value.copy(
+                        user = User(
+                            id = it,
+                            name = "",
+                            email = ""
+                        )
+                    )
                 }
             }
-
-
         }
     }
 

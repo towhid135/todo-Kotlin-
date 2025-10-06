@@ -1,16 +1,20 @@
 package com.example.todo.feature_todo.presentation.todo_details.view_model
 
+import android.content.Context
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.todo.feature_todo.data.datastore.TodoPreferenceStore
 import com.example.todo.feature_todo.data.di.IoDispatcher
+import com.example.todo.feature_todo.data.remote.dto.User
 import com.example.todo.feature_todo.domain.use_case.TodoUseCases
 import com.example.todo.feature_todo.domain.use_case.UserResult
 import com.example.todo.feature_todo.presentation.home.view_model.HomeViewModel.UiEvent
 import com.example.todo.feature_todo.presentation.todo_details.TodoDetailsEvent
 import com.example.todo.feature_todo.presentation.todo_details.TodoDetailsState
 import dagger.hilt.android.lifecycle.HiltViewModel
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -23,7 +27,8 @@ import javax.inject.Inject
 class TodoDetailsViewModel @Inject constructor(
     private val todoUseCases: TodoUseCases,
     savedStateHandle: SavedStateHandle,
-    @IoDispatcher private val dispatcher: CoroutineDispatcher
+    @IoDispatcher private val dispatcher: CoroutineDispatcher,
+    @ApplicationContext private val context: Context
 ) : ViewModel() {
 
     private val _state = mutableStateOf(TodoDetailsState())
@@ -52,25 +57,18 @@ class TodoDetailsViewModel @Inject constructor(
             }
         }
 
-        viewModelScope.launch {
-            val userEmail = "towhidulislam252"
-            val userResponse: UserResult = todoUseCases.getUserByMail(userEmail)
-
-            when (userResponse) {
-                is UserResult.Success -> {
+        viewModelScope.launch(dispatcher + errorHandler) {
+            TodoPreferenceStore.getUserId(context).collect { userId ->
+                userId?.takeIf { it.isNotEmpty() }?.let {
                     _state.value = _state.value.copy(
-                        user = userResponse.user
-                    )
-                }
-
-                is UserResult.Error -> {
-                    _state.value = _state.value.copy(
-                        error = userResponse.message
+                        user = User(
+                            id = it,
+                            name = "",
+                            email = ""
+                        )
                     )
                 }
             }
-
-
         }
     }
 

@@ -27,6 +27,14 @@ object TodoDetailsStrings {
     const val DELETE_TASK = "Delete Task"
 }
 
+object TodoProfileStrings {
+    const val LOG_OUT = "Log Out"
+    const val CANCEL = "Cancel"
+    const val TITLE = "Profile"
+    const val LOGOUT_MESSAGE = "Are you sure you want to log out?"
+    const val LOGOUT_TITLE  = "Log Out"
+}
+
 object CalenderScreenStrings {
     const val CALENDER = "Calender"
 }

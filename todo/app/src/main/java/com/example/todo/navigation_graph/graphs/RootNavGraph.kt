@@ -7,6 +7,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.example.todo.feature_todo.data.datastore.TodoPreferenceStore
 import com.example.todo.feature_todo.presentation.auth.viewmodel.AuthViewModel
 import com.example.todo.feature_todo.presentation.home.components.HomeScaffold
 import com.example.todo.navigation_graph.routes.GraphRoutes
@@ -14,11 +15,11 @@ import com.example.todo.navigation_graph.routes.GraphRoutes
 @Composable
 fun RootNavGraph(authViewModel: AuthViewModel = hiltViewModel()) {
     val navController = rememberNavController()
-    val isAuthenticated by authViewModel.isAuthenticated.collectAsState()
+    val currentUserId by authViewModel.userId.collectAsState(initial = "")
     NavHost(
         navController = navController,
         route = GraphRoutes.ROOT,
-        startDestination = if(isAuthenticated) GraphRoutes.HOME else GraphRoutes.AUTH
+        startDestination = if(currentUserId != "") GraphRoutes.HOME else GraphRoutes.AUTH
     ) {
         composable(route = GraphRoutes.HOME) {
             HomeScaffold()

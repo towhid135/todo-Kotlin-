@@ -2,6 +2,7 @@ package com.example.todo.feature_todo.presentation.auth.viewmodel
 
 import android.content.Context
 import androidx.compose.runtime.State
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -33,13 +34,13 @@ class AuthViewModel @Inject constructor(
 
     sealed class UiEvent {
         data object BackButton : UiEvent()
+        data object ShowSnackBar : UiEvent()
     }
 
     private val _uiEventFlow = MutableSharedFlow<UiEvent>()
     val uiEventFlow: SharedFlow<UiEvent> = _uiEventFlow
 
-    private val _isAuthenticated = MutableStateFlow<Boolean>(false)
-    val isAuthenticated: StateFlow<Boolean> = _isAuthenticated
+    val userId = TodoPreferenceStore.getUserId(context)
 
     private val _isSignupSuccess = MutableStateFlow<Boolean>(false)
     val isSignupSuccess: StateFlow<Boolean> = _isSignupSuccess
@@ -49,6 +50,11 @@ class AuthViewModel @Inject constructor(
             UiEvent.BackButton -> {
                 viewModelScope.launch {
                     _uiEventFlow.emit(UiEvent.BackButton)
+                }
+            }
+            UiEvent.ShowSnackBar -> {
+                viewModelScope.launch {
+                    _uiEventFlow.emit(UiEvent.ShowSnackBar)
                 }
             }
         }
@@ -68,6 +74,10 @@ class AuthViewModel @Inject constructor(
                 _state.value = _state.value.copy(confirmPassword = event.confirmPassword)
             }
 
+            AuthEvent.OnEyeButtonPress -> {
+                _state.value = _state.value.copy(isPasswordVisible = !_state.value.isPasswordVisible)
+            }
+
             AuthEvent.OnLoginClick -> {
                 //TODO: Implement login logic
                 viewModelScope.launch {
@@ -77,8 +87,7 @@ class AuthViewModel @Inject constructor(
                         _state.value.password
                     )) {
                         is SignInResult.Success -> {
-                            _state.value = _state.value.copy(isLoading = false)
-                            _isAuthenticated.emit(true)
+                            _state.value = _state.value.copy(isLoading = false, email = "" ,password = "")
                             TodoPreferenceStore.setUserEmail(
                                 context = context,
                                 userEmail = result.data.email.split("@")[0]
@@ -94,6 +103,7 @@ class AuthViewModel @Inject constructor(
                                 isLoading = false,
                                 error = result.message ?: "An unexpected error occurred"
                             )
+                            onUiEvent(UiEvent.ShowSnackBar)
                         }
                     }
                 }
@@ -115,7 +125,7 @@ class AuthViewModel @Inject constructor(
                         _state.value.password
                     )) {
                         is SignupResult.Success -> {
-                            _state.value = _state.value.copy(isLoading = false)
+                            _state.value = _state.value.copy(isLoading = false, email = "" ,password = "", confirmPassword = "")
                             _isSignupSuccess.emit(true)
                         }
 

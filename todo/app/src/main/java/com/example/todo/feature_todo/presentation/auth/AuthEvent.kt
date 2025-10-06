@@ -4,6 +4,7 @@ sealed class AuthEvent {
     data class OnEmailChange(val email: String) : AuthEvent()
     data class OnPasswordChange(val password: String) : AuthEvent()
     data class OnConfirmPasswordChange(val confirmPassword: String) : AuthEvent()
+    data object OnEyeButtonPress : AuthEvent()
     data object OnLoginClick : AuthEvent()
     data object OnRegisterClick : AuthEvent()
 }

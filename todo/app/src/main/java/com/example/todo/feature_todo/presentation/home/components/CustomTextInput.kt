@@ -1,5 +1,6 @@
 package com.example.todo.feature_todo.presentation.home.components
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Icon
@@ -25,7 +26,9 @@ fun CustomTextInput(
     placeholderText: String = "",
     labelText: String = "",
     onValueChange: (String) -> Unit,
-    leadingIcon: ImageVector? = null
+    leadingIcon: ImageVector? = null,
+    trailingIcon: ImageVector? = null,
+    onEyeButtonPress: () -> Unit = {}
 ) {
     val theme = LocalTheme.current
     TextField(
@@ -67,6 +70,20 @@ fun CustomTextInput(
             {
                 Icon(
                     modifier = Modifier.size(24.dp, 24.dp),
+                    imageVector = it,
+                    contentDescription = null,
+                    tint = theme.colors.iconSecondary,
+                )
+            }
+        },
+        trailingIcon = trailingIcon?.let {
+            {
+                Icon(
+                    modifier = Modifier
+                        .clickable(
+                            onClick = onEyeButtonPress
+                        )
+                        .size(24.dp, 24.dp),
                     imageVector = it,
                     contentDescription = null,
                     tint = theme.colors.iconSecondary,

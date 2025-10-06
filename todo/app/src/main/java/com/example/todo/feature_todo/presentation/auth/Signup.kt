@@ -10,14 +10,20 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBackIos
+import androidx.compose.material.icons.filled.Visibility
+import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -33,7 +39,6 @@ import com.example.todo.feature_todo.presentation.home.components.CustomTextInpu
 import com.example.todo.feature_todo.presentation.home.components.TodoListScreenTopAppBar
 import com.example.todo.ui.theme.LocalTheme
 import kotlinx.coroutines.flow.collectLatest
-import javax.inject.Inject
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
@@ -42,14 +47,19 @@ fun Signup(
     onBackButtonClick: () -> Unit,
     onLoginClick: () -> Unit = { }
 ) {
+    val snackBarHostState = remember { SnackbarHostState() }
     val state by authViewModel.state
     val isSignupSuccess by authViewModel.isSignupSuccess.collectAsState()
     val theme = LocalTheme.current
+    val focusManager = LocalFocusManager.current
 
     LaunchedEffect(true) {
         authViewModel.uiEventFlow.collectLatest { event ->
             when (event) {
                 AuthViewModel.UiEvent.BackButton -> onBackButtonClick()
+                AuthViewModel.UiEvent.ShowSnackBar -> {
+                    snackBarHostState.showSnackbar(message = state.error, actionLabel = "Dismiss")
+                }
             }
         }
     }
@@ -65,7 +75,8 @@ fun Signup(
             TodoListScreenTopAppBar(
                 leftIcon = Icons.AutoMirrored.Filled.ArrowBackIos,
                 onLeftIconClick = { authViewModel.onUiEvent(AuthViewModel.UiEvent.BackButton) })
-        }
+        },
+        snackbarHost = { SnackbarHost(hostState = snackBarHostState) }
     ) { innerPadding ->
         Column(
             modifier = Modifier
@@ -90,18 +101,22 @@ fun Signup(
                 onValueChange = { authViewModel.onEvent(AuthEvent.OnEmailChange(it)) }
             )
             CustomTextInput(
-                isSecureField = true,
+                isSecureField = !state.isPasswordVisible,
                 labelText = AuthStrings.PASSWORD,
                 text = state.password,
                 placeholderText = AuthStrings.PASSWORD_PLACEHOLDER,
-                onValueChange = { authViewModel.onEvent(AuthEvent.OnPasswordChange(it)) }
+                onValueChange = { authViewModel.onEvent(AuthEvent.OnPasswordChange(it)) },
+                trailingIcon = if (state.isPasswordVisible) Icons.Default.VisibilityOff else Icons.Default.Visibility,
+                onEyeButtonPress = { authViewModel.onEvent(AuthEvent.OnEyeButtonPress) }
             )
             CustomTextInput(
-                isSecureField = true,
+                isSecureField = !state.isPasswordVisible,
                 labelText = AuthStrings.CONFIRM_PASSWORD,
                 text = state.confirmPassword,
                 placeholderText = AuthStrings.CONFIRM_PASSWORD_PLACEHOLDER,
-                onValueChange = { authViewModel.onEvent(AuthEvent.OnConfirmPasswordChange(it)) }
+                onValueChange = { authViewModel.onEvent(AuthEvent.OnConfirmPasswordChange(it)) },
+                trailingIcon = if (state.isPasswordVisible) Icons.Default.VisibilityOff else Icons.Default.Visibility,
+                onEyeButtonPress = { authViewModel.onEvent(AuthEvent.OnEyeButtonPress) }
             )
 
             CustomButton(
@@ -109,6 +124,7 @@ fun Signup(
                 size = ButtonSize.EXTRA_LARGE,
                 title = ButtonTitle.REGISTER,
                 onPress = {
+                    focusManager.clearFocus()
                     authViewModel.onEvent(AuthEvent.OnRegisterClick)
                 },
                 isLoading = state.isLoading,

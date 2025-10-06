@@ -79,6 +79,10 @@ class TodoUseCases @Inject constructor(
             return UserResult.Error(error.message ?: "getUserByMail error")
         }
     }
+
+    suspend fun clearAllTodoItems(){
+        repo.clearAllTodoItems()
+    }
 }
 
 sealed class UserResult {

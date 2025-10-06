@@ -92,6 +92,17 @@ object TodoPreferenceStore {
         }
     }
 
+    suspend fun resetPreferences(context: Context) {
+        context.dataStore.edit { preferences ->
+            preferences[USER_ID] = ""
+            preferences[USER_NAME] = ""
+            preferences[USER_EMAIL] = ""
+            preferences[USER_PROFILE_IMAGE] = ""
+            preferences[IS_FRESH_APP_USER] = true
+            preferences[IS_LOGGED_IN] = false
+        }
+    }
+
     suspend fun clearAll(context: Context) {
         context.dataStore.edit { preferences ->
             preferences.clear()

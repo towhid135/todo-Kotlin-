@@ -13,4 +13,6 @@ interface HomeRepo {
     suspend fun deleteTodoItem(user: User,todo: TodoItem)
     suspend fun addUser(user: Map<String,User>)
     suspend fun getUserByMail(email: String):User
+
+    suspend fun clearAllTodoItems()
 }

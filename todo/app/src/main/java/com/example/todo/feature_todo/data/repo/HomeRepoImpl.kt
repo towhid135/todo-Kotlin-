@@ -112,4 +112,8 @@ class HomeRepoImpl(
         val userRes = api.getUserByMail(email)
         return userRes
     }
+
+    override suspend fun clearAllTodoItems(){
+        dao.clearAllTodoItems()
+    }
 }

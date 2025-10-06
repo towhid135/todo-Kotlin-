@@ -33,6 +33,8 @@ fun CommonDialog(
     showDialog:Boolean=false,
     title:String,
     message:String,
+    negativeButtonName: String = DialogStrings.CANCEL,
+    positiveButtonName: String = DialogStrings.DELETE,
     onNegativeActionClick: () -> Unit,
     onPositiveActionClick:() -> Unit
 ){
@@ -80,7 +82,7 @@ fun CommonDialog(
                         )
                     ) {
                         Text(
-                            text = DialogStrings.CANCEL,
+                            text = negativeButtonName,
                             fontSize = 14.sp,
                             fontFamily = FontFamily.SansSerif,
                             fontWeight = FontWeight.Bold
@@ -94,7 +96,7 @@ fun CommonDialog(
                         )
                     ) {
                         Text(
-                            text = DialogStrings.DELETE,
+                            text = positiveButtonName,
                             fontSize = 14.sp,
                             fontFamily = FontFamily.SansSerif,
                             fontWeight = FontWeight.Bold
