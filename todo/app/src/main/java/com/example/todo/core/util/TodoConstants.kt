@@ -33,6 +33,8 @@ object TodoProfileStrings {
     const val TITLE = "Profile"
     const val LOGOUT_MESSAGE = "Are you sure you want to log out?"
     const val LOGOUT_TITLE  = "Log Out"
+
+    const val CHANGE_PROFILE_PICTURE = "Change Profile Picture"
 }
 
 object CalenderScreenStrings {
@@ -85,11 +87,15 @@ enum class ButtonTitle(val value: String) {
     REGISTER_WITH_GOOGLE("Register with Google"),
     LOGIN("Login"),
     LOGIN_WITH_GOOGLE("Login with Google"),
+    GALLERY("Gallery"),
+    CAMERA("Camera"),
 }
 
 enum class IconAsset(val id:Int) {
     GOOGLE_LOGIN(R.drawable.google),
     APPLE_LOGIN(R.drawable.applelogin),
+    CAMERA_MODERN(R.drawable.camera_modern),
+    GALLERY(R.drawable.gallery),
 }
 
 enum class CategoryBoxType(){
@@ -111,6 +117,7 @@ enum class BottomTabItemTitle(val title:String) {
     FOCUS("Focus"),
     PROFILE("Profile")
 }
+
 
 
 

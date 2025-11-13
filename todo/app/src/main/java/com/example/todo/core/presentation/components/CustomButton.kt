@@ -18,6 +18,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -40,7 +41,8 @@ fun CustomButton(
     rightIcon: IconAsset? = null,
     isEnabled: Boolean = true,
     onPress: () -> Unit,
-    isLoading: Boolean = false
+    isLoading: Boolean = false,
+    containerColor: Color? = null
 ) {
     val screenWidth = LocalConfiguration.current.screenWidthDp
     val extraLargeButtonWidth = screenWidth - (2 * 24) // 24.dp padding on each side
@@ -61,7 +63,7 @@ fun CustomButton(
                     .height(buttonHeight),
                 onClick = { onPress() },
                 colors = ButtonDefaults.buttonColors(
-                    containerColor = theme.colors.primary,
+                    containerColor = containerColor ?: theme.colors.primary,
                     disabledContainerColor = theme.colors.secondary,
                     contentColor = theme.colors.textPrimary,
                     disabledContentColor = theme.colors.textPrimary
@@ -175,7 +177,7 @@ fun ButtonsPreview() {
                 leftIcon = IconAsset.GOOGLE_LOGIN,
                 onPress = {})
             CustomButton(
-                isLoading = true,
+                isLoading = false,
                 isEnabled = false,
                 type = ButtonType.FILLED,
                 size = ButtonSize.LARGE,
