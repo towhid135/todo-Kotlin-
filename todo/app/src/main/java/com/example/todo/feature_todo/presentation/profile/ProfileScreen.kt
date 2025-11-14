@@ -8,9 +8,11 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -24,19 +26,31 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.todo.core.presentation.components.CommonDialog
+import com.example.todo.core.presentation.components.ProfileImagePickerBottomSheet
 import com.example.todo.core.util.TodoProfileStrings
 import com.example.todo.feature_todo.presentation.home.components.TodoListScreenTopAppBar
+import com.example.todo.feature_todo.presentation.profile.components.ProfileImage
 import com.example.todo.ui.icons.Todoz
 import com.example.todo.ui.icons.todoz.Trash
 import com.example.todo.ui.theme.LocalTheme
 import kotlinx.coroutines.flow.collectLatest
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ProfileScreen(
     profileViewModel: ProfileViewModel = hiltViewModel<ProfileViewModel>()
 ) {
     val theme = LocalTheme.current
     var showLogoutDialog by remember { mutableStateOf(false) }
+
+    val sheetState = rememberModalBottomSheetState(
+        skipPartiallyExpanded = false,
+    )
+    var showBottomSheet by remember { mutableStateOf(false) }
+
+    fun toggleShowBottomSheet() {
+        showBottomSheet = !showBottomSheet
+    }
 
     LaunchedEffect(true) {
         profileViewModel.uiEventFlow.collectLatest { event ->
@@ -61,7 +75,12 @@ fun ProfileScreen(
                 .background(color = theme.colors.backgroundPrimary)
                 .padding(innerPadding),
             horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.spacedBy(10.dp)
         ) {
+            ProfileImage(
+                imageUrl = "",
+                onImageClick = {toggleShowBottomSheet()}
+            )
             Row(
                 modifier = Modifier.clickable { profileViewModel.onUiEvent(ProfileViewModel.UiEvent.LogoutButton) },
                 verticalAlignment = Alignment.CenterVertically,
@@ -94,6 +113,15 @@ fun ProfileScreen(
                 showLogoutDialog = false
             }
 
+            ProfileImagePickerBottomSheet(
+                showBottomSheet = showBottomSheet,
+                sheetState = sheetState,
+                toggleShowBottomSheet = { toggleShowBottomSheet() },
+                onGalleryImageSelected = { /*TODO*/ },
+                onCameraImageCaptured = { /*TODO*/ }
+            ) {
+                toggleShowBottomSheet()
+            }
 
         }
 

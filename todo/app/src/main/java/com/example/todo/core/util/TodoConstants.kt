@@ -96,6 +96,7 @@ enum class IconAsset(val id:Int) {
     APPLE_LOGIN(R.drawable.applelogin),
     CAMERA_MODERN(R.drawable.camera_modern),
     GALLERY(R.drawable.gallery),
+    AVATAR_PLACEHOLDER(R.drawable.avatar),
 }
 
 enum class CategoryBoxType(){
