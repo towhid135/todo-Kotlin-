@@ -1,6 +1,8 @@
 package com.example.todo.core.presentation.components
 
 import android.net.Uri
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -12,9 +14,14 @@ import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.SheetState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.RectangleShape
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -22,11 +29,17 @@ import androidx.compose.ui.unit.sp
 import com.example.todo.core.util.ButtonSize
 import com.example.todo.core.util.ButtonTitle
 import com.example.todo.core.util.ButtonType
+import com.example.todo.core.util.FileUtils
 import com.example.todo.core.util.IconAsset
+import com.example.todo.core.util.ImageUtils
 import com.example.todo.core.util.TodoProfileStrings
 import com.example.todo.ui.theme.LocalTheme
+import com.google.accompanist.permissions.ExperimentalPermissionsApi
+import com.google.accompanist.permissions.isGranted
+import com.google.accompanist.permissions.rememberPermissionState
+import java.io.File
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalPermissionsApi::class)
 @Composable
 fun ProfileImagePickerBottomSheet(
     showBottomSheet: Boolean,
@@ -35,10 +48,51 @@ fun ProfileImagePickerBottomSheet(
     onGalleryImageSelected: (uri: Uri) -> Unit,
     onCameraImageCaptured: (uri: Uri) -> Unit,
     onDismiss: () -> Unit
-){
+) {
     val theme = LocalTheme.current
+    val context = LocalContext.current
 
-    if(showBottomSheet){
+    var selectedImageUri by remember { mutableStateOf<Uri?>(null) }
+    var tempImageFile by remember { mutableStateOf<File?>(null) }
+
+    var cameraPermissionState = rememberPermissionState(
+        android.Manifest.permission.CAMERA
+    )
+
+    val galleryLauncher =
+        rememberLauncherForActivityResult(contract = ActivityResultContracts.GetContent()) { uri: Uri? ->
+            uri?.let {
+                onGalleryImageSelected(it)
+                selectedImageUri = it
+            }
+        }
+
+    val cameraLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.TakePicture()
+    ) { result ->
+        if(result && selectedImageUri != null) {
+            onCameraImageCaptured(selectedImageUri!!)
+        }
+    }
+
+    fun onGalleryClick() {
+        galleryLauncher.launch("image/*")
+        toggleShowBottomSheet()
+    }
+
+    fun onCameraClick(){
+        if(cameraPermissionState.status.isGranted){
+            val tempImageFile = FileUtils.getTempImageFile(context)
+            val uri = ImageUtils.getFileProviderUri(context,tempImageFile)
+            selectedImageUri = uri
+            cameraLauncher.launch(uri)
+        }else{
+            cameraPermissionState.launchPermissionRequest()
+        }
+        toggleShowBottomSheet()
+    }
+
+    if (showBottomSheet) {
         ModalBottomSheet(
             onDismissRequest = { toggleShowBottomSheet() },
             sheetState = sheetState,
@@ -65,7 +119,7 @@ fun ProfileImagePickerBottomSheet(
                     size = ButtonSize.LARGE,
                     title = ButtonTitle.GALLERY,
                     leftIcon = IconAsset.GALLERY,
-                    onPress = {}
+                    onPress = { onGalleryClick() }
                 )
                 CustomButton(
                     containerColor = theme.colors.buttonPrimary,
@@ -73,7 +127,7 @@ fun ProfileImagePickerBottomSheet(
                     size = ButtonSize.LARGE,
                     title = ButtonTitle.CAMERA,
                     leftIcon = IconAsset.CAMERA_MODERN,
-                    onPress = {}
+                    onPress = {onCameraClick()}
                 )
             }
         }

@@ -124,6 +124,10 @@ dependencies {
     // The compose calendar library for Android
     implementation(libs.compose.kizitonwose)
 
+    //coil
+    implementation("io.coil-kt:coil-compose:2.6.0")
+    //accompanist for permissions
+    implementation("com.google.accompanist:accompanist-permissions:0.34.0")
 
 }
 

@@ -1,5 +1,7 @@
 package com.example.todo.feature_todo.presentation.profile
 
+import android.net.Uri
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -43,6 +45,8 @@ fun ProfileScreen(
     val theme = LocalTheme.current
     var showLogoutDialog by remember { mutableStateOf(false) }
 
+    var selectedImageUri by remember { mutableStateOf<String>("") }
+
     val sheetState = rememberModalBottomSheetState(
         skipPartiallyExpanded = false,
     )
@@ -78,7 +82,7 @@ fun ProfileScreen(
             verticalArrangement = Arrangement.spacedBy(10.dp)
         ) {
             ProfileImage(
-                imageUrl = "",
+                imageUrl = selectedImageUri,
                 onImageClick = {toggleShowBottomSheet()}
             )
             Row(
@@ -117,8 +121,8 @@ fun ProfileScreen(
                 showBottomSheet = showBottomSheet,
                 sheetState = sheetState,
                 toggleShowBottomSheet = { toggleShowBottomSheet() },
-                onGalleryImageSelected = { /*TODO*/ },
-                onCameraImageCaptured = { /*TODO*/ }
+                onGalleryImageSelected = {selectedImageUri = it.toString()},
+                onCameraImageCaptured = {selectedImageUri = it.toString()}
             ) {
                 toggleShowBottomSheet()
             }
