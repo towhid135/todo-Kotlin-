@@ -20,6 +20,9 @@ if (localPropertiesFile.exists()) {
 }
 
 val baseUrl: String? = localProperties["BASE_URL"] as? String
+val cloudinaryCloudName: String? = localProperties["CLOUDINARY_CLOUD_NAME"] as? String
+val cloudinaryApiKey: String? = localProperties["CLOUDINARY_API_KEY"] as? String
+val cloudinaryApiSecret: String? = localProperties["CLOUDINARY_API_SECRET"] as String
 
 android {
     namespace = "com.example.todo"
@@ -38,9 +41,15 @@ android {
     buildTypes {
         debug {
             buildConfigField("String", "BASE_URL", "\"${baseUrl}\"")
+            buildConfigField("String", "CLOUDINARY_CLOUD_NAME", "\"${cloudinaryCloudName}\"")
+            buildConfigField("String", "CLOUDINARY_API_KEY", "\"${cloudinaryApiKey}\"")
+            buildConfigField("String", "CLOUDINARY_API_SECRET", "\"${cloudinaryApiSecret}\"")
         }
         release {
             buildConfigField("String", "BASE_URL", "\"${baseUrl}\"")
+            buildConfigField("String", "CLOUDINARY_CLOUD_NAME", "\"${cloudinaryCloudName}\"")
+            buildConfigField("String", "CLOUDINARY_API_KEY", "\"${cloudinaryApiKey}\"")
+            buildConfigField("String", "CLOUDINARY_API_SECRET", "\"${cloudinaryApiSecret}\"")
             isMinifyEnabled = false
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
@@ -128,6 +137,9 @@ dependencies {
     implementation("io.coil-kt:coil-compose:2.6.0")
     //accompanist for permissions
     implementation("com.google.accompanist:accompanist-permissions:0.34.0")
+
+    //cloudinary
+    implementation("com.cloudinary:cloudinary-android:2.4.0")
 
 }
 

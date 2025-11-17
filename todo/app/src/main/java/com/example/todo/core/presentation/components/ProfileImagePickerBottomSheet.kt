@@ -46,8 +46,7 @@ fun ProfileImagePickerBottomSheet(
     showBottomSheet: Boolean,
     sheetState: SheetState,
     toggleShowBottomSheet: () -> Unit,
-    onGalleryImageSelected: (uri: Uri) -> Unit,
-    onCameraImageCaptured: (uri: Uri) -> Unit,
+    onImageSelected: (uri: Uri) -> Unit,
     onDismiss: () -> Unit
 ) {
     val theme = LocalTheme.current
@@ -59,11 +58,12 @@ fun ProfileImagePickerBottomSheet(
     var cameraPermissionState = rememberPermissionState(
         android.Manifest.permission.CAMERA
     )
+    var permissionRequested by remember { mutableStateOf(false)}
 
     val galleryLauncher =
         rememberLauncherForActivityResult(contract = ActivityResultContracts.GetContent()) { uri: Uri? ->
             uri?.let {
-                onGalleryImageSelected(it)
+                onImageSelected(it)
                 selectedImageUri = it
             }
         }
@@ -72,7 +72,7 @@ fun ProfileImagePickerBottomSheet(
         contract = ActivityResultContracts.TakePicture()
     ) { result ->
         if(result && selectedImageUri != null) {
-            onCameraImageCaptured(selectedImageUri!!)
+            onImageSelected(selectedImageUri!!)
         }
     }
 
@@ -92,22 +92,24 @@ fun ProfileImagePickerBottomSheet(
         if(cameraPermissionState.status.isGranted){
             launchCamera()
         }else{
+            permissionRequested = true
             cameraPermissionState.launchPermissionRequest()
         }
         toggleShowBottomSheet()
     }
 
     LaunchedEffect(cameraPermissionState.status) {
-        if (cameraPermissionState.status.isGranted) {
+        if (permissionRequested && cameraPermissionState.status.isGranted) {
             if (selectedImageUri == null) {
                 launchCamera()
+                permissionRequested = false
             }
         }
     }
 
     if (showBottomSheet) {
         ModalBottomSheet(
-            onDismissRequest = { toggleShowBottomSheet() },
+            onDismissRequest = onDismiss ,
             sheetState = sheetState,
             containerColor = theme.colors.backgroundSecondary,
         ) {

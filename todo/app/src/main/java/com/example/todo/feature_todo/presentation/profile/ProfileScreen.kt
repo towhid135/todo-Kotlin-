@@ -43,9 +43,8 @@ fun ProfileScreen(
     profileViewModel: ProfileViewModel = hiltViewModel<ProfileViewModel>()
 ) {
     val theme = LocalTheme.current
+    val profileState = profileViewModel.state.value
     var showLogoutDialog by remember { mutableStateOf(false) }
-
-    var selectedImageUri by remember { mutableStateOf<String>("") }
 
     val sheetState = rememberModalBottomSheetState(
         skipPartiallyExpanded = false,
@@ -82,7 +81,7 @@ fun ProfileScreen(
             verticalArrangement = Arrangement.spacedBy(10.dp)
         ) {
             ProfileImage(
-                imageUrl = selectedImageUri,
+                imageUrl = profileState.profileImageUrl,
                 onImageClick = {toggleShowBottomSheet()}
             )
             Row(
@@ -121,8 +120,7 @@ fun ProfileScreen(
                 showBottomSheet = showBottomSheet,
                 sheetState = sheetState,
                 toggleShowBottomSheet = { toggleShowBottomSheet() },
-                onGalleryImageSelected = {selectedImageUri = it.toString()},
-                onCameraImageCaptured = {selectedImageUri = it.toString()}
+                onImageSelected = {profileViewModel.onEvent(ProfileEvent.EditProfileImage(it.toString()))},
             ) {
                 toggleShowBottomSheet()
             }

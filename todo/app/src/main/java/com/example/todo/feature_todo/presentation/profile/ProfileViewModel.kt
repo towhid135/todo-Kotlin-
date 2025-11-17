@@ -47,14 +47,14 @@ class ProfileViewModel @Inject constructor(
         }
     }
 
-    fun onLogoutConfirmed() {
+    private fun onLogoutConfirmed() {
         viewModelScope.launch {
             todoUseCases.clearAllTodoItems()
             TodoPreferenceStore.resetPreferences(context)
         }
     }
 
-    fun onEditProfileImage(selectedProfileImageUri: String) {
+    private fun onEditProfileImage(selectedProfileImageUri: String) {
         _state.value = _state.value.copy(
             profileImageUrl = selectedProfileImageUri
         )
