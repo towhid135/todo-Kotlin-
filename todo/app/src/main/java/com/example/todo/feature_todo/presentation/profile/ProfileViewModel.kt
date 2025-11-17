@@ -1,6 +1,8 @@
 package com.example.todo.feature_todo.presentation.profile
 
 import android.content.Context
+import androidx.compose.runtime.State
+import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.todo.feature_todo.data.datastore.TodoPreferenceStore
@@ -17,6 +19,9 @@ class ProfileViewModel @Inject constructor(
     private val todoUseCases: TodoUseCases,
     @ApplicationContext private val context: Context
 ) : ViewModel() {
+
+    private val _state = mutableStateOf(ProfileState())
+    val state: State<ProfileState> = _state
 
     sealed class UiEvent {
         data object LogoutButton : UiEvent()
@@ -37,12 +42,21 @@ class ProfileViewModel @Inject constructor(
 
     fun onEvent(event: ProfileEvent) {
         when (event) {
-            is ProfileEvent.Logout -> {
-                viewModelScope.launch {
-                    todoUseCases.clearAllTodoItems()
-                    TodoPreferenceStore.resetPreferences(context)
-                }
-            }
+            is ProfileEvent.Logout -> onLogoutConfirmed()
+            is ProfileEvent.EditProfileImage -> onEditProfileImage(event.selectedProfileImageUri)
         }
+    }
+
+    fun onLogoutConfirmed() {
+        viewModelScope.launch {
+            todoUseCases.clearAllTodoItems()
+            TodoPreferenceStore.resetPreferences(context)
+        }
+    }
+
+    fun onEditProfileImage(selectedProfileImageUri: String) {
+        _state.value = _state.value.copy(
+            profileImageUrl = selectedProfileImageUri
+        )
     }
 }

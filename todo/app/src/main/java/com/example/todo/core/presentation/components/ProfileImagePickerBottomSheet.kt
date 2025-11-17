@@ -14,6 +14,7 @@ import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.SheetState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -80,16 +81,28 @@ fun ProfileImagePickerBottomSheet(
         toggleShowBottomSheet()
     }
 
+    fun launchCamera(){
+        val tempImageFile = FileUtils.getTempImageFile(context)
+        val uri = ImageUtils.getFileProviderUri(context,tempImageFile)
+        selectedImageUri = uri
+        cameraLauncher.launch(uri)
+    }
+
     fun onCameraClick(){
         if(cameraPermissionState.status.isGranted){
-            val tempImageFile = FileUtils.getTempImageFile(context)
-            val uri = ImageUtils.getFileProviderUri(context,tempImageFile)
-            selectedImageUri = uri
-            cameraLauncher.launch(uri)
+            launchCamera()
         }else{
             cameraPermissionState.launchPermissionRequest()
         }
         toggleShowBottomSheet()
+    }
+
+    LaunchedEffect(cameraPermissionState.status) {
+        if (cameraPermissionState.status.isGranted) {
+            if (selectedImageUri == null) {
+                launchCamera()
+            }
+        }
     }
 
     if (showBottomSheet) {
