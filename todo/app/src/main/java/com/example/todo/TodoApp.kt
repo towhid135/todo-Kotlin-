@@ -1,6 +1,7 @@
 package com.example.todo
 
 import android.app.Application
+import com.cloudinary.android.MediaManager
 import com.google.firebase.Firebase
 import com.google.firebase.initialize
 import dagger.hilt.android.HiltAndroidApp

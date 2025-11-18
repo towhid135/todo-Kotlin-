@@ -1,19 +1,12 @@
 package com.example.todo.feature_todo.presentation.profile
 
-import android.net.Uri
-import android.util.Log
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -23,17 +16,21 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.todo.core.presentation.components.CommonDialog
+import com.example.todo.core.presentation.components.CustomButton
 import com.example.todo.core.presentation.components.ProfileImagePickerBottomSheet
+import com.example.todo.core.util.AuthStrings
+import com.example.todo.core.util.ButtonSize
+import com.example.todo.core.util.ButtonTitle
+import com.example.todo.core.util.ButtonType
 import com.example.todo.core.util.TodoProfileStrings
+import com.example.todo.feature_todo.presentation.auth.AuthEvent
+import com.example.todo.feature_todo.presentation.home.components.CustomTextInput
 import com.example.todo.feature_todo.presentation.home.components.TodoListScreenTopAppBar
+import com.example.todo.feature_todo.presentation.profile.components.LogoutButton
 import com.example.todo.feature_todo.presentation.profile.components.ProfileImage
-import com.example.todo.ui.icons.Todoz
-import com.example.todo.ui.icons.todoz.Trash
 import com.example.todo.ui.theme.LocalTheme
 import kotlinx.coroutines.flow.collectLatest
 
@@ -76,33 +73,41 @@ fun ProfileScreen(
             modifier = Modifier
                 .fillMaxSize()
                 .background(color = theme.colors.backgroundPrimary)
-                .padding(innerPadding),
+                .padding(innerPadding)
+                .padding(horizontal = 24.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.spacedBy(10.dp)
+            verticalArrangement = Arrangement.spacedBy(40.dp)
         ) {
             ProfileImage(
                 imageUrl = profileState.profileImageUrl,
-                onImageClick = {toggleShowBottomSheet()}
+                onImageClick = { toggleShowBottomSheet() }
             )
-            Row(
-                modifier = Modifier.clickable { profileViewModel.onUiEvent(ProfileViewModel.UiEvent.LogoutButton) },
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(10.dp)
-            ) {
-                Icon(
-                    modifier = Modifier
-                        .size(25.dp),
-                    imageVector = Todoz.Trash,
-                    contentDescription = null,
-                    tint = theme.colors.error,
-                )
-                Text(
-                    text = TodoProfileStrings.LOG_OUT,
-                    fontSize = 14.sp,
-                    color = theme.colors.error,
-                    fontFamily = FontFamily.SansSerif,
-                )
-            }
+
+            CustomTextInput(
+                labelText = TodoProfileStrings.NAME,
+                text = profileState.name,
+                placeholderText = TodoProfileStrings.USER_NAME_PLACEHOLDER,
+                onValueChange = { profileViewModel.onEvent(ProfileEvent.OnNameChange(it))  }
+            )
+            CustomTextInput(
+                labelText = TodoProfileStrings.EMAIL,
+                text = profileState.email,
+                placeholderText = TodoProfileStrings.EMAIL_PLACEHOLDER,
+                onValueChange = { profileViewModel.onEvent(ProfileEvent.OnEmailChange(it)) }
+            )
+
+            CustomButton(
+                isLoading = profileState.isLoading,
+                isEnabled = !profileState.isLoading,
+                type = ButtonType.FILLED,
+                size = ButtonSize.LARGE,
+                title = ButtonTitle.SAVE_CHANGES,
+                onPress = { profileViewModel.onEvent(ProfileEvent.OnSubmitProfileChanges) }
+            )
+
+            LogoutButton(
+                onClick = { profileViewModel.onUiEvent(ProfileViewModel.UiEvent.LogoutButton) }
+            )
 
             CommonDialog(
                 showDialog = showLogoutDialog,
@@ -120,7 +125,7 @@ fun ProfileScreen(
                 showBottomSheet = showBottomSheet,
                 sheetState = sheetState,
                 toggleShowBottomSheet = { toggleShowBottomSheet() },
-                onImageSelected = {profileViewModel.onEvent(ProfileEvent.EditProfileImage(it.toString()))},
+                onImageSelected = { profileViewModel.onEvent(ProfileEvent.EditProfileImage(it)) },
             ) {
                 toggleShowBottomSheet()
             }

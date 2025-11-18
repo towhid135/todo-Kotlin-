@@ -23,6 +23,8 @@ val baseUrl: String? = localProperties["BASE_URL"] as? String
 val cloudinaryCloudName: String? = localProperties["CLOUDINARY_CLOUD_NAME"] as? String
 val cloudinaryApiKey: String? = localProperties["CLOUDINARY_API_KEY"] as? String
 val cloudinaryApiSecret: String? = localProperties["CLOUDINARY_API_SECRET"] as String
+val cloudinaryUploadPreset: String? = localProperties["CLOUDINARY_UPLOAD_PRESET"] as String
+
 
 android {
     namespace = "com.example.todo"
@@ -44,12 +46,15 @@ android {
             buildConfigField("String", "CLOUDINARY_CLOUD_NAME", "\"${cloudinaryCloudName}\"")
             buildConfigField("String", "CLOUDINARY_API_KEY", "\"${cloudinaryApiKey}\"")
             buildConfigField("String", "CLOUDINARY_API_SECRET", "\"${cloudinaryApiSecret}\"")
+            buildConfigField("String", "CLOUDINARY_UPLOAD_PRESET", "\"${cloudinaryUploadPreset}\"")
         }
         release {
             buildConfigField("String", "BASE_URL", "\"${baseUrl}\"")
             buildConfigField("String", "CLOUDINARY_CLOUD_NAME", "\"${cloudinaryCloudName}\"")
             buildConfigField("String", "CLOUDINARY_API_KEY", "\"${cloudinaryApiKey}\"")
             buildConfigField("String", "CLOUDINARY_API_SECRET", "\"${cloudinaryApiSecret}\"")
+            buildConfigField("String", "CLOUDINARY_UPLOAD_PRESET", "\"${cloudinaryUploadPreset}\"")
+
             isMinifyEnabled = false
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),

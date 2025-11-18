@@ -1,10 +1,13 @@
 package com.example.todo.feature_todo.presentation.profile
 
 import android.content.Context
+import android.net.Uri
+import android.util.Log
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.todo.core.util.CloudinaryManager
 import com.example.todo.feature_todo.data.datastore.TodoPreferenceStore
 import com.example.todo.feature_todo.domain.use_case.TodoUseCases
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -44,6 +47,9 @@ class ProfileViewModel @Inject constructor(
         when (event) {
             is ProfileEvent.Logout -> onLogoutConfirmed()
             is ProfileEvent.EditProfileImage -> onEditProfileImage(event.selectedProfileImageUri)
+            is ProfileEvent.OnSubmitProfileChanges -> onSubmitProfileChanges()
+            is ProfileEvent.OnNameChange -> onNameChange(event.name)
+            is ProfileEvent.OnEmailChange -> onEmailChange(event.email)
         }
     }
 
@@ -54,9 +60,45 @@ class ProfileViewModel @Inject constructor(
         }
     }
 
-    private fun onEditProfileImage(selectedProfileImageUri: String) {
+    private fun onNameChange(name: String){
+        _state.value = _state.value.copy(name)
+    }
+
+    private fun onEmailChange(email: String){
+        _state.value = _state.value.copy(email)
+    }
+
+    private fun onEditProfileImage(selectedProfileImageUri: Uri) {
         _state.value = _state.value.copy(
-            profileImageUrl = selectedProfileImageUri
+            profileImageUri = selectedProfileImageUri,
+            profileImageUrl = selectedProfileImageUri.toString()
         )
     }
+
+    private fun onSubmitProfileChanges() {
+        viewModelScope.launch {
+            _state.value = _state.value.copy(isLoading = true)
+
+            try {
+                if (_state.value.profileImageUri != null) {
+                    val profileImageUrlFromCloudinary = CloudinaryManager.uploadImageToCloudinary(
+                        _state.value.profileImageUri!!,
+                        context
+                    )
+
+                    profileImageUrlFromCloudinary?.let { url ->
+                        _state.value = _state.value.copy(
+                            profileImageUrl = url
+                        )
+                    }
+                }
+
+            } catch (e: Exception) {
+                Log.e("ProfileViewModel", "An error occurred during profile update", e)
+            } finally {
+                _state.value = _state.value.copy(isLoading = false)
+            }
+        }
+    }
+
 }

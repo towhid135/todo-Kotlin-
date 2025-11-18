@@ -35,6 +35,10 @@ object TodoProfileStrings {
     const val LOGOUT_TITLE  = "Log Out"
 
     const val CHANGE_PROFILE_PICTURE = "Change Profile Picture"
+    const val NAME = "Name"
+    const val EMAIL = "Email"
+    const val USER_NAME_PLACEHOLDER = "Enter your name"
+    const val EMAIL_PLACEHOLDER = "Enter your email"
 }
 
 object CalenderScreenStrings {
@@ -89,6 +93,7 @@ enum class ButtonTitle(val value: String) {
     LOGIN_WITH_GOOGLE("Login with Google"),
     GALLERY("Gallery"),
     CAMERA("Camera"),
+    SAVE_CHANGES("Save Changes"),
 }
 
 enum class IconAsset(val id:Int) {
