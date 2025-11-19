@@ -36,6 +36,9 @@ interface TodoApi {
     @PATCH
     suspend fun addUser(@Url url: String, @Body user: Map<String,User>)
 
+    @PATCH("/users/{email}.json")
+    suspend fun updateUser(@Path("email") email: String, @Body user: User)
+
     @GET("/users/{email}/.json")
     suspend fun getUserByMail(@Path("email") email: String): User
 }

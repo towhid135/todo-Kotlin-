@@ -90,7 +90,6 @@ class HomeRepoImpl(
             if(response.isSuccessful){
                 dao.deleteTodoItem(todo.toLocalTodoItem())
             }else{
-                Log.i("API_DELETE","Response Unsuccessful")
                 Log.i("API_DELETE",response.message())
             }
         }catch (e:Exception){
@@ -115,5 +114,9 @@ class HomeRepoImpl(
 
     override suspend fun clearAllTodoItems(){
         dao.clearAllTodoItems()
+    }
+
+    override suspend fun updateUser(email: String, user: User) {
+        api.updateUser(email,user)
     }
 }

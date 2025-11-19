@@ -71,6 +71,10 @@ class TodoUseCases @Inject constructor(
         repo.addUser(user)
     }
 
+    suspend fun updateUser(email: String, user: User){
+        repo.updateUser(email,user)
+    }
+
     suspend fun getUserByMail(email: String): UserResult {
         try {
             val userResponse = repo.getUserByMail(email)

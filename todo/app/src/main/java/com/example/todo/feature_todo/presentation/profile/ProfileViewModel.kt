@@ -9,11 +9,13 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.todo.core.util.CloudinaryManager
 import com.example.todo.feature_todo.data.datastore.TodoPreferenceStore
+import com.example.todo.feature_todo.data.remote.dto.User
 import com.example.todo.feature_todo.domain.use_case.TodoUseCases
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharedFlow
+import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -65,7 +67,7 @@ class ProfileViewModel @Inject constructor(
     }
 
     private fun onEmailChange(email: String){
-        _state.value = _state.value.copy(email)
+        _state.value = _state.value.copy(email = email)
     }
 
     private fun onEditProfileImage(selectedProfileImageUri: Uri) {
@@ -92,6 +94,28 @@ class ProfileViewModel @Inject constructor(
                         )
                     }
                 }
+
+                val userId = TodoPreferenceStore.getUserId(context).firstOrNull() ?: ""
+                val userEmail = TodoPreferenceStore.getUserEmail(context).firstOrNull() ?: ""
+                TodoPreferenceStore.setUserName(context, _state.value.name)
+                TodoPreferenceStore.setUserProfileImage(context, _state.value.profileImageUrl)
+
+                val user = User(
+                    id = userId,
+                    name = _state.value.name,
+                    email = userEmail,
+                    profileImageUrl = _state.value.profileImageUrl
+                )
+
+                if(userId.isNotEmpty() && userEmail.isNotEmpty()){
+                    todoUseCases.updateUser(
+                        email = userEmail,
+                        user = user
+                    )
+                }else{
+                    Log.e("ProfileViewModel", "User ID or Email is empty, cannot update user profile")
+                }
+
 
             } catch (e: Exception) {
                 Log.e("ProfileViewModel", "An error occurred during profile update", e)

@@ -15,4 +15,6 @@ interface HomeRepo {
     suspend fun getUserByMail(email: String):User
 
     suspend fun clearAllTodoItems()
+
+    suspend fun updateUser(email: String, user: User)
 }
