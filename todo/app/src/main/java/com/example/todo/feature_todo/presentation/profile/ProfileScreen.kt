@@ -20,6 +20,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.todo.core.presentation.components.CommonDialog
 import com.example.todo.core.presentation.components.CustomButton
+import com.example.todo.core.presentation.components.LoadingModal
 import com.example.todo.core.presentation.components.ProfileImagePickerBottomSheet
 import com.example.todo.core.util.AuthStrings
 import com.example.todo.core.util.ButtonSize
@@ -90,10 +91,11 @@ fun ProfileScreen(
                 onValueChange = { profileViewModel.onEvent(ProfileEvent.OnNameChange(it))  }
             )
             CustomTextInput(
+                enabled = false,
                 labelText = TodoProfileStrings.EMAIL,
                 text = profileState.email,
                 placeholderText = TodoProfileStrings.EMAIL_PLACEHOLDER,
-                onValueChange = { profileViewModel.onEvent(ProfileEvent.OnEmailChange(it)) }
+                onValueChange = { profileViewModel.onEvent(ProfileEvent.OnEmailChange(it)) },
             )
 
             CustomButton(
@@ -129,6 +131,8 @@ fun ProfileScreen(
             ) {
                 toggleShowBottomSheet()
             }
+
+            LoadingModal(profileState.isProfileGetApiLoading)
 
         }
 

@@ -28,12 +28,14 @@ fun CustomTextInput(
     onValueChange: (String) -> Unit,
     leadingIcon: ImageVector? = null,
     trailingIcon: ImageVector? = null,
-    onEyeButtonPress: () -> Unit = {}
+    onEyeButtonPress: () -> Unit = {},
+    enabled: Boolean = true
 ) {
     val theme = LocalTheme.current
     TextField(
         modifier = Modifier.fillMaxWidth(),
         value = text,
+        enabled = enabled,
         textStyle = TextStyle(
             color = theme.colors.textPrimary,
             fontSize = 16.sp,
@@ -64,6 +66,7 @@ fun CustomTextInput(
             focusedIndicatorColor = theme.colors.transparent,
             unfocusedIndicatorColor = theme.colors.transparent,
             disabledIndicatorColor = theme.colors.transparent,
+            disabledContainerColor = theme.colors.backgroundSecondary
         ),
         visualTransformation = if (isSecureField) PasswordVisualTransformation() else VisualTransformation.None,
         leadingIcon = leadingIcon?.let {

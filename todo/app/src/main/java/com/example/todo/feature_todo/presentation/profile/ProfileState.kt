@@ -7,5 +7,6 @@ data class ProfileState(
     val email: String = "",
     val profileImageUrl: String = "",
     val profileImageUri: Uri? = null,
-    val isLoading: Boolean = false
+    val isLoading: Boolean = false,
+    val isProfileGetApiLoading: Boolean = false
 )

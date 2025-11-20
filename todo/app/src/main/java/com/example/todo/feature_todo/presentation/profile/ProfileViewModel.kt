@@ -11,6 +11,7 @@ import com.example.todo.core.util.CloudinaryManager
 import com.example.todo.feature_todo.data.datastore.TodoPreferenceStore
 import com.example.todo.feature_todo.data.remote.dto.User
 import com.example.todo.feature_todo.domain.use_case.TodoUseCases
+import com.example.todo.feature_todo.domain.use_case.UserResult
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -34,6 +35,39 @@ class ProfileViewModel @Inject constructor(
 
     private val _uiEventFlow = MutableSharedFlow<UiEvent>()
     val uiEventFlow: SharedFlow<UiEvent> = _uiEventFlow
+
+    init {
+        viewModelScope.launch {
+            try{
+                _state.value = _state.value.copy(isProfileGetApiLoading = true)
+                val userEmail = TodoPreferenceStore.getUserEmail(context).firstOrNull() ?: ""
+                val userResponse = todoUseCases.getUserByMail(email = userEmail)
+                when(userResponse){
+                    is UserResult.Success -> {
+                        userResponse.user.let { user ->
+                            TodoPreferenceStore.setUserId(context, user.id)
+                            TodoPreferenceStore.setUserName(context, user.name)
+                            TodoPreferenceStore.setUserProfileImage(context, user.profileImageUrl)
+                            _state.value = _state.value.copy(
+                                name = user.name,
+                                email = user.email,
+                                profileImageUrl = user.profileImageUrl,
+                            )
+                        }
+                    }
+                    is UserResult.Error -> {
+                        Log.e("ProfileViewModel", "Error fetching user: ${userResponse.message}")
+                    }
+                }
+
+            }catch (e: Exception){
+                Log.e("ProfileViewModel", "An error occurred while fetching user data", e)
+            }finally {
+                _state.value = _state.value.copy(isProfileGetApiLoading = false)
+            }
+
+        }
+    }
 
     fun onUiEvent(event: UiEvent) {
         when (event) {
