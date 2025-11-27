@@ -21,6 +21,7 @@ import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharedFlow
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -30,6 +31,7 @@ class HomeViewModel @Inject constructor(
     @IoDispatcher private val dispatcher: CoroutineDispatcher,
     @ApplicationContext private val context: Context
 ) : ViewModel() {
+
     private val _state = mutableStateOf(HomeScreenState())
     val state: State<HomeScreenState> = _state
 
@@ -61,6 +63,20 @@ class HomeViewModel @Inject constructor(
                 }
             }
         }
+
+        viewModelScope.launch(dispatcher + errorHandler) {
+            TodoPreferenceStore.getUserProfileImage(context).collect { profileImagUrl ->
+                // This log should now be reachable
+                Log.d("HomeViewModel", "profileImagUrl: $profileImagUrl")
+                profileImagUrl?.takeIf { it.isNotEmpty() }?.let {
+                    _state.value = _state.value.copy(
+                        user = _state.value.user.copy(profileImageUrl = it)
+                    )
+                }
+            }
+        }
+
+
     }
 
     fun onEvent(event: HomeScreenEvent) {

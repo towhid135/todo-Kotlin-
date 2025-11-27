@@ -75,7 +75,8 @@ fun HomeScreen(
                     title = TodoListStrings.HOME,
                     leftIcon = Todoz.Filter,
                     onLeftIconClick = { scope.launch { drawerState.open() } },
-                    imageUrl = "dummyUrl"
+                    imageUrl = state.user.profileImageUrl,
+                    showActions = true
                 )
             },
 

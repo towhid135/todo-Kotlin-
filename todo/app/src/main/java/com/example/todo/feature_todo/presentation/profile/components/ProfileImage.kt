@@ -25,6 +25,7 @@ import com.example.todo.ui.theme.LocalTheme
 fun ProfileImage(
     imageUrl: String,
     onImageClick: () -> Unit,
+    modifier: Modifier = Modifier
 ) {
     val theme = LocalTheme.current
     Box(
@@ -34,9 +35,7 @@ fun ProfileImage(
             AsyncImage(
                 model = imageUrl,
                 contentDescription = "User Profile Image",
-                modifier = Modifier
-                    .size(100.dp)
-                    .clip(CircleShape), 
+                modifier = modifier,
                 contentScale = ContentScale.Crop
             )
         } else {

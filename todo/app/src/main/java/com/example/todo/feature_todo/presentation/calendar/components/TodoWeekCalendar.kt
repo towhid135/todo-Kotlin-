@@ -31,9 +31,13 @@ fun TodoWeekCalendar(
         firstVisibleWeekDate = initialDate
     )
 
+    val focusedMonth = calendarState.firstVisibleWeek.days.first().date.month
+    val focusedYear = calendarState.firstVisibleWeek.days.first().date.year
+
+
     WeekCalendarHeader(
-        monthName = "February",
-        year = "2023",
+        monthName = focusedMonth.name.lowercase().replaceFirstChar { it.uppercase() },
+        year = focusedYear.toString(),
         onLeftArrowClick = {
             scope.launch {
                 val targetDate = calendarState.firstVisibleWeek.days.first().date.minusWeeks(1)

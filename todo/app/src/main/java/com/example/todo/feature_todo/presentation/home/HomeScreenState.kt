@@ -23,15 +23,11 @@ data class HomeScreenState(
             icon = Todoz.Work.name.lowercase()
         ),
         completed = false,
-        createdAt = 0L,
-        dueDate = 0L,
+        createdAt = System.currentTimeMillis(),
+        dueDate = System.currentTimeMillis(),
     ),
     val todoItems:List<TodoItem> = emptyList(),
-    val user:User = User(
-        id = "",
-        name = "",
-        email = ""
-    ),
+    val user:User = User(),
     val todoItemOrder:TodoItemOrder = TodoItemOrder.Time(SortingDirection.DESC),
     val isLoading:Boolean = false,
     val error:String? = null
