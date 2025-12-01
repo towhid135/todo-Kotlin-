@@ -17,4 +17,9 @@ interface HomeRepo {
     suspend fun clearAllTodoItems()
 
     suspend fun updateUser(email: String, user: User)
+    suspend fun getTodosByDateRange(
+        userId: String,
+        startAt: Long,
+        endAt: Long
+    ): List<TodoItem>
 }

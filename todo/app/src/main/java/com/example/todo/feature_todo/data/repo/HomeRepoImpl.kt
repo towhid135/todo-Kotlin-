@@ -4,6 +4,7 @@ import android.util.Log
 import com.example.todo.core.util.generateUuid
 import com.example.todo.feature_todo.data.di.IoDispatcher
 import com.example.todo.feature_todo.data.local.TodoDao
+import com.example.todo.feature_todo.data.local.dto.LocalTodoItem
 import com.example.todo.feature_todo.data.mapper.toLocalTodoItem
 import com.example.todo.feature_todo.data.mapper.toLocalTodoItemListFromRemote
 import com.example.todo.feature_todo.data.mapper.toRemoteTodoItem
@@ -118,5 +119,12 @@ class HomeRepoImpl(
 
     override suspend fun updateUser(email: String, user: User) {
         api.updateUser(email,user)
+    }
+
+    override suspend fun getTodosByDateRange(userId: String, startAt: Long, endAt: Long): List<TodoItem> {
+        val remoteTodos = api.getTodosByDateRange(userId, startAt = startAt, endAt =  endAt)
+        val convertedRemoteTodos = convertToList(remoteTodos).filterNotNull()
+
+        return convertedRemoteTodos.map { it.toTodoItem() }
     }
 }

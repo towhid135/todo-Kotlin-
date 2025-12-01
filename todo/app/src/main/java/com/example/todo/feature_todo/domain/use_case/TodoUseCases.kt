@@ -87,6 +87,19 @@ class TodoUseCases @Inject constructor(
     suspend fun clearAllTodoItems(){
         repo.clearAllTodoItems()
     }
+
+    suspend fun getTodosByDateRange(
+        userId: String,
+        startAt: Long,
+        endAt: Long
+    ): TodoResult {
+        try {
+            val todosRes = repo.getTodosByDateRange(userId, startAt, endAt)
+            return TodoResult.Success(todosRes)
+        }catch (error: Error) {
+            return TodoResult.Error(error.message ?: "getTodosByDateRange error")
+        }
+    }
 }
 
 sealed class UserResult {

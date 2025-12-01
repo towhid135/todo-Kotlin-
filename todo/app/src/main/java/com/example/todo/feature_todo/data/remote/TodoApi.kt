@@ -41,4 +41,12 @@ interface TodoApi {
 
     @GET("/users/{email}/.json")
     suspend fun getUserByMail(@Path("email") email: String): User
+
+    @GET("todos/{userId}.json")
+    suspend fun getTodosByDateRange(
+        @Path("userId") userId: String,
+        @Query("orderBy") orderBy: String = "\"dueDate\"",
+        @Query("startAt") startAt: Long, // Start of the day timestamp
+        @Query("endAt") endAt: Long      // End of the day timestamp
+    ): Map<String, RemoteTodoItem>
 }

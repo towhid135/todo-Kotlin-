@@ -15,7 +15,7 @@ import com.example.todo.navigation_graph.routes.GraphRoutes
 @Composable
 fun RootNavGraph(authViewModel: AuthViewModel = hiltViewModel()) {
     val navController = rememberNavController()
-    val currentUserId by authViewModel.userId.collectAsState(initial = "")
+    val currentUserId = authViewModel.state.value.userId
     NavHost(
         navController = navController,
         route = GraphRoutes.ROOT,

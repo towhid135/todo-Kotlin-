@@ -22,6 +22,7 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -36,6 +37,16 @@ class AuthViewModel @Inject constructor(
     private val _state = mutableStateOf(AuthState())
     val state: State<AuthState> = _state
 
+    init {
+        viewModelScope.launch {
+            TodoPreferenceStore.getUserId(context).collectLatest { userId ->
+                _state.value = _state.value.copy(
+                    userId = userId ?: ""
+                )
+            }
+        }
+    }
+
     sealed class UiEvent {
         data object BackButton : UiEvent()
         data object ShowSnackBar : UiEvent()
@@ -44,7 +55,6 @@ class AuthViewModel @Inject constructor(
     private val _uiEventFlow = MutableSharedFlow<UiEvent>()
     val uiEventFlow: SharedFlow<UiEvent> = _uiEventFlow
 
-    val userId = TodoPreferenceStore.getUserId(context)
 
     private val _isSignupSuccess = MutableStateFlow<Boolean>(false)
     val isSignupSuccess: StateFlow<Boolean> = _isSignupSuccess
@@ -82,7 +92,7 @@ class AuthViewModel @Inject constructor(
     }
 
     private fun onEmailChange(email: String) {
-        _state.value = _state.value.copy(email)
+        _state.value = _state.value.copy(email = email)
     }
 
     private fun onPasswordChange(password: String) {

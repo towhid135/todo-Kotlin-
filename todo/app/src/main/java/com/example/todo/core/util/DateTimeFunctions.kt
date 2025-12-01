@@ -2,6 +2,7 @@ import com.example.todo.core.util.FormattedDate
 import java.time.Instant
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
+import java.time.LocalTime
 
 fun formatTimestampToHourMinute(timestamp: Long): String {
     val instant = Instant.ofEpochMilli(timestamp)
@@ -30,4 +31,14 @@ fun timeStampToDate(timestamp: Long): FormattedDate {
         monthNumber = monthNumberFormatter.format(instant).toInt(),
         year = yearFormatter.format(instant).toInt()
     )
+}
+
+fun getStartOfDayMillis(timestamp: Long): Long {
+    val date = Instant.ofEpochMilli(timestamp).atZone(ZoneId.systemDefault()).toLocalDate()
+    return date.atStartOfDay(ZoneId.systemDefault()).toInstant().toEpochMilli()
+}
+
+fun getEndOfDayMillis(timestamp: Long): Long {
+    val date = Instant.ofEpochMilli(timestamp).atZone(ZoneId.systemDefault()).toLocalDate()
+    return date.atTime(LocalTime.MAX).atZone(ZoneId.systemDefault()).toInstant().toEpochMilli()
 }
