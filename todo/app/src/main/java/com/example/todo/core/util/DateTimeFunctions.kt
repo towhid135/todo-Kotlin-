@@ -1,5 +1,6 @@
 import com.example.todo.core.util.FormattedDate
 import java.time.Instant
+import java.time.LocalDate
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 import java.time.LocalTime
@@ -33,12 +34,11 @@ fun timeStampToDate(timestamp: Long): FormattedDate {
     )
 }
 
-fun getStartOfDayMillis(timestamp: Long): Long {
-    val date = Instant.ofEpochMilli(timestamp).atZone(ZoneId.systemDefault()).toLocalDate()
+
+fun getStartOfDayMillis(date: LocalDate): Long {
     return date.atStartOfDay(ZoneId.systemDefault()).toInstant().toEpochMilli()
 }
 
-fun getEndOfDayMillis(timestamp: Long): Long {
-    val date = Instant.ofEpochMilli(timestamp).atZone(ZoneId.systemDefault()).toLocalDate()
+fun getEndOfDayMillis(date: LocalDate): Long {
     return date.atTime(LocalTime.MAX).atZone(ZoneId.systemDefault()).toInstant().toEpochMilli()
 }

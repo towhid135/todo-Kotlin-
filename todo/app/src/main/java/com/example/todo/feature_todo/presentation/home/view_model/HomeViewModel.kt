@@ -66,8 +66,6 @@ class HomeViewModel @Inject constructor(
 
         viewModelScope.launch(dispatcher + errorHandler) {
             TodoPreferenceStore.getUserProfileImage(context).collect { profileImagUrl ->
-                // This log should now be reachable
-                Log.d("HomeViewModel", "profileImagUrl: $profileImagUrl")
                 profileImagUrl?.takeIf { it.isNotEmpty() }?.let {
                     _state.value = _state.value.copy(
                         user = _state.value.user.copy(profileImageUrl = it)
