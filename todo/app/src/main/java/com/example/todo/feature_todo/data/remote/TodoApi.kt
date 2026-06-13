@@ -1,7 +1,12 @@
 package com.example.todo.feature_todo.data.remote
 
-import androidx.room.Delete
-import com.example.todo.feature_todo.data.remote.dto.RemoteTodoItem
+import com.example.todo.core.util.ApiResponseDto
+import com.example.todo.feature_todo.data.remote.dto.CreateTodoRequestDto
+import com.example.todo.feature_todo.data.remote.dto.LoginResponseData
+import com.example.todo.feature_todo.data.remote.dto.RefreshAccessTokenDto
+import com.example.todo.feature_todo.data.remote.dto.TodoItemDto
+import com.example.todo.feature_todo.data.remote.dto.UpdateTodoRequestDto
+import com.example.todo.feature_todo.data.remote.dto.UpdateTodoResponseDto
 import com.example.todo.feature_todo.data.remote.dto.User
 import retrofit2.Response
 import retrofit2.http.Body
@@ -15,23 +20,38 @@ import retrofit2.http.Query
 import retrofit2.http.Url
 
 interface TodoApi {
-    @GET("/todos/{userId}/.json")
-    suspend fun getAllTodos(@Path("userId") userId:String): Map<String, RemoteTodoItem>
+    @POST(ApiEndpoints.LOGIN_URL)
+    suspend fun login(@Body body: Map<String, String>): ApiResponseDto<LoginResponseData>
+    @POST(ApiEndpoints.REFRESH_ACCESS_TOKEN_URL)
+    suspend fun refreshAccessToken(@Body body: Map<String, String>): Response<RefreshAccessTokenDto>
 
-    @GET("/todos.json?orderBy=\"ID\"")
-    suspend fun getTodoItemById(@Query("equalTo") id: String?): Map<String,RemoteTodoItem>
+    @GET(ApiEndpoints.GET_ALL_TODOS_BY_USER_ID)
+    suspend fun getAllTodos(
+        @Query("userId") userId: Long
+    ): ApiResponseDto<List<TodoItemDto>>
+
+    @POST(ApiEndpoints.CREATE_TODO_URL)
+    suspend fun createTodo(@Body todo: CreateTodoRequestDto): ApiResponseDto<TodoItemDto>
+
+    @PUT("/api/v1/todos")
+    suspend fun updateTodo(
+        @Body todo: UpdateTodoRequestDto
+    ): ApiResponseDto<UpdateTodoResponseDto>
+
+    @GET("/api/v1/todos/{id}")
+    suspend fun getTodoItemById(@Path("id") id: Long): ApiResponseDto<TodoItemDto>
 
 //    @POST
-//    suspend fun addTodo(@Url url:String, @Body updatedTodo:RemoteTodoItem):Response<Unit>
+//    suspend fun addTodo(@Url url:String, @Body updatedTodo:TodoItemDto):Response<Unit>
 
     @PATCH
-    suspend fun addTodo(@Url url:String, @Body updatedTodo:Map<String,RemoteTodoItem>):Response<Unit>
+    suspend fun addTodo(@Url url:String, @Body updatedTodo:Map<String,TodoItemDto>):Response<Unit>
 
     @DELETE("/todos/{userId}/{todoId}.json")
     suspend fun deleteTodo(@Path("userId") userId: String,@Path("todoId") todoId : String?) : Response<Unit>
 
     @PUT("/todos/{userId}/{id}.json")
-    suspend fun updateTodoItem(@Path("userId") userId: String,@Path("id") id: String?, @Body todoItem:RemoteTodoItem):Response<Unit>
+    suspend fun updateTodoItem(@Path("userId") userId: String,@Path("id") id: String?, @Body todoItem:TodoItemDto):Response<Unit>
 
     @PATCH
     suspend fun addUser(@Url url: String, @Body user: Map<String,User>)
@@ -48,5 +68,5 @@ interface TodoApi {
         @Query("orderBy") orderBy: String = "\"dueDate\"",
         @Query("startAt") startAt: Long, // Start of the day timestamp
         @Query("endAt") endAt: Long      // End of the day timestamp
-    ): Map<String, RemoteTodoItem>
+    ): Map<String, TodoItemDto>
 }

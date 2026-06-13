@@ -23,7 +23,7 @@ fun HomeScaffold() {
 
     val uiEventFlow = homeViewModel.uiEventFlow
 
-    LaunchedEffect(key1 = true) {
+    LaunchedEffect(uiEventFlow) {
         uiEventFlow.collectLatest { uiEvent ->
             when(uiEvent){
                 HomeViewModel.UiEvent.ShowSnackbar -> {

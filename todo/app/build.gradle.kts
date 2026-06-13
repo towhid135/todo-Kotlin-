@@ -55,7 +55,8 @@ android {
             buildConfigField("String", "CLOUDINARY_API_SECRET", "\"${cloudinaryApiSecret}\"")
             buildConfigField("String", "CLOUDINARY_UPLOAD_PRESET", "\"${cloudinaryUploadPreset}\"")
 
-            isMinifyEnabled = false
+            isMinifyEnabled = true
+            isShrinkResources = true
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
@@ -115,6 +116,10 @@ dependencies {
 
     //Retrofit
     implementation(libs.retrofit)
+    // OkHttp via version catalog (BOM + artifacts)
+    implementation(platform(libs.okhttp.bom))
+    implementation(libs.okhttp)
+    implementation(libs.okhttp.logging.interceptor)
 
     //GSON
     implementation(libs.gson)

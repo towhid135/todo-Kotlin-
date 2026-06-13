@@ -27,6 +27,7 @@ import com.example.todo.core.util.CategoryBoxType
 import com.example.todo.ui.icons.IconsNamed
 import com.example.todo.ui.icons.Todoz
 import com.example.todo.ui.icons.todoz.University
+import com.example.todo.ui.icons.todoz.Work
 import com.example.todo.ui.theme.LocalTheme
 import com.example.todo.ui.theme.TodoTheme
 
@@ -37,6 +38,24 @@ fun CategoryBox(
     onPress: (category: Category) -> Unit
 ) {
     val theme = LocalTheme.current
+    // Helper to safely parse color strings from the backend. Supports formats like:
+    // "#RRGGBB", "#AARRGGBB", "0xAARRGGBB" and "RRGGBB". Falls back to theme primary color.
+    fun parseColorString(raw: String?): Color {
+        if (raw.isNullOrBlank()) return theme.colors.primary
+        val cleaned = raw.trim().removePrefix("0x").removePrefix("#")
+        val hex = when (cleaned.length) {
+            6 -> "FF$cleaned" // add opaque alpha
+            8 -> cleaned
+            else -> return theme.colors.primary
+        }
+
+        return try {
+            Color(hex.toLong(radix = 16))
+        } catch (_: Exception) {
+            theme.colors.primary
+        }
+    }
+
     val height = when (type) {
         CategoryBoxType.RECTANGLE -> 30.dp
         CategoryBoxType.SQUARE -> 70.dp
@@ -60,7 +79,7 @@ fun CategoryBox(
                 .height(height)
                 .width(width)
                 .clip(RoundedCornerShape(5.dp))
-                .background(color = Color(category.bgColor.removePrefix("0x").toLong(radix = 16)))
+                .background(color = parseColorString(category.bgColor))
                 .clickable { onPress(category) },
             horizontalArrangement = Arrangement.Center,
             verticalAlignment = Alignment.CenterVertically,
@@ -94,9 +113,7 @@ fun CategoryBox(
                     .width(width)
                     .clip(RoundedCornerShape(5.dp))
                     .background(
-                        color = Color(
-                            category.bgColor.removePrefix("0x").toLong(radix = 16)
-                        )
+                        color = parseColorString(category.bgColor)
                     )
                     .padding(5.dp)
                     .clickable { onPress(category) },
@@ -144,11 +161,11 @@ fun CategoryBox(
 @Composable
 fun CategoryBoxPreview() {
     val mockCategory = Category(
-        id = "1",
+        id = 1L,
         title = "Work",
-        isSelected = true,
         bgColor = "0xFFCC4173",
-        icon = "calendar" // Replace with an appropriate ImageVector
+        icon = Todoz.Work.name.lowercase(),
+        isSelected = true
     )
 
     TodoTheme {
@@ -166,4 +183,3 @@ fun CategoryBoxPreview() {
         }
     }
 }
-

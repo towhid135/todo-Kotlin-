@@ -35,6 +35,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.todo.core.presentation.components.CommonDialog
 import com.example.todo.core.presentation.components.CustomButton
 import com.example.todo.core.presentation.components.LoadingModal
@@ -44,6 +45,7 @@ import com.example.todo.core.util.ButtonType
 import com.example.todo.core.util.DialogStrings
 import com.example.todo.core.util.TodoDetailsStrings
 import com.example.todo.core.util.TodoListStrings
+import com.example.todo.core.util.timeStampToDate
 import com.example.todo.feature_todo.presentation.home.components.CreateTodoModalBottomSheet
 import com.example.todo.feature_todo.presentation.home.components.TodoListScreenTopAppBar
 import com.example.todo.feature_todo.presentation.todo_details.components.TodoDetailsItem
@@ -56,7 +58,6 @@ import com.example.todo.ui.icons.todoz.Tag
 import com.example.todo.ui.icons.todoz.Trash
 import com.example.todo.ui.theme.LocalTheme
 import kotlinx.coroutines.flow.collectLatest
-import timeStampToDate
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -73,9 +74,18 @@ fun TodoDetailsScreen(
     var showBottomSheet by remember { mutableStateOf(false) }
 
     val theme = LocalTheme.current
-    val state = todoDetailsViewModel.state
+    val state = todoDetailsViewModel.state.collectAsStateWithLifecycle()
     val todo = state.value.todo
-    val dueDate = timeStampToDate(todo!!.dueDate)
+    // Guard against null todo to avoid calling timeStampToDate on a null reference.
+    if (todo == null) {
+        // Show the existing loading modal while todo is not available and exit early.
+        LoadingModal(isLoading = state.value.isGetTodoByIdLoading)
+        return
+    }
+
+    // `todo.dueDate` is a ZonedDateTime; `timeStampToDate` expects epoch millis (Long).
+    val dueDateEpochMillis = todo.dueDate.toInstant().toEpochMilli()
+    val dueDate = timeStampToDate(dueDateEpochMillis)
     val dueDateString = "${dueDate.dayNumber} ${dueDate.monthName}, ${dueDate.year}"
 
     val uiEventFlow = todoDetailsViewModel.uiEventFlow
@@ -266,7 +276,7 @@ fun TodoDetailsScreen(
                     )
                 }
             )
-            LoadingModal(isLoading = state.value.isLoading)
+            LoadingModal(isLoading = state.value.isUpdateTodoLoading)
         }
     }
 

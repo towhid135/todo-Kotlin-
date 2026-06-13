@@ -50,61 +50,61 @@ fun ChooseCategoryDialog(
     val theme = LocalTheme.current
     val categories = listOf(
         Category(
-            id = "1",
+            id = 1L,
             title = Todoz.Grocery.name,
             bgColor = CategoryColor.GREEN.colorCode,
             icon = Todoz.Grocery.name.lowercase()
         ),
         Category(
-            id = "2",
+            id = 2L,
             title = Todoz.Work.name,
             bgColor = CategoryColor.PERU.colorCode,
             icon = Todoz.Work.name.lowercase()
         ),
         Category(
-            id = "3",
+            id = 3L,
             title = Todoz.Sport.name,
             bgColor = CategoryColor.SEA_RIDGE.colorCode,
             icon = Todoz.Sport.name.lowercase()
         ),
         Category(
-            id = "4",
+            id = 4L,
             title = Todoz.Design.name,
             bgColor = CategoryColor.MINT_JELLY.colorCode,
             icon = Todoz.Design.name.lowercase()
         ),
         Category(
-            id = "5",
+            id = 5L,
             title = Todoz.University.name,
             bgColor = CategoryColor.WORN_DENIM.colorCode,
             icon = Todoz.University.name.lowercase()
         ),
         Category(
-            id = "6",
+            id = 6L,
             title = Todoz.Social.name,
             bgColor = CategoryColor.PURPLE_VANITY.colorCode,
             icon = Todoz.Social.name.lowercase()
         ),
         Category(
-            id = "7",
+            id = 7L,
             title = Todoz.Music.name,
             bgColor = CategoryColor.PURPLE_VANITY.colorCode,
             icon = Todoz.Music.name.lowercase()
         ),
         Category(
-            id = "8",
+            id = 8L,
             title = Todoz.Health.name,
             bgColor = CategoryColor.GREEN.colorCode,
             icon = Todoz.Health.name.lowercase()
         ),
         Category(
-            id = "9",
+            id = 9L,
             title = Todoz.Movie.name,
             bgColor = CategoryColor.FUCHSIA_ROSE.colorCode,
             icon = Todoz.Movie.name.lowercase()
         ),
         Category(
-            id = "10",
+            id = 10L,
             title = Todoz.Home.name,
             bgColor = CategoryColor.YELLOW.colorCode,
             icon = Todoz.Home.name.lowercase()
@@ -114,6 +114,8 @@ fun ChooseCategoryDialog(
 
     fun onCategoryBoxPress(category: Category) {
         onCategoryChange(category)
+        // close the dialog after selection so the user sees the change reflected in the sheet
+        toggleShowCategory()
     }
 
     if (showCategory) {
@@ -149,7 +151,8 @@ fun ChooseCategoryDialog(
                         maxItemsInEachRow = 3,
                         verticalArrangement = Arrangement.spacedBy(15.dp)
                     ) {
-                        categories.map { category ->
+                        // use forEach because we are emitting composables, not transforming the list
+                        categories.forEach { category ->
                             CategoryBox(
                                 category = category.copy(isSelected = selectedCategory.id == category.id),
                                 type = CategoryBoxType.SQUARE,

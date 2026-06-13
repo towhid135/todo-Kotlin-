@@ -1,16 +1,17 @@
 package com.example.todo.feature_todo.presentation.todo_details.view_model
 
 import android.content.Context
-import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.todo.core.util.collectUseCaseFlow
+import com.example.todo.core.util.sharedFlowWithReplay1
 import com.example.todo.feature_todo.data.datastore.TodoPreferenceStore
 import com.example.todo.feature_todo.data.di.IoDispatcher
 import com.example.todo.feature_todo.data.remote.dto.User
+import com.example.todo.feature_todo.domain.model.TodoItem
+import com.example.todo.feature_todo.domain.repo.HomeRepo
 import com.example.todo.feature_todo.domain.use_case.TodoUseCases
-import com.example.todo.feature_todo.domain.use_case.UserResult
-import com.example.todo.feature_todo.presentation.home.view_model.HomeViewModel.UiEvent
 import com.example.todo.feature_todo.presentation.todo_details.TodoDetailsEvent
 import com.example.todo.feature_todo.presentation.todo_details.TodoDetailsState
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -18,21 +19,28 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import java.time.Instant
+import java.time.ZoneId
 import javax.inject.Inject
 
 @HiltViewModel
 class TodoDetailsViewModel @Inject constructor(
+    private val repo: HomeRepo,
     private val todoUseCases: TodoUseCases,
     savedStateHandle: SavedStateHandle,
     @IoDispatcher private val dispatcher: CoroutineDispatcher,
     @ApplicationContext private val context: Context
 ) : ViewModel() {
 
-    private val _state = mutableStateOf(TodoDetailsState())
-    val state = _state
+    private val _state = MutableStateFlow(TodoDetailsState())
+    val state: StateFlow<TodoDetailsState> = _state.asStateFlow()
 
     sealed class UiEvent {
         data object BackButton : UiEvent()
@@ -42,34 +50,58 @@ class TodoDetailsViewModel @Inject constructor(
     private val _uiEventFlow = MutableSharedFlow<UiEvent>()
     val uiEventFlow: SharedFlow<UiEvent> = _uiEventFlow.asSharedFlow()
 
+    val _triggerUpdateTodo = sharedFlowWithReplay1<TodoItem>()
+    val _triggerGetTodoById = sharedFlowWithReplay1<Long>()
+
     private val errorHandler = CoroutineExceptionHandler { _, e ->
         e.printStackTrace()
-        _state.value = _state.value.copy(error = e.message, isLoading = false)
+        _state.update { it.copy(error = e.message, isGetTodoByIdLoading = false, isUpdateTodoLoading = false) }
     }
 
     init {
-        savedStateHandle.get<String>("todoId")?.let {
-            viewModelScope.launch {
-                val todoItem = todoUseCases.getTodoItemById(it)
-                _state.value = _state.value.copy(
-                    todo = todoItem
-                )
+        savedStateHandle.get<String>("todoId")?.let { todoId ->
+            todoId.toLongOrNull()?.let { id ->
+                _triggerGetTodoById.tryEmit(id)
             }
         }
 
         viewModelScope.launch(dispatcher + errorHandler) {
-            TodoPreferenceStore.getUserId(context).collect { userId ->
-                userId?.takeIf { it.isNotEmpty() }?.let {
-                    _state.value = _state.value.copy(
-                        user = User(
-                            id = it,
-                            name = "",
-                            email = ""
+            TodoPreferenceStore.getUserIdFlow(context).collect { userId ->
+                userId?.takeIf { it.toString().isNotEmpty() }?.let { uid ->
+                    _state.update { current ->
+                        current.copy(
+                            user = User(
+                                id = uid,
+                                name = "",
+                                email = ""
+                            )
                         )
-                    )
+                    }
                 }
             }
         }
+
+        viewModelScope.launch(dispatcher + errorHandler) {
+            TodoPreferenceStore.getAuthToken(context).collect { token ->
+                _state.update { it.copy(authToken = token) }
+            }
+        }
+
+        collectUseCaseFlow(
+            trigger = _triggerUpdateTodo,
+            useCase = { todo -> todoUseCases.updateTodoUseCase(todo) },
+            onLoading = ::onUpdateTodoLoading,
+            onSuccess = ::onSuccessUpdateTodo,
+            onError = ::onUpdateTodoError
+        )
+
+        collectUseCaseFlow(
+            trigger = _triggerGetTodoById,
+            useCase = { id -> todoUseCases.getTodoByIdUseCase(id) },
+            onLoading = ::onGetTodoByIdLoading,
+            onSuccess = ::onSuccessGetTodoById,
+            onError = ::onGetTodoByIdError
+        )
     }
 
     fun onUiEvent(event: UiEvent) {
@@ -93,63 +125,94 @@ class TodoDetailsViewModel @Inject constructor(
             is TodoDetailsEvent.OnDeleteTodo -> {
                 viewModelScope.launch(dispatcher + errorHandler) {
                     try {
-                        todoUseCases.deleteTodoItem(event.user, event.todo)
-                        todoUseCases.getTodoItems(_state.value.user.id)
+                        // delete the todo via the repository
+                        repo.deleteTodoItem(event.user, event.todo)
+                        // don't attempt to call a non-existent getAllTodos helper here;
+                        // HomeViewModel is responsible for refreshing the list.
                     } catch (e: Exception) {
-                        _state.value = _state.value.copy(
-                            error = e.message
-                        )
+                        _state.update { it.copy(error = e.message) }
                     }
                 }
 
             }
 
             is TodoDetailsEvent.OnChangeTitle -> {
-                _state.value = _state.value.copy(
-                    todo = _state.value.todo?.copy(title = event.title)
-                )
+                _state.update { current ->
+                    current.copy(todo = current.todo?.copy(title = event.title))
+                }
             }
 
             is TodoDetailsEvent.OnChangeDescription -> {
-                _state.value = _state.value.copy(
-                    todo = _state.value.todo?.copy(description = event.description)
-                )
+                _state.update { current ->
+                    current.copy(todo = current.todo?.copy(description = event.description))
+                }
             }
 
             is TodoDetailsEvent.OnSelectCategory -> {
-                _state.value = _state.value.copy(
-                    todo = _state.value.todo?.copy(category = event.category.copy(isSelected = !event.category.isSelected))
-                )
+                _state.update { current ->
+                    current.copy(
+                        todo = current.todo?.copy(
+                            category = event.category.copy(isSelected = !event.category.isSelected)
+                        )
+                    )
+                }
             }
 
             is TodoDetailsEvent.OnSelectPriority -> {
-                _state.value = _state.value.copy(
-                    todo = _state.value.todo?.copy(priority = event.priority)
-                )
+                // map Priority enum to Int values used by the domain model
+                val priorityInt = when (event.priority) {
+                    com.example.todo.core.util.Priority.LOW -> 1
+                    com.example.todo.core.util.Priority.MEDIUM -> 2
+                    com.example.todo.core.util.Priority.HIGH -> 3
+                }
+
+                _state.update { current ->
+                    current.copy(todo = current.todo?.copy(priority = priorityInt))
+                }
             }
 
             is TodoDetailsEvent.OnSelectDueDate -> {
-                _state.value = _state.value.copy(
-                    todo = _state.value.todo?.copy(dueDate = event.dueDate)
-                )
+                // convert epoch millis (Long) to ZonedDateTime used by domain model
+                val zonedDueDate = Instant.ofEpochMilli(event.dueDate).atZone(ZoneId.systemDefault())
+                _state.update { current ->
+                    current.copy(todo = current.todo?.copy(dueDate = zonedDueDate))
+                }
             }
 
             is TodoDetailsEvent.OnPressAddTodo -> {
-                viewModelScope.launch(dispatcher + errorHandler) {
-                    _state.value = _state.value.copy(isLoading = true)
-                    try {
-                        todoUseCases.updateTodoItem(event.user, event.updateTodo)
-                        _state.value = _state.value.copy(
-                            isLoading = false
-                        )
-                    } catch (e: Exception) {
-                        _state.value = _state.value.copy(
-                            error = e.message,
-                            isLoading = false
-                        )
-                    }
-                }
+                handlePressAddTodo(event.updateTodo)
             }
         }
+    }
+
+    private fun handlePressAddTodo(todo: TodoItem) {
+        _triggerUpdateTodo.tryEmit(todo)
+    }
+
+    fun onUpdateTodoLoading() {
+        _state.update { it.copy(isUpdateTodoLoading = true) }
+    }
+
+    fun onSuccessUpdateTodo(updatedTodo: TodoItem) {
+        _state.update { it.copy(isUpdateTodoLoading = false, todo = updatedTodo) }
+        viewModelScope.launch {
+            _uiEventFlow.emit(UiEvent.BackButton)
+        }
+    }
+
+    fun onUpdateTodoError(message: String) {
+        _state.update { it.copy(isUpdateTodoLoading = false, error = message) }
+    }
+
+    fun onGetTodoByIdLoading() {
+        _state.update { it.copy(isGetTodoByIdLoading = true) }
+    }
+
+    fun onSuccessGetTodoById(todoItem: TodoItem) {
+        _state.update { it.copy(isGetTodoByIdLoading = false, todo = todoItem) }
+    }
+
+    fun onGetTodoByIdError(message: String) {
+        _state.update { it.copy(isGetTodoByIdLoading = false, error = message) }
     }
 }

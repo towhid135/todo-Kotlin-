@@ -1,50 +1,63 @@
 package com.example.todo.feature_todo.presentation.auth.viewmodel
 
 import android.content.Context
-import android.util.Log
-import androidx.compose.runtime.State
-import androidx.compose.runtime.mutableStateOf
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.todo.feature_todo.data.datastore.TodoPreferenceStore
 import com.example.todo.feature_todo.data.di.IoDispatcher
+import com.example.todo.feature_todo.domain.model.LoginResult
 import com.example.todo.feature_todo.domain.use_case.AuthUseCases
-import com.example.todo.feature_todo.domain.use_case.SignInResult
 import com.example.todo.feature_todo.domain.use_case.SignupResult
-import com.example.todo.feature_todo.domain.use_case.TodoUseCases
-import com.example.todo.feature_todo.domain.use_case.UserResult
+import com.example.todo.core.util.collectUseCaseFlow
+import com.example.todo.core.util.sharedFlowWithReplay1
+import com.example.todo.feature_todo.domain.model.LoginRequest
+import com.example.todo.feature_todo.domain.use_case.LoginUseCase
 import com.example.todo.feature_todo.presentation.auth.AuthEvent
 import com.example.todo.feature_todo.presentation.auth.AuthState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
-import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 class AuthViewModel @Inject constructor(
     private val authUseCases: AuthUseCases,
-    private val todoUseCases: TodoUseCases,
+    private val loginUseCase: LoginUseCase,
     @IoDispatcher private val dispatcher: CoroutineDispatcher,
     @ApplicationContext private val context: Context
 ) : ViewModel() {
-    private val _state = mutableStateOf(AuthState())
-    val state: State<AuthState> = _state
+    private val _state = MutableStateFlow(AuthState())
+    val state: StateFlow<AuthState> = _state.asStateFlow()
+
+    private val _triggerLogin = sharedFlowWithReplay1<LoginRequest>()
 
     init {
         viewModelScope.launch {
-            TodoPreferenceStore.getUserId(context).collectLatest { userId ->
-                _state.value = _state.value.copy(
-                    userId = userId ?: ""
-                )
+            TodoPreferenceStore.getUserIdFlow(context).collectLatest { userId ->
+                _state.update { it.copy(userId = userId ?: 0L) }
             }
         }
+
+        collectUseCaseFlow<LoginRequest, LoginResult>(
+            trigger = _triggerLogin,
+            useCase = { payload -> loginUseCase(payload) },
+            onLoading = {
+                _state.update { it.copy(isLoading = true) }
+            },
+            onSuccess = { result -> onLoginSuccess(result) },
+            onError = { message ->
+                _state.update { it.copy(isLoading = false, error = message) }
+                onUiEvent(UiEvent.ShowSnackBar)
+            }
+        )
     }
 
     sealed class UiEvent {
@@ -60,15 +73,13 @@ class AuthViewModel @Inject constructor(
     val isSignupSuccess: StateFlow<Boolean> = _isSignupSuccess
 
     fun onUiEvent(event: UiEvent) {
-        when (event) {
-            UiEvent.BackButton -> {
-                viewModelScope.launch {
+        viewModelScope.launch {
+            when (event) {
+                UiEvent.BackButton -> {
                     _uiEventFlow.emit(UiEvent.BackButton)
                 }
-            }
 
-            UiEvent.ShowSnackBar -> {
-                viewModelScope.launch {
+                UiEvent.ShowSnackBar -> {
                     _uiEventFlow.emit(UiEvent.ShowSnackBar)
                 }
             }
@@ -92,52 +103,35 @@ class AuthViewModel @Inject constructor(
     }
 
     private fun onEmailChange(email: String) {
-        _state.value = _state.value.copy(email = email)
+        _state.update { it.copy(email = email) }
     }
 
     private fun onPasswordChange(password: String) {
-        _state.value = _state.value.copy(password = password)
+        _state.update { it.copy(password = password) }
     }
 
     private fun onConfirmPassChange(confirmPass: String) {
-        _state.value = _state.value.copy(confirmPassword = confirmPass)
+        _state.update { it.copy(confirmPassword = confirmPass) }
     }
 
     private fun onEyeButtonPress() {
-        _state.value = _state.value.copy(isPasswordVisible = !_state.value.isPasswordVisible)
+        _state.update { it.copy(isPasswordVisible = !it.isPasswordVisible) }
     }
 
     private fun onLoginClick() {
-        viewModelScope.launch {
-            _state.value = _state.value.copy(isLoading = true)
-            when (val result = authUseCases.firebaseLoginWithEmailAndPassword(
-                _state.value.email,
-                _state.value.password
-            )) {
-                is SignInResult.Success -> {
-                     onLoginSuccess(_state.value.email)
-                    _state.value = _state.value.copy(isLoading = false, email = "", password = "")
-                }
-
-                is SignInResult.Error -> {
-                    _state.value = _state.value.copy(
-                        isLoading = false,
-                        error = result.message ?: "An unexpected error occurred"
-                    )
-                    onUiEvent(UiEvent.ShowSnackBar)
-                }
-            }
-        }
+        _triggerLogin.tryEmit(
+            LoginRequest(
+                email = _state.value.email,
+                password = _state.value.password
+            )
+        )
     }
 
     private fun onRegisterClick() {
         viewModelScope.launch {
-            _state.value = _state.value.copy(isLoading = true)
+            _state.update { it.copy(isLoading = true) }
             if (_state.value.password != _state.value.confirmPassword) {
-                _state.value = _state.value.copy(
-                    isLoading = false,
-                    error = "Passwords do not match"
-                )
+                _state.update { it.copy(isLoading = false, error = "Passwords do not match") }
                 return@launch
             }
 
@@ -146,43 +140,30 @@ class AuthViewModel @Inject constructor(
                 _state.value.password
             )) {
                 is SignupResult.Success -> {
-                    _state.value = _state.value.copy(
-                        isLoading = false,
-                        email = "",
-                        password = "",
-                        confirmPassword = ""
-                    )
+                    _state.update { it.copy(isLoading = false, email = "", password = "", confirmPassword = "") }
                     _isSignupSuccess.emit(true)
                 }
 
                 is SignupResult.Error -> {
-                    _state.value = _state.value.copy(
-                        isLoading = false,
-                        error = result.message ?: "An unexpected error occurred"
-                    )
+                    _state.update { it.copy(isLoading = false, error = result.message ?: "An unexpected error occurred") }
                 }
             }
         }
     }
 
-    private fun onLoginSuccess(userEmail: String){
+    private fun onLoginSuccess(result: LoginResult) {
         viewModelScope.launch {
-            val userResponse = todoUseCases.getUserByMail(email = userEmail.split("@")[0])
-            when (userResponse) {
-                is UserResult.Success -> {
-                    userResponse.user.let { user ->
-                        TodoPreferenceStore.setUserId(context, user.id)
-                        TodoPreferenceStore.setUserName(context, user.name)
-                        TodoPreferenceStore.setUserEmail(context, user.email)
-                        TodoPreferenceStore.setUserProfileImage(context, user.profileImageUrl)
-                        TodoPreferenceStore.setIsLoggedIn(context, true)
-                    }
-                }
-
-                is UserResult.Error -> {
-                    Log.e("ProfileViewModel", "Error fetching user: ${userResponse.message}")
-                }
+            _state.update { it.copy(isLoading = false) }
+            result.let { data ->
+                TodoPreferenceStore.setUserId(context, data.id)
+                TodoPreferenceStore.setUserName(context, data.name)
+                TodoPreferenceStore.setUserEmail(context, data.email)
+                TodoPreferenceStore.setUserProfileImage(context, data.imageUrl)
+                TodoPreferenceStore.setIsLoggedIn(context, true)
+                TodoPreferenceStore.setAuthToken(context, data.accessToken)
+                TodoPreferenceStore.setRefreshToken(context, data.refreshToken)
             }
+
         }
     }
 }

@@ -13,11 +13,14 @@ import com.example.todo.core.presentation.components.LoadingModal
 import com.example.todo.core.util.CalenderScreenStrings
 import com.example.todo.feature_todo.presentation.calendar.components.TodoWeekCalendar
 import com.example.todo.feature_todo.presentation.calendar.viewmodel.CalendarViewModel
+import com.example.todo.feature_todo.presentation.home.HomeScreenEvent
+import com.example.todo.feature_todo.presentation.home.components.TodoItemList
 import com.example.todo.feature_todo.presentation.home.components.TodoListScreenTopAppBar
 import com.example.todo.ui.theme.LocalTheme
 
 @Composable
 fun CalendarScreen(
+    navigateToTodoDetails: (route: String) -> Unit,
     calendarViewModel: CalendarViewModel = hiltViewModel()
 ) {
     val theme = LocalTheme.current
@@ -41,6 +44,16 @@ fun CalendarScreen(
                 selectedDate = state.selectedDate,
                 onDateSelect = {calendarViewModel.onEvent(CalendarEvent.OnDateSelect(it))}
             )
+            state.todos?.let {
+                TodoItemList(
+                    todoItems = state.todos,
+                    isLoading = state.isPullToRefresh,
+                    onPullToRefresh = { calendarViewModel.onEvent(CalendarEvent.OnPullToRefresh) },
+                    onCompleteClick = {todoItem -> calendarViewModel.onEvent(CalendarEvent.OnToggleComplete(state.user,todoItem)) },
+                    onCardClick = navigateToTodoDetails,
+                    topPadding = 0.dp
+                )
+            }
 
         }
         LoadingModal(state.isTodosLoading)

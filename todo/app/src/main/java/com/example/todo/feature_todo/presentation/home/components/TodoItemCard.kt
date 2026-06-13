@@ -27,19 +27,36 @@ import com.example.todo.feature_todo.domain.model.TodoItem
 import com.example.todo.navigation_graph.routes.Screen
 import com.example.todo.ui.theme.LocalTheme
 import com.example.todo.ui.theme.TodoTheme
-import formatTimestampToHourMinute
-import timeStampToDate
+import com.example.todo.core.util.FormattedDate
+import java.time.ZonedDateTime
 
 @Composable
 fun TodoItemCard(
     todo: TodoItem,
     onCompleteClick: () -> Unit,
-    onCardClick: (route:String) -> Unit
+    onCardClick: (route: String) -> Unit
 ) {
     val theme = LocalTheme.current
-    val dueDate = timeStampToDate(todo.dueDate)
+
+    // convert ZonedDateTime dueDate to epoch millis for the helper
+    val dueDateMillis = try {
+        todo.dueDate.toInstant().toEpochMilli()
+    } catch (_: Exception) {
+        System.currentTimeMillis()
+    }
+
+    val dueDate: FormattedDate = com.example.todo.core.util.timeStampToDate(dueDateMillis)
+
+    // map Int priority to Priority enum expected by PriorityBox
+    val priorityEnum: Priority = when (todo.priority) {
+        1 -> Priority.LOW
+        2 -> Priority.MEDIUM
+        3 -> Priority.HIGH
+        else -> Priority.MEDIUM
+    }
+
     Card(
-        onClick = {onCardClick(Screen.TodoDetails.route + "?todoId=${todo.id}")},
+        onClick = { onCardClick(Screen.TodoDetails.route + "?todoId=${todo.id}") },
         colors = CardDefaults.cardColors(containerColor = theme.colors.secondary),
     ) {
         Row(
@@ -84,7 +101,7 @@ fun TodoItemCard(
                         type = CategoryBoxType.RECTANGLE,
                         onPress = { /* Handle click */ }
                     )
-                    PriorityBox(priority = todo.priority)
+                    com.example.todo.feature_todo.presentation.home.components.PriorityBox(priority = priorityEnum)
                 }
 
             }
@@ -97,19 +114,20 @@ fun TodoItemCard(
 @Composable
 fun TodoItemCardPreview() {
     val mockTodoItem = TodoItem(
-        id = "1",
-        createdAt = 0L,
-        dueDate = System.currentTimeMillis(),
+        id = 1L,
+        userId = 0L,
         title = "Complete Homework",
         description = "Finish math and science homework",
-        completed = false,
         category = Category(
-            id = "1",
+            id = 1L,
             title = "Work",
             bgColor = "0xFFCC4173",
             icon = "work"
         ),
-        priority = Priority.HIGH
+        priority = 3,
+        completed = false,
+        createdAt = ZonedDateTime.now(),
+        dueDate = ZonedDateTime.now().plusDays(1),
     )
 
     TodoTheme {
@@ -120,4 +138,3 @@ fun TodoItemCardPreview() {
         )
     }
 }
-

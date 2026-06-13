@@ -35,11 +35,12 @@ fun HomeNavGraph(
         composable(route = Screen.Home.route) {
             HomeScreen(
                 onCardClick = { route -> navController.navigate(route) },
-                viewModel = homeViewModel
+                viewModel = homeViewModel,
+
             )
         }
         composable(route = Screen.Calendar.route) {
-            CalendarScreen()
+            CalendarScreen(navigateToTodoDetails = { route -> navController.navigate(route) })
         }
         composable(route = Screen.Profile.route) {
             ProfileScreen()

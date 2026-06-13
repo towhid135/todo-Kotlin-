@@ -1,38 +1,85 @@
 package com.example.todo.feature_todo.data.repo
 
 import android.util.Log
-import com.example.todo.core.util.generateUuid
+import com.example.todo.core.util.ApiResult
+import com.example.todo.core.util.safeApiFlow
 import com.example.todo.feature_todo.data.di.IoDispatcher
 import com.example.todo.feature_todo.data.local.TodoDao
-import com.example.todo.feature_todo.data.local.dto.LocalTodoItem
-import com.example.todo.feature_todo.data.mapper.toLocalTodoItem
-import com.example.todo.feature_todo.data.mapper.toLocalTodoItemListFromRemote
-import com.example.todo.feature_todo.data.mapper.toRemoteTodoItem
-import com.example.todo.feature_todo.data.mapper.toTodoItem
-import com.example.todo.feature_todo.data.mapper.toTodoItemListFromLocal
+import com.example.todo.feature_todo.data.mapper.toDomain
+import com.example.todo.feature_todo.data.mapper.toTodoDomainList
 import com.example.todo.feature_todo.data.remote.TodoApi
-import com.example.todo.feature_todo.data.remote.dto.RemoteTodoItem
+import com.example.todo.feature_todo.data.remote.dto.CreateTodoRequestDto
+import com.example.todo.feature_todo.data.remote.dto.TodoItemDto
+import com.example.todo.feature_todo.data.remote.dto.UpdateTodoRequestDto
 import com.example.todo.feature_todo.data.remote.dto.User
 import com.example.todo.feature_todo.domain.model.TodoItem
 import com.example.todo.feature_todo.domain.repo.HomeRepo
 import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.withContext
 import retrofit2.HttpException
 import java.net.ConnectException
 import java.net.UnknownHostException
+import java.time.format.DateTimeFormatter
 
 class HomeRepoImpl(
     private val dao: TodoDao,
     private val api: TodoApi,
     @IoDispatcher private val dispatcher: CoroutineDispatcher
 ) : HomeRepo {
-    override suspend fun getAllTodos(userId: String):List<TodoItem>{
-        getAllTodosFromRemote(userId)
-        return dao.getAllTodoItems().toTodoItemListFromLocal()
+    override  fun getAllTodos(userId: Long): Flow<ApiResult<List<TodoItem>>>{
+        Log.d("HomeRepoImpl", "getAllTodos called for userId: $userId")
+        return safeApiFlow(
+            apiCall = {
+                Log.d("HomeRepoImpl", "Making API call to getAllTodos")
+                api.getAllTodos(userId)
+            },
+            mapper = {dto ->
+                Log.d("HomeRepoImpl", "Mapper called with ${dto.size} items from API")
+                dto.toTodoDomainList()
+            }
+        )
+    }
+
+    override fun createTodo(todo: TodoItem): Flow<ApiResult<TodoItem>> {
+        // Convert ZonedDateTime to UTC RFC3339 (e.g. "2026-06-13T00:00:00Z").
+        // ZonedDateTime.toString() appends "[Asia/Dhaka]" which Go's time.Time
+        // JSON parser cannot handle — it only accepts RFC3339 / ISO-8601 offset format.
+        val utcFormatter = DateTimeFormatter.ISO_INSTANT
+        val createDto = CreateTodoRequestDto(
+            userId = todo.userId,
+            title = todo.title,
+            description = todo.description,
+            categoryId = todo.category.id,
+            priority = todo.priority,
+            completed = todo.completed,
+            dueDate = utcFormatter.format(todo.dueDate.toInstant())
+        )
+        return safeApiFlow(
+            apiCall = { api.createTodo(createDto) },
+            mapper = { dto -> dto.toDomain() }
+        )
+    }
+
+    override fun updateTodo(todo: TodoItem): Flow<ApiResult<TodoItem>> {
+        val utcFormatter = DateTimeFormatter.ISO_INSTANT
+        val updateDto = UpdateTodoRequestDto(
+            id = todo.id,
+            title = todo.title,
+            description = todo.description,
+            categoryId = todo.category.id,
+            priority = todo.priority,
+            completed = todo.completed,
+            dueDate = utcFormatter.format(todo.dueDate.toInstant())
+        )
+        return safeApiFlow(
+            apiCall = { api.updateTodo(updateDto) },
+            mapper = { dto -> dto.toDomain(todo) }
+        )
     }
 
     override suspend fun getAllTodosFromLocalCache(): List<TodoItem>{
-        return dao.getAllTodoItems().toTodoItemListFromLocal()
+        return emptyList()
     }
 
     override suspend fun getAllTodosFromRemote(userId: String){
@@ -54,12 +101,10 @@ class HomeRepoImpl(
     }
 
     private suspend fun refreshRoomCache(userId:String){
-        val remoteTodos = api.getAllTodos(userId)
-        val convertedRemoteTodos = convertToList(remoteTodos).filterNotNull()
-        dao.addAllTodoItems(convertedRemoteTodos.toLocalTodoItemListFromRemote())
+
     }
 
-    private fun convertToList(response:  Map<String, RemoteTodoItem>): List<RemoteTodoItem> {
+    private fun convertToList(response:  Map<String, TodoItemDto>): List<TodoItemDto> {
         return response.values.toList()
     }
 
@@ -69,37 +114,23 @@ class HomeRepoImpl(
         return isEmpty
     }
 
-    override suspend fun getSingleTodoItemById(id: String): TodoItem?{
-        return dao.getSingleTodoItemById(id)?.toTodoItem()
+    override fun getTodoById(id: Long): Flow<ApiResult<TodoItem>> {
+        return safeApiFlow(
+            apiCall = { api.getTodoItemById(id) },
+            mapper = { dto -> dto.toDomain() }
+        )
     }
 
     override suspend fun addTodoItem(user: User,todo: TodoItem){
-        val url = "todos/${user.id}.json"
-        val uuid = generateUuid()
-        val newTodoItem = todo.toRemoteTodoItem().copy(id = uuid)
-        api.addTodo(url, mapOf(uuid to newTodoItem))
+
     }
 
     override suspend fun updateTodoItem(user: User,todo: TodoItem){
-        dao.addTodoItem(todo.toLocalTodoItem())
-        api.updateTodoItem(user.id,todo.id,todo.toRemoteTodoItem())
+
     }
 
     override suspend fun deleteTodoItem(user: User,todo: TodoItem) {
-        try{
-            val response = api.deleteTodo(user.id,todo.id)
-            if(response.isSuccessful){
-                dao.deleteTodoItem(todo.toLocalTodoItem())
-            }else{
-                Log.i("API_DELETE",response.message())
-            }
-        }catch (e:Exception){
-            when(e){
-                is UnknownHostException, is ConnectException, is HttpException -> {
-                    Log.e("HTTP", "Error: Could not delete")
-                }else -> throw e
-            }
-        }
+
     }
 
     override suspend fun addUser(user: Map<String,User>) {
@@ -121,10 +152,7 @@ class HomeRepoImpl(
         api.updateUser(email,user)
     }
 
-    override suspend fun getTodosByDateRange(userId: String, startAt: Long, endAt: Long): List<TodoItem> {
-        val remoteTodos = api.getTodosByDateRange(userId, startAt = startAt, endAt =  endAt)
-        val convertedRemoteTodos = convertToList(remoteTodos).filterNotNull()
-
-        return convertedRemoteTodos.map { it.toTodoItem() }
+    override suspend fun getTodosByDateRange(userId: Long, startAt: Long, endAt: Long): List<TodoItem> {
+        return emptyList()
     }
 }

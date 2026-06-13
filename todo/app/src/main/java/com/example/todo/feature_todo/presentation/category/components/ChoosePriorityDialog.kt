@@ -1,6 +1,5 @@
 package com.example.todo.feature_todo.presentation.category.components
 
-import android.content.res.Resources.Theme
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -59,6 +58,8 @@ fun ChoosePriorityDialog(
 
     fun onPriorityBoxPress(priority: Priority) {
         onPriorityChange(priority)
+        // close the dialog after selection so the user sees the change reflected in the sheet
+        toggleShowPriority()
     }
 
     if (showPriority) {

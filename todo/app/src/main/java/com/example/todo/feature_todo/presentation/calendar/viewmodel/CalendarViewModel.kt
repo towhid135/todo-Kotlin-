@@ -1,19 +1,21 @@
 package com.example.todo.feature_todo.presentation.calendar.viewmodel
 
 import android.content.Context
-import androidx.compose.runtime.mutableStateOf
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.todo.feature_todo.data.datastore.TodoPreferenceStore
 import com.example.todo.feature_todo.data.di.IoDispatcher
-import com.example.todo.feature_todo.domain.use_case.TodoResult
+import com.example.todo.feature_todo.data.remote.dto.User
+import com.example.todo.feature_todo.domain.model.TodoItem
 import com.example.todo.feature_todo.domain.use_case.TodoUseCases
 import com.example.todo.feature_todo.presentation.calendar.CalendarEvent
 import com.example.todo.feature_todo.presentation.calendar.CalendarState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
-import getEndOfDayMillis
-import getStartOfDayMillis
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.flow.firstOrNull
@@ -21,51 +23,75 @@ import kotlinx.coroutines.launch
 import java.time.LocalDate
 import javax.inject.Inject
 
+import com.example.todo.core.util.getEndOfDayMillis
+import com.example.todo.core.util.getStartOfDayMillis
+
 @HiltViewModel
 class CalendarViewModel @Inject constructor(
     private val todoUseCases: TodoUseCases,
     @IoDispatcher private val dispatcher: CoroutineDispatcher,
     @ApplicationContext private val context: Context
 ) : ViewModel() {
-    private val _state = mutableStateOf(CalendarState())
-    val state = _state
-    private val errorHandler = CoroutineExceptionHandler {_ , e ->
+    private val _state = MutableStateFlow(CalendarState())
+    val state: StateFlow<CalendarState> = _state.asStateFlow()
+    private val errorHandler = CoroutineExceptionHandler { _, e ->
         e.printStackTrace()
-        _state.value = _state.value.copy(message = e.message ?: "date was todos fetching error")
+        _state.update { it.copy(message = e.message ?: "date was todos fetching error") }
     }
 
     init {
-        fetchTodosForSelectedDate(_state.value.selectedDate)
+        viewModelScope.launch {
+            val userId = TodoPreferenceStore.getUserIdFlow(context).firstOrNull()
+            _state.update { current -> current.copy(user = current.user.copy(id = userId)) }
+            _state.value.user.id?.let {
+                fetchTodosForSelectedDate(
+                    userId = it,
+                    dueDate = _state.value.selectedDate
+                )
+            }
+        }
     }
-
 
 
     fun onEvent(event: CalendarEvent) {
         when (event) {
-            is CalendarEvent.OnDateSelect -> {
-                _state.value = _state.value.copy(selectedDate = event.date)
-                fetchTodosForSelectedDate(dueDate = event.date)
+            is CalendarEvent.OnDateSelect -> onDateSelect(event.date)
+            is CalendarEvent.OnToggleComplete -> onToggleComplete(event.user, event.todoItem)
+            CalendarEvent.OnPullToRefresh -> {
+                _state.value.user.id?.let {
+                    fetchTodosForSelectedDate(
+                        it,
+                        _state.value.selectedDate,
+                        isPullToRefresh = true
+                    )
+                }
             }
         }
     }
 
     private fun fetchTodosForSelectedDate(
+        userId: Long,
         dueDate: LocalDate,
-
+        isPullToRefresh: Boolean = false
     ) {
-        _state.value = _state.value.copy(isTodosLoading = true)
+        _state.update {
+            if (isPullToRefresh) it.copy(isPullToRefresh = true) else it.copy(isTodosLoading = true)
+        }
         val startAt = getStartOfDayMillis(dueDate)
         val endAt = getEndOfDayMillis(dueDate)
         viewModelScope.launch(dispatcher + errorHandler) {
-            val userId = TodoPreferenceStore.getUserId(context).firstOrNull() ?: ""
-            when(val todosRes = todoUseCases.getTodosByDateRange(userId,startAt,endAt)){
-                is TodoResult.Success -> {
-                    _state.value = _state.value.copy(todos = todosRes.todoItems, isTodosLoading = false)
-                }
-                is TodoResult.Error -> {
-                    _state.value = _state.value.copy(message = todosRes.message, isTodosLoading = false)
-                }
-            }
+
         }
+    }
+
+    private fun onDateSelect(date: LocalDate) {
+        _state.update { it.copy(selectedDate = date) }
+        _state.value.user.id?.let {
+            fetchTodosForSelectedDate(userId = it, dueDate = date)
+        }
+    }
+
+    private fun onToggleComplete(user: User, todoItem: TodoItem) {
+
     }
 }

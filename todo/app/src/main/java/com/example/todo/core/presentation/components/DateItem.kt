@@ -16,7 +16,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.todo.ui.theme.LocalTheme
-import timeStampToDate
 import java.time.LocalDate
 import java.time.format.TextStyle
 import java.util.Locale

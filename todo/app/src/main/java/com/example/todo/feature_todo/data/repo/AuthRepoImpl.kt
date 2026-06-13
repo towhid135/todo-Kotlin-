@@ -1,13 +1,18 @@
 package com.example.todo.feature_todo.data.repo
 
 import android.util.Log
+import com.example.todo.feature_todo.data.mapper.toDomain
 import com.example.todo.feature_todo.data.remote.TodoApi
 import com.example.todo.feature_todo.data.remote.dto.User
+import com.example.todo.feature_todo.domain.model.LoginResult
 import com.example.todo.feature_todo.domain.repo.AuthRepo
 import com.example.todo.feature_todo.domain.use_case.SignInResponse
 import com.example.todo.feature_todo.domain.use_case.SignInResult
 import com.example.todo.feature_todo.domain.use_case.SignupResult
+import com.example.todo.core.util.ApiResult
+import com.example.todo.core.util.safeApiFlow
 import com.google.firebase.auth.FirebaseAuth
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.tasks.await
 import javax.inject.Singleton
 
@@ -27,7 +32,7 @@ class AuthRepoImpl(
                 val emailAsKey = user.email?.split("@")[0] ?: ""
                 val url = "/users.json"
                 val user = User(
-                    id = user.uid,
+                    id = 1L,
                     name = "",
                     email = emailAsKey
                 )
@@ -42,25 +47,18 @@ class AuthRepoImpl(
     }
 
 
-    override suspend fun firebaseLoginWithEmailAndPassword(
+    override fun login(
         email: String,
         password: String
-    ): SignInResult {
-        return try {
-            val loginRes = auth.signInWithEmailAndPassword(email, password).await()
-            val user = loginRes.user
-            if (user != null) {
-                val response = SignInResponse(
-                    email = user.email ?: "",
-                    localId = user.uid
-                )
-                SignInResult.Success(response)
-            } else {
-                SignInResult.Error("User is null")
-            }
-        } catch (e: Exception) {
-            SignInResult.Error(e.message ?: "Something went wrong")
-        }
+    ): Flow<ApiResult<LoginResult>> {
+        val reqBody = mapOf(
+            "email" to email,
+            "password" to password
+        )
+       return safeApiFlow(
+           apiCall = { api.login(reqBody) },
+           mapper = {dto -> dto.toDomain() }
+       )
     }
 
     override suspend fun signOut() {

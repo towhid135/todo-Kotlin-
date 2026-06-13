@@ -4,14 +4,12 @@ import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
-import androidx.compose.foundation.layout.WindowInsetsSides
-import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.navigationBars
-import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.systemBars
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.CircularProgressIndicator
@@ -27,11 +25,10 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.example.todo.core.util.ContentDescriptions
-import com.example.todo.feature_todo.data.remote.dto.User
 import com.example.todo.feature_todo.domain.model.TodoItem
-import com.example.todo.feature_todo.presentation.home.HomeScreenEvent
 import com.example.todo.ui.theme.LocalTheme
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -39,20 +36,16 @@ import com.example.todo.ui.theme.LocalTheme
 fun TodoItemList(
     modifier: Modifier = Modifier,
     todoItems: List<TodoItem>,
-    user: User,
     isLoading: Boolean,
     onPullToRefresh: () -> Unit,
-    onEvent: (HomeScreenEvent) -> Unit,
-    onCardClick: (route:String) -> Unit
+    onCompleteClick: (todo: TodoItem) -> Unit,
+    onCardClick: (route:String) -> Unit,
+    topPadding: Dp? = null
 ) {
     val theme = LocalTheme.current
     val pullToRefreshState = rememberPullToRefreshState()
     val topInsets = with(LocalDensity.current){
         WindowInsets.systemBars.getTop(LocalDensity.current).toDp() + 15.dp
-    }
-
-    fun onRefresh() {
-        onPullToRefresh()
     }
 
     PullToRefreshBox(
@@ -61,7 +54,7 @@ fun TodoItemList(
             .background(theme.colors.backgroundPrimary),
         state = pullToRefreshState,
         isRefreshing = isLoading,
-        onRefresh = { onRefresh() },
+        onRefresh = { onPullToRefresh() },
         indicator = {
             PullToRefreshDefaults.Indicator(
                 state = pullToRefreshState,
@@ -79,6 +72,7 @@ fun TodoItemList(
                 .padding(top = 10.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
+            // top spacer instead of a full-size VerticalDivider
             item {
                 VerticalDivider(
                     modifier = Modifier
@@ -90,23 +84,14 @@ fun TodoItemList(
             items(todoItems, key = { it.id }) { todoItem ->
                 TodoItemCard(
                     todo = todoItem,
-                    onCompleteClick = { onEvent(HomeScreenEvent.ToggleCompleted(user, todoItem)) },
+                    onCompleteClick =  { onCompleteClick(todoItem) },
                     onCardClick = onCardClick
                 )
-                VerticalDivider(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(vertical = 12.dp)
-
-                )
+                // small spacer between items
+                Spacer(modifier = Modifier.height(12.dp))
             }
             item {
-                VerticalDivider(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(vertical = 100.dp)
-
-                )
+                Spacer(modifier = Modifier.height(200.dp))
             }
 
         }

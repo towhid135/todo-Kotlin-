@@ -1,3 +1,5 @@
+package com.example.todo.core.util
+
 import com.example.todo.core.util.FormattedDate
 import java.time.Instant
 import java.time.LocalDate
@@ -17,7 +19,6 @@ fun timeStampToDate(timestamp: Long): FormattedDate {
     val dayNameFormatter = DateTimeFormatter.ofPattern("EEE")
         .withZone(ZoneId.systemDefault())
     val dayNumberFormatter = DateTimeFormatter.ofPattern("d")
-        .withZone(ZoneId.systemDefault())
         .withZone(ZoneId.systemDefault())
     val monthNameFormatter = DateTimeFormatter.ofPattern("MMMM")
         .withZone(ZoneId.systemDefault())

@@ -22,7 +22,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.example.todo.core.util.Category
 import com.example.todo.core.util.Priority
-import com.example.todo.feature_todo.data.remote.dto.User
 import com.example.todo.feature_todo.domain.model.TodoItem
 import com.example.todo.feature_todo.presentation.category.components.ChooseCategoryDialog
 import com.example.todo.feature_todo.presentation.category.components.ChoosePriorityDialog
@@ -38,16 +37,16 @@ import kotlinx.coroutines.launch
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CreateTodoModalBottomSheet(
-    newTodo:TodoItem,
+    newTodo: TodoItem,
     sheetState: SheetState,
     showBottomSheet: Boolean,
     toggleShowBottomSheet: () -> Unit,
     scope: CoroutineScope,
     onTitleChange: (String) -> Unit,
     onDescriptionChange: (String) -> Unit,
-    onCategoryChange: (category:Category) -> Unit,
-    onPriorityChange: (priority:Priority) -> Unit,
-    onChangeDueDate:(dueDate:Long) -> Unit,
+    onCategoryChange: (category: Category) -> Unit,
+    onPriorityChange: (priority: Priority) -> Unit,
+    onChangeDueDate: (dueDate: Long) -> Unit,
     onPressAddTodo: (newTodo: TodoItem) -> Unit,
 ) {
     val theme = LocalTheme.current
@@ -85,13 +84,13 @@ fun CreateTodoModalBottomSheet(
             ) {
                 CustomTextInput(
                     labelText = "Title",
-                    text = newTodo?.title ?: "",
+                    text = newTodo.title,
                     placeholderText = "Enter title",
                     onValueChange = { onTitleChange(it) }
                 )
                 CustomTextInput(
                     labelText = "Description",
-                    text = newTodo?.description ?: "",
+                    text = newTodo.description,
                     placeholderText = "Enter description",
                     onValueChange = { onDescriptionChange(it) }
                 )
@@ -114,7 +113,7 @@ fun CreateTodoModalBottomSheet(
                             tint = theme.colors.iconPrimary,
                         )
                         Icon(
-                            modifier = Modifier.clickable {toggleShowCategory()},
+                            modifier = Modifier.clickable { toggleShowCategory() },
                             imageVector = Todoz.Tag,
                             contentDescription = null,
                             tint = theme.colors.iconPrimary,
@@ -144,13 +143,40 @@ fun CreateTodoModalBottomSheet(
         }
     }
 
+    // convert ZonedDateTime dueDate to epoch millis for the DatePicker (which expects Long?)
+    val initialSelectedMillis: Long? = try {
+        newTodo.dueDate.toInstant().toEpochMilli()
+    } catch (e: Exception) {
+        null
+    }
+
+    // map Int priority to Priority enum
+    val selectedPriority: Priority = when (newTodo.priority) {
+        1 -> Priority.LOW
+        2 -> Priority.MEDIUM
+        3 -> Priority.HIGH
+        else -> Priority.MEDIUM
+    }
+
     TodoDatePickerModal(
-        initialSelectedDateMillis = newTodo.dueDate,
+        initialSelectedDateMillis = initialSelectedMillis,
         showDatePicker = showDatePicker,
         toggleShowDatePicker = { toggleShowDatePicker() },
-        onChangeDueDate = {onChangeDueDate(it)}
+        onChangeDueDate = { onChangeDueDate(it) }
     )
-    ChooseCategoryDialog(showCategory=showCategory, selectedCategory = newTodo.category,toggleShowCategory={toggleShowCategory()},onCategoryChange={onCategoryChange(it)})
-    ChoosePriorityDialog(showPriority, toggleShowPriority = {toggleShowPriority()}, selectedPriority = newTodo.priority,onPriorityChange={onPriorityChange(it)})
+
+    ChooseCategoryDialog(
+        showCategory = showCategory,
+        selectedCategory = newTodo.category,
+        toggleShowCategory = { toggleShowCategory() },
+        onCategoryChange = { onCategoryChange(it) }
+    )
+
+    ChoosePriorityDialog(
+        showPriority = showPriority,
+        toggleShowPriority = { toggleShowPriority() },
+        selectedPriority = selectedPriority,
+        onPriorityChange = { onPriorityChange(it) }
+    )
 
 }

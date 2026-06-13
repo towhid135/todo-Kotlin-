@@ -10,7 +10,6 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -18,6 +17,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.todo.core.presentation.components.LoadingModal
 import com.example.todo.core.util.TodoListStrings
 import com.example.todo.feature_todo.presentation.home.components.AddTodoButton
@@ -34,10 +34,10 @@ import kotlinx.coroutines.launch
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
 fun HomeScreen(
-    onCardClick: (route:String) -> Unit,
+    onCardClick: (route: String) -> Unit,
     viewModel: HomeViewModel = hiltViewModel()
 ) {
-    val state = viewModel.state.value
+    val state by viewModel.state.collectAsStateWithLifecycle()
     val scope = rememberCoroutineScope()
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
 
@@ -50,11 +50,6 @@ fun HomeScreen(
         showBottomSheet = !showBottomSheet
     }
 
-    LaunchedEffect(key1 = state.user.id) {
-        state.user.id.takeIf { it.isNotEmpty() }?.let {
-            viewModel.getTodoItems(userId = it)
-        }
-    }
 
     ModalNavigationDrawer(
         drawerState = drawerState,
@@ -86,13 +81,17 @@ fun HomeScreen(
             ) {
                 TodoItemList(
                     todoItems = state.todoItems,
-                    user = state.user,
-                    isLoading = state.isLoading,
+                    isLoading = state.isGetAllTodosLoading,
                     onPullToRefresh = {
-                        viewModel.getTodoItems(state.user.id)
+                        viewModel.onEvent(HomeScreenEvent.GetAllTodos)
                     },
-                    onEvent = { event ->
-                        viewModel.onEvent(event)
+                    onCompleteClick = { todoItem ->
+                        viewModel.onEvent(
+                            HomeScreenEvent.ToggleCompleted(
+                                state.user,
+                                todoItem
+                            )
+                        )
                     },
                     onCardClick = onCardClick
                 )
@@ -118,14 +117,10 @@ fun HomeScreen(
                     }
                 )
 
-                LoadingModal(isLoading = state.isLoading)
+                LoadingModal(isLoading = state.isGetAllTodosLoading)
             }
         }
     }
 
 
 }
-
-
-
-
