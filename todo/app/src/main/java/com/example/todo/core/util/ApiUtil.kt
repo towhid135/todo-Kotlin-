@@ -26,6 +26,22 @@ fun <T, R> safeApiFlow(
     }
 }
 
+fun <T> safeApiNoDataFlow(
+    apiCall: suspend () -> ApiResponseDto<T>
+): Flow<ApiResult<Unit>> = flow {
+    emit(ApiResult.Loading())
+    try {
+        val response = apiCall()
+        if (response.status) {
+            emit(ApiResult.Success(Unit))
+        } else {
+            emit(ApiResult.Error(response.message ?: "Unknown error"))
+        }
+    } catch (e: Exception) {
+        emit(ApiResult.Error(e.message ?: "Network error"))
+    }
+}
+
 
 data class ApiResponseDto<T>(
     @SerializedName("status")

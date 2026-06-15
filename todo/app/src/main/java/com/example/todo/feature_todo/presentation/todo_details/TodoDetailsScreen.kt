@@ -276,7 +276,7 @@ fun TodoDetailsScreen(
                     )
                 }
             )
-            LoadingModal(isLoading = state.value.isUpdateTodoLoading)
+            LoadingModal(isLoading = state.value.isUpdateTodoLoading || state.value.isDeleteTodoLoading)
         }
     }
 

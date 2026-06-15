@@ -14,6 +14,7 @@ data class TodoDetailsState(
     ),
     val isGetTodoByIdLoading: Boolean = false,
     val isUpdateTodoLoading: Boolean = false,
+    val isDeleteTodoLoading: Boolean = false,
     val error: String? = null,
     val authToken: String? = null
 )

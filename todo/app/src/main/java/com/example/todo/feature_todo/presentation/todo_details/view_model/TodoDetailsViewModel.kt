@@ -52,6 +52,7 @@ class TodoDetailsViewModel @Inject constructor(
 
     val _triggerUpdateTodo = sharedFlowWithReplay1<TodoItem>()
     val _triggerGetTodoById = sharedFlowWithReplay1<Long>()
+    val _triggerDeleteTodo = sharedFlowWithReplay1<Long>()
 
     private val errorHandler = CoroutineExceptionHandler { _, e ->
         e.printStackTrace()
@@ -102,6 +103,14 @@ class TodoDetailsViewModel @Inject constructor(
             onSuccess = ::onSuccessGetTodoById,
             onError = ::onGetTodoByIdError
         )
+
+        collectUseCaseFlow(
+            trigger = _triggerDeleteTodo,
+            useCase = { id -> todoUseCases.deleteTodoUseCase(id) },
+            onLoading = ::onDeleteTodoLoading,
+            onSuccess = ::onSuccessDeleteTodo,
+            onError = ::onDeleteTodoError
+        )
     }
 
     fun onUiEvent(event: UiEvent) {
@@ -123,17 +132,7 @@ class TodoDetailsViewModel @Inject constructor(
     fun onEvent(event: TodoDetailsEvent) {
         when (event) {
             is TodoDetailsEvent.OnDeleteTodo -> {
-                viewModelScope.launch(dispatcher + errorHandler) {
-                    try {
-                        // delete the todo via the repository
-                        repo.deleteTodoItem(event.user, event.todo)
-                        // don't attempt to call a non-existent getAllTodos helper here;
-                        // HomeViewModel is responsible for refreshing the list.
-                    } catch (e: Exception) {
-                        _state.update { it.copy(error = e.message) }
-                    }
-                }
-
+                handleDeleteTodo(event.todo.id)
             }
 
             is TodoDetailsEvent.OnChangeTitle -> {
@@ -214,5 +213,24 @@ class TodoDetailsViewModel @Inject constructor(
 
     fun onGetTodoByIdError(message: String) {
         _state.update { it.copy(isGetTodoByIdLoading = false, error = message) }
+    }
+
+    private fun handleDeleteTodo(id: Long) {
+        _triggerDeleteTodo.tryEmit(id)
+    }
+
+    fun onDeleteTodoLoading() {
+        _state.update { it.copy(isDeleteTodoLoading = true) }
+    }
+
+    fun onSuccessDeleteTodo(unit: Unit) {
+        _state.update { it.copy(isDeleteTodoLoading = false) }
+        viewModelScope.launch {
+            _uiEventFlow.emit(UiEvent.BackButton)
+        }
+    }
+
+    fun onDeleteTodoError(message: String) {
+        _state.update { it.copy(isDeleteTodoLoading = false, error = message) }
     }
 }

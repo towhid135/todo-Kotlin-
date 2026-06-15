@@ -21,16 +21,15 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.todo.core.presentation.components.CommonDialog
 import com.example.todo.core.presentation.components.CustomButton
 import com.example.todo.core.presentation.components.LoadingModal
 import com.example.todo.core.presentation.components.ProfileImagePickerBottomSheet
-import com.example.todo.core.util.AuthStrings
 import com.example.todo.core.util.ButtonSize
 import com.example.todo.core.util.ButtonTitle
 import com.example.todo.core.util.ButtonType
 import com.example.todo.core.util.TodoProfileStrings
-import com.example.todo.feature_todo.presentation.auth.AuthEvent
 import com.example.todo.feature_todo.presentation.home.components.CustomTextInput
 import com.example.todo.feature_todo.presentation.home.components.TodoListScreenTopAppBar
 import com.example.todo.feature_todo.presentation.profile.components.LogoutButton
@@ -44,7 +43,7 @@ fun ProfileScreen(
     profileViewModel: ProfileViewModel = hiltViewModel<ProfileViewModel>()
 ) {
     val theme = LocalTheme.current
-    val profileState = profileViewModel.state.value
+    val profileState = profileViewModel.state.collectAsStateWithLifecycle()
     var showLogoutDialog by remember { mutableStateOf(false) }
 
     val sheetState = rememberModalBottomSheetState(
@@ -83,7 +82,7 @@ fun ProfileScreen(
             verticalArrangement = Arrangement.spacedBy(40.dp)
         ) {
             ProfileImage(
-                imageUrl = profileState.profileImageUrl,
+                imageUrl = profileState.value.profileImageUrl,
                 onImageClick = { toggleShowBottomSheet() },
                 modifier = Modifier
                     .size(100.dp)
@@ -92,21 +91,21 @@ fun ProfileScreen(
 
             CustomTextInput(
                 labelText = TodoProfileStrings.NAME,
-                text = profileState.name,
+                text = profileState.value.name,
                 placeholderText = TodoProfileStrings.USER_NAME_PLACEHOLDER,
                 onValueChange = { profileViewModel.onEvent(ProfileEvent.OnNameChange(it))  }
             )
             CustomTextInput(
                 enabled = false,
                 labelText = TodoProfileStrings.EMAIL,
-                text = profileState.email,
+                text = profileState.value.email,
                 placeholderText = TodoProfileStrings.EMAIL_PLACEHOLDER,
                 onValueChange = { profileViewModel.onEvent(ProfileEvent.OnEmailChange(it)) },
             )
 
             CustomButton(
-                isLoading = profileState.isLoading,
-                isEnabled = !profileState.isLoading,
+                isLoading = profileState.value.isProfileUpdateLoading,
+                isEnabled = !profileState.value.isProfileUpdateLoading,
                 type = ButtonType.FILLED,
                 size = ButtonSize.LARGE,
                 title = ButtonTitle.SAVE_CHANGES,
@@ -138,7 +137,7 @@ fun ProfileScreen(
                 toggleShowBottomSheet()
             }
 
-            LoadingModal(profileState.isProfileGetApiLoading)
+            LoadingModal(profileState.value.isProfileGetApiLoading || profileState.value.isProfileUpdateLoading || profileState.value.isLogoutLoading)
 
         }
 

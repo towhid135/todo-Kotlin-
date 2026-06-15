@@ -1,16 +1,13 @@
 package com.example.todo.feature_todo.data.repo
 
-import android.util.Log
+import com.example.todo.core.util.ApiResult
+import com.example.todo.core.util.safeApiFlow
 import com.example.todo.feature_todo.data.mapper.toDomain
 import com.example.todo.feature_todo.data.remote.TodoApi
 import com.example.todo.feature_todo.data.remote.dto.User
 import com.example.todo.feature_todo.domain.model.LoginResult
 import com.example.todo.feature_todo.domain.repo.AuthRepo
-import com.example.todo.feature_todo.domain.use_case.SignInResponse
-import com.example.todo.feature_todo.domain.use_case.SignInResult
 import com.example.todo.feature_todo.domain.use_case.SignupResult
-import com.example.todo.core.util.ApiResult
-import com.example.todo.core.util.safeApiFlow
 import com.google.firebase.auth.FirebaseAuth
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.tasks.await
@@ -36,7 +33,7 @@ class AuthRepoImpl(
                     name = "",
                     email = emailAsKey
                 )
-                api.addUser(url,mapOf(emailAsKey to user))
+//                api.addUser(url,mapOf(emailAsKey to user))
                 SignupResult.Success(true)
             }else{
                 SignupResult.Error("no user found")
