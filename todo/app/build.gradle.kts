@@ -121,6 +121,11 @@ dependencies {
     implementation(libs.okhttp)
     implementation(libs.okhttp.logging.interceptor)
 
+    //chucker
+    debugImplementation(libs.chucker.library)
+    // Empty no-op stub — release builds (no UI, no overhead, no traces)
+    releaseImplementation(libs.chucker.no.op)
+
     //GSON
     implementation(libs.gson)
     implementation(libs.converter.gson)

@@ -23,7 +23,7 @@ interface TodoApi {
     @POST(ApiEndpoints.LOGIN_URL)
     suspend fun login(@Body body: Map<String, String>): ApiResponseDto<LoginResponseData>
     @POST(ApiEndpoints.REFRESH_ACCESS_TOKEN_URL)
-    suspend fun refreshAccessToken(@Body body: Map<String, String>): Response<RefreshAccessTokenDto>
+    suspend fun refreshAccessToken(@Body body: Map<String, String>): ApiResponseDto<RefreshAccessTokenDto>
 
     @GET(ApiEndpoints.GET_ALL_TODOS_BY_USER_ID)
     suspend fun getAllTodos(

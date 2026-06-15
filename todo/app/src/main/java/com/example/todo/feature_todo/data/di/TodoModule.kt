@@ -2,6 +2,9 @@ package com.example.todo.feature_todo.data.di
 
 import android.content.Context
 import androidx.room.Room
+import com.chuckerteam.chucker.api.ChuckerCollector
+import com.chuckerteam.chucker.api.ChuckerInterceptor
+import com.chuckerteam.chucker.api.RetentionManager
 import com.example.todo.BuildConfig
 import com.example.todo.feature_todo.data.local.TodoDao
 import com.example.todo.feature_todo.data.local.TodoDatabase
@@ -34,6 +37,26 @@ object TodoModule {
 
     @Provides
     @Singleton
+    fun provideChuckerInterceptor(
+        @ApplicationContext context: Context
+    ): ChuckerInterceptor {
+        val collector = ChuckerCollector(
+            context          = context,
+            showNotification = true,
+            retentionPeriod  = RetentionManager.Period.ONE_HOUR
+        )
+
+        return ChuckerInterceptor.Builder(context)
+            .collector(collector)
+            .maxContentLength(250_000L)
+            .alwaysReadResponseBody(true)
+            // No redactHeaders() call — everything is visible
+            .createShortcut(true)
+            .build()
+    }
+
+    @Provides
+    @Singleton
     fun provideHeaderInterceptor(
         @ApplicationContext context: Context
     ): HeaderInterceptor = HeaderInterceptor(context)
@@ -63,10 +86,12 @@ object TodoModule {
     fun provideOkHttpClient(
         loggingInterceptor: HttpLoggingInterceptor,
         headerInterceptor: HeaderInterceptor,
-        tokenAuthenticator: TokenAuthenticator
+        tokenAuthenticator: TokenAuthenticator,
+        chuckerInterceptor: ChuckerInterceptor
     ): OkHttpClient = OkHttpClient.Builder()
         .addInterceptor(loggingInterceptor)    // logs before the auth header is added
         .addInterceptor(headerInterceptor)     // attaches Authorization header
+        .addInterceptor(chuckerInterceptor)
         .authenticator(tokenAuthenticator)     // handles 401 globally
         .connectTimeout(30, TimeUnit.SECONDS)
         .readTimeout(30, TimeUnit.SECONDS)

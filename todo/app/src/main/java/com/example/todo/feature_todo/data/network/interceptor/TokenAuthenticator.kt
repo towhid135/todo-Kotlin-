@@ -92,37 +92,25 @@ class TokenAuthenticator @Inject constructor(
                     mapOf("refresh_token" to refreshToken)
                 )
 
-                when {
-                    refreshResponse.isSuccessful -> {
-                        val body = refreshResponse.body() ?: return null
-                        // Persist the new access token.
-                        // Pass refreshToken only when the backend returns one
-                        // (refresh-token rotation). Null keeps the existing token.
-                        TodoPreferenceStore.setAuthToken(
-                           context = context,
-                            token = body.accessToken
-                        )
-                        return body.accessToken
-                    }
-
-                    refreshResponse.code() == 401 ||
-                            refreshResponse.code() == 403 -> {
-                        // Refresh token is invalid or expired.
-                        // No point retrying — return null immediately.
-                        return null
-                    }
-
-                    refreshResponse.code() in 500..599 -> {
-                        // Transient server error — back off and retry if attempts remain.
+                if(refreshResponse.status){
+                    val data = refreshResponse.data ?: return null
+                    // Persist the new access token.
+                    // Pass refreshToken only when the backend returns one
+                    // (refresh-token rotation). Null keeps the existing token.
+                    TodoPreferenceStore.setAuthToken(
+                        context = context,
+                        token = data.accessToken
+                    )
+                    return data.accessToken
+                }else{
+                    if(refreshResponse.code != "UNAUTHORIZED"){
+                        //handling status code 500..599
                         if (attempt < MAX_REFRESH_RETRIES - 1) {
                             kotlinx.coroutines.delay(exponentialBackoff(attempt))
                         }
                     }
-
-                    else -> {
-                        // Any other error (4xx etc.) — non-recoverable.
-                        return null
-                    }
+                    //for 401, 403, etc just return
+                    return null
                 }
             } catch (e: IOException) {
                 // Network error or timeout — retry if attempts remain.
