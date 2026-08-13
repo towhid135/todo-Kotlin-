@@ -1,68 +1,49 @@
 # Add project specific ProGuard rules here.
-# You can control the set of applied configuration files using the
-# proguardFiles setting in build.gradle.
-#
-# For more details, see
-#   http://developer.android.com/guide/developing/tools/proguard.html
 
-# If your project uses WebView with JS, uncomment the following
-# and specify the fully qualified class name to the JavaScript interface
-# class:
-#-keepclassmembers class fqcn.of.javascript.interface.for.webview {
-#   public *;
-#}
-
-# Uncomment this to preserve the line number information for
-# debugging stack traces.
-#-keepattributes SourceFile,LineNumberTable
-
-# If you keep the line number information, uncomment this to
-# hide the original source file name.
-#-renamesourcefileattribute SourceFile
-
-# Keep data classes used for API serialization
--keep class com.example.todo.feature_todo.data.remote.dto.** { *; }
-
-# Keep GSON annotations
--keepattributes *Annotation*
+# Preserve line numbers and source file attributes for crash reporting & debugging
 -keepattributes SourceFile,LineNumberTable
 -renamesourcefileattribute SourceFile
 
-# Keep generic signatures for Retrofit/GSON
--keepattributes Signature
+# Preserve generic signatures and annotations for Retrofit / Gson / Room / Hilt reflection
+-keepattributes Signature, *Annotation*, InnerClasses, EnclosingMethod
 
-# Preserve line numbers for crash reporting
--keepattributes SourceFile,LineNumberTable
-
-
-# Keep generic signatures and annotation metadata needed by Retrofit/Gson for reflection.
-# Without this, R8 may strip type info or annotations used at runtime.
--keepattributes Signature, *Annotation*
-
-# Keep all Retrofit runtime classes (don't remove or rename them).
-# Retrofit relies on these classes at runtime.
+# Keep Retrofit classes and annotated interface methods
 -keep class retrofit2.** { *; }
-
-# Keep all OkHttp runtime classes (don't remove or rename them).
-# OkHttp is the HTTP client used by Retrofit; keep its implementation.
--keep class okhttp3.** { *; }
-
-# Preserve any methods annotated with Retrofit HTTP annotations (e.g. @GET, @POST).
-# This prevents R8 from removing/renaming interface methods used to build requests.
 -keepclassmembers class * {
     @retrofit2.http.* <methods>;
 }
+-keep interface com.example.todo.feature_todo.data.remote.TodoApi { *; }
 
-# Keep all Gson runtime classes (don't remove or rename them).
-# Gson reflection code depends on these classes.
+# Keep OkHttp runtime classes
+-keep class okhttp3.** { *; }
+
+# Keep Gson runtime classes and fields with @SerializedName
 -keep class com.google.gson.** { *; }
-
-# Preserve fields annotated with @SerializedName so Gson can map JSON to fields.
-# If these are removed/renamed, JSON deserialization may fail.
 -keepclassmembers class * {
     @com.google.gson.annotations.SerializedName <fields>;
 }
 
-# Keep your model/data classes used for API serialization/deserialization.
-# Adjust the package to match your actual model package.
--keep class com.example.todo.model.** { *; }
+# Keep Data Transfer Objects (DTOs), Domain Models, and Core Utilities
+-keep class com.example.todo.feature_todo.data.remote.dto.** { *; }
+-keep class com.example.todo.feature_todo.data.local.dto.** { *; }
+-keep class com.example.todo.feature_todo.domain.model.** { *; }
+-keep class com.example.todo.core.util.** { *; }
+
+# Keep Enum classes & members so Enum.name() and Enum.valueOf() work properly at runtime
+-keepclassmembers enum * {
+    public static **[] values();
+    public static ** valueOf(java.lang.String);
+}
+
+# Keep Room Database classes and Entities
+-keep class * extends androidx.room.RoomDatabase { *; }
+-keep @androidx.room.Entity class * { *; }
+-dontwarn androidx.room.paging.**
+
+# Keep Cloudinary SDK classes & suppress warnings for optional third-party integrations (Glide, Picasso)
+-keep class com.cloudinary.** { *; }
+-dontwarn com.cloudinary.android.download.glide.**
+-dontwarn com.cloudinary.android.download.picasso.**
+-dontwarn com.bumptech.glide.**
+-dontwarn com.squareup.picasso.**
+
