@@ -13,6 +13,10 @@ class AuthUseCases @Inject constructor(private val repo: AuthRepo) {
         return repo.register(request)
     }
 
+    fun verifyOtp(email: String, otp: String): Flow<ApiResult<Unit>> {
+        return repo.verifyOtp(email, otp)
+    }
+
     fun login(email: String, password: String): Flow<ApiResult<LoginResult>> {
         return repo.login(email, password)
     }

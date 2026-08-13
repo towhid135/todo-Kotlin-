@@ -2,13 +2,12 @@ package com.example.todo.navigation_graph.graphs
 
 import androidx.compose.foundation.background
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
 import com.example.todo.feature_todo.presentation.auth.Login
 import com.example.todo.feature_todo.presentation.auth.Signup
 import com.example.todo.feature_todo.presentation.auth.viewmodel.AuthViewModel
@@ -21,13 +20,6 @@ import com.example.todo.ui.theme.LocalTheme
 fun AuthNavGraph(authViewModel: AuthViewModel) {
     val theme = LocalTheme.current
     val navController = rememberNavController()
-    val isSignupSuccess by authViewModel.isSignupSuccess.collectAsState()
-
-    LaunchedEffect(isSignupSuccess) {
-        if (isSignupSuccess) {
-            navController.navigate(Screen.Otp.route)
-        }
-    }
 
     NavHost(
         modifier = Modifier.background(theme.colors.backgroundPrimary),
@@ -37,12 +29,15 @@ fun AuthNavGraph(authViewModel: AuthViewModel) {
     ) {
         composable(route = Screen.Signup.route) {
             Signup(
-                authViewModel,
+                authViewModel = authViewModel,
                 onBackButtonClick = {
                     navController.navigateUp()
                 },
                 onLoginClick = {
                     navController.navigate(Screen.Login.route)
+                },
+                onNavigateToOtp = { email ->
+                    navController.navigate("${Screen.Otp.route}?email=$email")
                 }
             )
         }
@@ -54,13 +49,25 @@ fun AuthNavGraph(authViewModel: AuthViewModel) {
                 }
             )
         }
-        composable(route = Screen.Otp.route) {
+        composable(
+            route = Screen.Otp.route + "?email={email}",
+            arguments = listOf(
+                navArgument(name = "email") {
+                    type = NavType.StringType
+                    defaultValue = ""
+                }
+            )
+        ) {
             OtpScreen(
                 onNavigateBack = {
                     navController.navigateUp()
                 },
                 onSubmit = {
-                    // TODO: Navigate to home or next screen after OTP verified
+                    navController.navigate(Screen.Login.route) {
+                        popUpTo(Screen.Login.route) {
+                            inclusive = true
+                        }
+                    }
                 }
             )
         }

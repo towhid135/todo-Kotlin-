@@ -11,6 +11,7 @@ import com.example.todo.feature_todo.data.remote.dto.UpdateTodoRequestDto
 import com.example.todo.feature_todo.data.remote.dto.UpdateTodoResponseDto
 import com.example.todo.feature_todo.data.remote.dto.UpdateUserRequestDto
 import com.example.todo.feature_todo.data.remote.dto.User
+import com.example.todo.feature_todo.data.remote.dto.VerifyOtpRequestDto
 import retrofit2.http.Body
 import retrofit2.http.DELETE
 import retrofit2.http.GET
@@ -21,7 +22,10 @@ import retrofit2.http.Query
 
 interface TodoApi {
     @POST(ApiEndpoints.REGISTER_URL)
-    suspend fun register(@Body body: SignupRequestDto): SignupResponseDto
+    suspend fun register(@Body body: SignupRequestDto): ApiResponseDto<SignupResponseDto>
+
+    @POST(ApiEndpoints.VERIFY_OTP_URL)
+    suspend fun verifyOtp(@Body body: VerifyOtpRequestDto): ApiResponseDto<Unit?>
 
     @POST(ApiEndpoints.LOGIN_URL)
     suspend fun login(@Body body: Map<String, String>): ApiResponseDto<LoginResponseData>

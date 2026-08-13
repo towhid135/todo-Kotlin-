@@ -8,6 +8,7 @@ import kotlinx.coroutines.flow.Flow
 
 interface AuthRepo {
     fun register(request: SignupRequest): Flow<ApiResult<SignupResult>>
+    fun verifyOtp(email: String, otp: String): Flow<ApiResult<Unit>>
     fun login(email: String, password: String): Flow<ApiResult<LoginResult>>
     suspend fun signOut()
 }

@@ -148,6 +148,7 @@ class AuthViewModel @Inject constructor(
             onUiEvent(UiEvent.ShowSnackBar)
             return
         }
+        _state.update { it.copy(error = "") }
         _triggerSignup.tryEmit(
             SignupRequest(
                 email = _state.value.email,
@@ -165,6 +166,7 @@ class AuthViewModel @Inject constructor(
             it.copy(
                 isLoading = false,
                 signupEmail = result.email,
+                error = "",
                 password = "",
                 confirmPassword = ""
             )
