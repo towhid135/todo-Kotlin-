@@ -4,6 +4,8 @@ import com.example.todo.core.util.ApiResponseDto
 import com.example.todo.feature_todo.data.remote.dto.CreateTodoRequestDto
 import com.example.todo.feature_todo.data.remote.dto.LoginResponseData
 import com.example.todo.feature_todo.data.remote.dto.RefreshAccessTokenDto
+import com.example.todo.feature_todo.data.remote.dto.SignupRequestDto
+import com.example.todo.feature_todo.data.remote.dto.SignupResponseDto
 import com.example.todo.feature_todo.data.remote.dto.TodoItemDto
 import com.example.todo.feature_todo.data.remote.dto.UpdateTodoRequestDto
 import com.example.todo.feature_todo.data.remote.dto.UpdateTodoResponseDto
@@ -18,6 +20,9 @@ import retrofit2.http.Path
 import retrofit2.http.Query
 
 interface TodoApi {
+    @POST(ApiEndpoints.REGISTER_URL)
+    suspend fun register(@Body body: SignupRequestDto): SignupResponseDto
+
     @POST(ApiEndpoints.LOGIN_URL)
     suspend fun login(@Body body: Map<String, String>): ApiResponseDto<LoginResponseData>
 

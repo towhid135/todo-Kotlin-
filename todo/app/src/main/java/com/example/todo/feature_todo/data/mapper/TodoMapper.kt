@@ -3,9 +3,11 @@ package com.example.todo.feature_todo.data.mapper
 import com.example.todo.core.util.Category
 import com.example.todo.feature_todo.data.remote.dto.CategoryDto
 import com.example.todo.feature_todo.data.remote.dto.LoginResponseData
+import com.example.todo.feature_todo.data.remote.dto.SignupResponseDto
 import com.example.todo.feature_todo.data.remote.dto.TodoItemDto
 import com.example.todo.feature_todo.data.remote.dto.UpdateTodoResponseDto
 import com.example.todo.feature_todo.domain.model.LoginResult
+import com.example.todo.feature_todo.domain.model.SignupResult
 import com.example.todo.feature_todo.domain.model.TodoItem
 import java.time.ZonedDateTime
 
@@ -19,6 +21,13 @@ fun LoginResponseData.toDomain(): LoginResult {
         imageUrl = imageUrl,
         accessToken = accessToken,
         refreshToken = refreshToken
+    )
+}
+
+fun SignupResponseDto.toDomain(): SignupResult {
+    return SignupResult(
+        message = message,
+        email = email
     )
 }
 

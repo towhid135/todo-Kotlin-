@@ -155,6 +155,7 @@ object TodoPreferenceStore {
 
     suspend fun resetPreferences(context: Context) {
         context.dataStore.edit { preferences ->
+            preferences[USER_ID] = 0L
             preferences[USER_NAME] = ""
             preferences[USER_EMAIL] = ""
             preferences[USER_PROFILE_IMAGE] = ""

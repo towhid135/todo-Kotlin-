@@ -94,6 +94,7 @@ enum class ButtonTitle(val value: String) {
     GALLERY("Gallery"),
     CAMERA("Camera"),
     SAVE_CHANGES("Save Changes"),
+    SUBMIT(value = "Submit")
 }
 
 enum class IconAsset(val id:Int) {

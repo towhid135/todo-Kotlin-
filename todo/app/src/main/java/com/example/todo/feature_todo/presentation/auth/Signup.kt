@@ -45,11 +45,11 @@ import kotlinx.coroutines.flow.collectLatest
 fun Signup(
     authViewModel: AuthViewModel = hiltViewModel(),
     onBackButtonClick: () -> Unit,
-    onLoginClick: () -> Unit = { }
+    onLoginClick: () -> Unit = { },
+    onNavigateToOtp: (email: String) -> Unit = { }
 ) {
     val snackBarHostState = remember { SnackbarHostState() }
     val state by authViewModel.state.collectAsState()
-    val isSignupSuccess by authViewModel.isSignupSuccess.collectAsState()
     val theme = LocalTheme.current
     val focusManager = LocalFocusManager.current
 
@@ -60,13 +60,8 @@ fun Signup(
                 AuthViewModel.UiEvent.ShowSnackBar -> {
                     snackBarHostState.showSnackbar(message = state.error, actionLabel = "Dismiss")
                 }
+                is AuthViewModel.UiEvent.NavigateToOtp -> onNavigateToOtp(event.email)
             }
-        }
-    }
-
-    LaunchedEffect(isSignupSuccess) {
-        if (isSignupSuccess) {
-            onLoginClick()
         }
     }
 

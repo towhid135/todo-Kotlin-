@@ -59,6 +59,7 @@ fun Login(
                 AuthViewModel.UiEvent.ShowSnackBar -> {
                     snackBarHostState.showSnackbar(message = state.error, actionLabel = "Dismiss")
                 }
+                is AuthViewModel.UiEvent.NavigateToOtp -> { /* Login screen ignores this event */ }
             }
         }
     }

@@ -7,5 +7,6 @@ data class AuthState(
     val confirmPassword: String = "",
     val isLoading: Boolean = false,
     val error: String = "",
-    val isPasswordVisible: Boolean = false
+    val isPasswordVisible: Boolean = false,
+    val signupEmail: String = ""
 )
