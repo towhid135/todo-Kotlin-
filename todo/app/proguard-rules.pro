@@ -47,3 +47,11 @@
 -dontwarn com.bumptech.glide.**
 -dontwarn com.squareup.picasso.**
 
+# Jetpack DataStore Preferences & Protobuf Lite
+-keepclassmembers class * extends androidx.datastore.preferences.protobuf.GeneratedMessageLite {
+    <fields>;
+}
+-keep class androidx.datastore.preferences.protobuf.** { *; }
+-keep class androidx.datastore.preferences.core.** { *; }
+
+
